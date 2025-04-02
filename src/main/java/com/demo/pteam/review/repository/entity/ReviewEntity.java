@@ -13,23 +13,21 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "review")
-@Getter
-@Setter
+@Getter @Setter
 @NoArgsConstructor
-public class Review {
+public class Review extends BaseTimeEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "trainer_id", nullable = false)
-    private Accounts trainer;
+    private Account trainer;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private Accounts user;
+    private Account user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id", nullable = false)
@@ -47,12 +45,4 @@ public class Review {
 
     @Column(name = "pt_session_count", nullable = false)
     private Integer ptSessionCount;
-
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
 }
