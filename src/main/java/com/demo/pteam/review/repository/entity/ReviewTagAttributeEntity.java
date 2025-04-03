@@ -19,5 +19,5 @@ public class ReviewTagAttributeEntity {
     private String name;
 
     @Column(name = "is_active", nullable = false)
-    private Boolean isActive;
+    private Boolean isActive = true;
 }
