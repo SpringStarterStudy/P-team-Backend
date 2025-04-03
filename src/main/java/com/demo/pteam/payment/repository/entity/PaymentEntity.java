@@ -44,6 +44,9 @@ public class PaymentEntity {
     @Column(name = "account_id", nullable = false)
     private Long accountId;
 
+    @OneToOne(mappedBy = "payment", fetch = FetchType.LAZY, optional = true)
+    private ExternalPaymentEntity externalPayment;
+
     //TODO : 계정 수정
     @Builder
     public PaymentEntity(Long paymentId, String productId, PaymentMethod paymentMethod,
