@@ -3,11 +3,10 @@ package com.demo.pteam.review.repository.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "review_reply")
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 public class ReviewReplyEntity extends BaseTimeEntity {
 

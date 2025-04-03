@@ -10,7 +10,7 @@ import lombok.Setter;
 @AttributeOverrides({
         @AttributeOverride(name = "createdAt", column = @Column(name = "upload_date"))
 })
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 public class ReviewImageEntity extends BaseTimeEntity {
 

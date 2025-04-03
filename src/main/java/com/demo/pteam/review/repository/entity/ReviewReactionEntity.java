@@ -9,7 +9,7 @@ import lombok.Setter;
 @Table(name = "review_reaction", uniqueConstraints = {
         @UniqueConstraint(name = "uk_review_account", columnNames = {"review_id", "account_id"})
 })
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 public class ReviewReactionEntity extends BaseTimeEntity {
 

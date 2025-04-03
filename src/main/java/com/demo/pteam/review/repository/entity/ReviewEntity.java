@@ -5,13 +5,12 @@ import com.demo.pteam.schedule.service.domain.Schedule;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "review")
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 public class ReviewEntity extends BaseTimeEntity {
 

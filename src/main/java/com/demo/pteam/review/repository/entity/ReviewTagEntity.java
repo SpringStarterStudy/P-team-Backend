@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "review_tag")
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 public class ReviewTagEntity {
 
