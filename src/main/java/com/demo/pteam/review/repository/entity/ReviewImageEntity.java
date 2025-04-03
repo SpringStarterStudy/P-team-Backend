@@ -30,7 +30,7 @@ public class ReviewImageEntity extends BaseTimeEntity {
     private Byte displayOrder;
 
     @Column(name = "is_active", nullable = false)
-    private Integer isActive = 1; // 1: 활성화, 0: 비활성화 (기본값 1)
+    private Boolean isActive = true; // 1: 활성화, 0: 비활성화 (기본값 1)
 
     @Column(name = "file_name", length = 255)
     private String fileName;
