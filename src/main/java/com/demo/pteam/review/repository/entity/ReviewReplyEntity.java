@@ -12,6 +12,7 @@ import lombok.Setter;
 public class ReviewReplyEntity extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "review_reply_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
