@@ -8,8 +8,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "review_image")
 @AttributeOverrides({
-        @AttributeOverride(name = "createdAt", column = @Column(name = "upload_date")),
-        @AttributeOverride(name = "updatedAt", column = @Column(name = "updated_at"))
+        @AttributeOverride(name = "createdAt", column = @Column(name = "upload_date"))
 })
 @Getter @Setter
 @NoArgsConstructor
@@ -39,5 +38,5 @@ public class ReviewImageEntity extends BaseTimeEntity {
     private String fileType;
 
     @Column(name = "file_size")
-    private String fileSize;
+    private Integer fileSize;
 }
