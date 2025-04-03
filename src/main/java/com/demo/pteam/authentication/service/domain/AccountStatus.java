@@ -7,8 +7,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public enum AccountStatus {
-    LOCAL(1),
-    SOCIAL(2);
+    DELETED(-1),    // 삭제
+    SUSPENDED(0),   // 정지
+    ACTIVE(1),      // 활성
+    UNVERIFIED(2);  // 미인증
+
 
     private final byte code;
     private static final Map<Byte, AccountStatus> CODE_MAP =
