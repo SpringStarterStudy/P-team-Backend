@@ -29,6 +29,6 @@ public enum AccountStatus {
 
     public static AccountStatus getType(Byte code) {
         Objects.requireNonNull(code, "code is null");
-        return Objects.requireNonNull(CODE_MAP.get(code), "Not Found AccountStatus");
+        return Objects.requireNonNull(CODE_MAP.get(code), "Invalid code! Not Found AccountStatus");
     }
 }

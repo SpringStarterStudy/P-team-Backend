@@ -29,6 +29,6 @@ public enum Role {
 
     public static Role getType(Byte code) {
         Objects.requireNonNull(code, "code is null");
-        return Objects.requireNonNull(CODE_MAP.get(code), "Not Found Role");
+        return Objects.requireNonNull(CODE_MAP.get(code), "Invalid code! Not Found Role");
     }
 }

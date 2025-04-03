@@ -29,6 +29,6 @@ public enum SocialType {
 
     public static SocialType getType(Byte code) {
         Objects.requireNonNull(code, "code is null");
-        return Objects.requireNonNull(CODE_MAP.get(code), "Not Found SocialType");
+        return Objects.requireNonNull(CODE_MAP.get(code), "Invalid code! Not Found SocialType");
     }
 }
