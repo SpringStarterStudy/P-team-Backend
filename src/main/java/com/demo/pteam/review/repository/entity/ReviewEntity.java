@@ -1,5 +1,6 @@
 package com.demo.pteam.review.repository.entity;
 
+import com.demo.pteam.schedule.repository.entity.ScheduleEntity;
 import com.demo.pteam.schedule.service.domain.Schedule;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -28,7 +29,7 @@ public class ReviewEntity extends BaseTimeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "schedule_id", nullable = false)
-    private Schedule schedule;
+    private ScheduleEntity schedule;
 
     @Column(nullable = false, precision = 2, scale = 1)
     private BigDecimal rating;
