@@ -1,19 +1,23 @@
 package com.demo.pteam.favorite.repository.entity;
 
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "favorites")
+@Table(name = "favorites", uniqueConstraints = {
+        @UniqueConstraint(name = "uk_favorites_user_profile",
+        columnNames = {"user_id", "profile_id"})
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FavoriteEntity {
 
-    @EmbeddedId
-    private FavoriteId favoritesId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "favorite_id")
+    private Long favoriteId;
 
-    // TODO: BaseEntity 상속
+    // TODO: 회원, 프로필 관계 설정
 
+    // TODO: Auditing 적용
 }
