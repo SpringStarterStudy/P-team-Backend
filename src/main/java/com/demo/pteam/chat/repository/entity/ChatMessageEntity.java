@@ -24,7 +24,7 @@ public class ChatMessageEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "chat_room_id", nullable = false)
-    private ChatRoom chatRoom;
+    private ChatRoomEntity chatRoom;
 
     //TODO 회원 관계 설정
 
