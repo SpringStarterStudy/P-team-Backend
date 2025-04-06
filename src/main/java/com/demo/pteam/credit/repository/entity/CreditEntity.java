@@ -21,7 +21,7 @@ public class CreditEntity {
     private Long accountId;
 
     @Column(name = "credit_balance", nullable = false)
-    private Integer creditBalance;
+    private Integer creditBalance = 0;
 
     @Builder
     public CreditEntity(Long accountId, Integer creditBalance) {
