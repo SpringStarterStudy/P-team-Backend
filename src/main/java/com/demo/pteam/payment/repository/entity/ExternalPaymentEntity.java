@@ -34,7 +34,7 @@ public class ExternalPaymentEntity {
     @Column(name = "cancelled_at")
     private LocalDateTime cancelledAt;
 
-    @Column(name = "amount", columnDefinition = "json", nullable = false)
+    @Column(name = "amount", columnDefinition = "text", nullable = false)
     private String amount;
 
 
