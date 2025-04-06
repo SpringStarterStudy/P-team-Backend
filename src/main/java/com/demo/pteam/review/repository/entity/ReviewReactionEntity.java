@@ -1,5 +1,7 @@
 package com.demo.pteam.review.repository.entity;
 
+import com.demo.pteam.authentication.repository.entity.AccountEntity;
+import com.demo.pteam.global.entity.BaseEntity;
 import com.demo.pteam.review.repository.type.Reaction;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 })
 @Getter
 @NoArgsConstructor
-public class ReviewReactionEntity extends BaseTimeEntity {
+public class ReviewReactionEntity extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_reaction_id")

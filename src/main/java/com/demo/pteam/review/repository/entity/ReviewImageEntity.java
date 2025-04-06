@@ -1,5 +1,6 @@
 package com.demo.pteam.review.repository.entity;
 
+import com.demo.pteam.global.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.Setter;
 })
 @Getter
 @NoArgsConstructor
-public class ReviewImageEntity extends BaseTimeEntity {
+public class ReviewImageEntity extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_image_id")

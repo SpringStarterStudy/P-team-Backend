@@ -1,5 +1,7 @@
 package com.demo.pteam.review.repository.entity;
 
+import com.demo.pteam.authentication.repository.entity.AccountEntity;
+import com.demo.pteam.global.entity.BaseEntity;
 import com.demo.pteam.review.repository.type.PtPurpose;
 import com.demo.pteam.schedule.repository.entity.ScheduleEntity;
 import jakarta.persistence.*;
@@ -12,7 +14,7 @@ import java.math.BigDecimal;
 @Table(name = "review")
 @Getter
 @NoArgsConstructor
-public class ReviewEntity extends BaseTimeEntity {
+public class ReviewEntity extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
