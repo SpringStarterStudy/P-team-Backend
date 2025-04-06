@@ -1,7 +1,7 @@
 package com.demo.pteam.review.repository.entity;
 
+import com.demo.pteam.review.repository.type.PtPurpose;
 import com.demo.pteam.schedule.repository.entity.ScheduleEntity;
-import com.demo.pteam.schedule.service.domain.Schedule;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

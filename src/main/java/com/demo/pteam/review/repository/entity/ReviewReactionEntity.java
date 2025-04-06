@@ -1,9 +1,9 @@
 package com.demo.pteam.review.repository.entity;
 
+import com.demo.pteam.review.repository.type.Reaction;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "review_reaction", uniqueConstraints = {

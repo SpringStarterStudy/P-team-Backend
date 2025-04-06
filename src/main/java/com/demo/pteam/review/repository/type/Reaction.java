@@ -1,4 +1,4 @@
-package com.demo.pteam.review.repository.entity;
+package com.demo.pteam.review.repository.type;
 
 public enum Reaction {
     thumbs_up("좋아요"),

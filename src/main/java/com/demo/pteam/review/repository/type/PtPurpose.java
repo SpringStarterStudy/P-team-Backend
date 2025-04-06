@@ -1,4 +1,4 @@
-package com.demo.pteam.review.repository.entity;
+package com.demo.pteam.review.repository.type;
 
 public enum PtPurpose {
     다이어트("체중 감량 목적"),
