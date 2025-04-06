@@ -1,6 +1,6 @@
 package com.demo.pteam.workout.repository.entity;
 
-import com.demo.pteam.global.entity.BaseEntity;
+import com.demo.pteam.global.entity.SoftDeletableEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "workout_request")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class WorkoutEntity extends BaseEntity {
+public class WorkoutEntity extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
