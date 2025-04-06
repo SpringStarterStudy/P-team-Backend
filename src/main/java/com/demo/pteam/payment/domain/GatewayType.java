@@ -1,4 +1,4 @@
-package com.demo.pteam.payment.service.domain;
+package com.demo.pteam.payment.domain;
 
 public enum GatewayType {
     KAKAOPAY,

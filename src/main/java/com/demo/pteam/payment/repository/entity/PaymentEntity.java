@@ -1,12 +1,11 @@
 package com.demo.pteam.payment.repository.entity;
 
-import com.demo.pteam.payment.service.domain.PaymentMethod;
-import com.demo.pteam.payment.service.domain.PaymentStatus;
+import com.demo.pteam.payment.domain.PaymentMethod;
+import com.demo.pteam.payment.domain.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 
