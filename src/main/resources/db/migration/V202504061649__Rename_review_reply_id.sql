@@ -1,2 +1,0 @@
-ALTER TABLE `review_reply`
-CHANGE COLUMN `id` `review_reply_id` BIGINT NOT NULL AUTO_INCREMENT;
