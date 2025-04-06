@@ -38,7 +38,7 @@ public class ExternalPaymentEntity {
     private String amount;
 
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id", nullable = false)
     private PaymentEntity payment;
 
