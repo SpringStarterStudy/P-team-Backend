@@ -115,12 +115,14 @@ INSERT IGNORE INTO review_reply (id, review_id, trainer_id, content, created_at,
 (1, 1, @trainer_id1, '김회원님, 좋은 리뷰 감사합니다! 앞으로도 더 좋은 결과를 위해 노력하겠습니다.', '2023-11-10 15:20:00', '2023-11-10 15:20:00');
 
 -- 1. Payment 테이블 (결제 정보)
-INSERT IGNORE INTO Payment (account_id, payment_id, product_id, payment_method, payment_money, status)
-VALUES (@user_id1, 1, 'PROD0', '간편결제', 15000, 'SUCCESS');
+INSERT INTO Payment (account_id, product_id, payment_method, payment_money, status)
+VALUES (@user_id1, 'PROD0', '간편결제', 15000, 'SUCCESS');
+
+SET @payment_id := LAST_INSERT_ID();
 
 -- 2. ExternalPayment 테이블 (외부 결제 연동 정보)
-INSERT IGNORE INTO ExternalPayment (payment_id, gateway_type, external_payment_key, cid, approved_at, cancelled_at, amount)
-VALUES (@user_id1, 'KAKAOPAY', "T1234567890123456789", "18FCCB1CFCFC3E5ED89F", '2025-03-30 10:00:00', NULL, '{"total": 15000}');
+INSERT INTO ExternalPayment (payment_id, gateway_type, external_payment_key, cid, approved_at, cancelled_at, amount)
+VALUES (@payment_id, 'KAKAOPAY', 'T1234567890123456789', '18FCCB1CFCFC3E5ED89F', '2025-03-30 10:00:00', NULL, '{"total": 15000}');
 
 -- 3. 크레딧 구매 내역 (구매 시 trainer_id는 필요 없음)
 INSERT IGNORE INTO CreditLog (account_id, credit_difference, credit_info, credit_balance)
