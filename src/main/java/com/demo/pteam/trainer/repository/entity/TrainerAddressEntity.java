@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "trainer_address")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,8 +29,8 @@ public class TrainerAddressEntity {
     private String postalCode;
 
     @Column(nullable = false, precision = 10, scale = 8)
-    private Double latitude;
+    private BigDecimal latitude;
 
     @Column(nullable = false, precision = 11, scale = 8)
-    private Double longitude;
+    private BigDecimal longitude;
 }
