@@ -1,6 +1,6 @@
 package com.demo.pteam.authentication.repository.converter;
 
-import com.demo.pteam.authentication.service.domain.SocialType;
+import com.demo.pteam.authentication.domain.SocialType;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

@@ -1,6 +1,6 @@
 package com.demo.pteam.authentication.repository.converter;
 
-import com.demo.pteam.authentication.service.domain.AccountStatus;
+import com.demo.pteam.authentication.domain.AccountStatus;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

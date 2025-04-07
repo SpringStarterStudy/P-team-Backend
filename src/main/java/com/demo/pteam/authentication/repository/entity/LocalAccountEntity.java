@@ -1,8 +1,8 @@
 package com.demo.pteam.authentication.repository.entity;
 
 import com.demo.pteam.authentication.repository.converter.AccountStatusConverter;
-import com.demo.pteam.authentication.service.domain.AccountStatus;
-import com.demo.pteam.authentication.service.domain.Role;
+import com.demo.pteam.authentication.domain.AccountStatus;
+import com.demo.pteam.authentication.domain.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

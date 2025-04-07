@@ -1,4 +1,4 @@
-package com.demo.pteam.authentication.service.domain;
+package com.demo.pteam.authentication.domain;
 
 import java.util.Arrays;
 import java.util.Map;

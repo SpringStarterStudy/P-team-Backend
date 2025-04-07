@@ -1,6 +1,6 @@
 package com.demo.pteam.payment.repository.entity;
 
-import com.demo.pteam.payment.service.domain.GatewayType;
+import com.demo.pteam.payment.domain.GatewayType;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

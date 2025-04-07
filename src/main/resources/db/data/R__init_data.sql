@@ -78,7 +78,7 @@ insert IGNORE into `schedule`(user_accounts_id, trainer_accounts_id, start_time,
     (@user_id2, @trainer_id2, '2025-03-27 14:00:00', '2025-03-27 15:30:00');
 
 -- 리뷰 태그 속성 review_tag_attribute
-INSERT IGNORE INTO review_tag_attribute (id, name, is_active) VALUES
+INSERT IGNORE INTO review_tag_attribute (review_tag_attribute_id, name, is_active) VALUES
 (1, '친절해요', 1),
 (2, '전문성이 있어요', 1),
 (3, '시설이 좋아요', 1),
@@ -95,33 +95,33 @@ INSERT IGNORE INTO review (review_id, trainer_id, user_id, schedule_id, rating, 
 (1, @trainer_id1, @user_id1, 1, 4.5, '강트레이너님 덕분에 체중 감량에 성공했어요! 맞춤 운동이 정말 효과적이었습니다.', '다이어트', 10, '2023-11-10 09:30:00', '2023-11-10 09:30:00');
 
 -- 리뷰 태그 review_tag
-INSERT IGNORE INTO review_tag (id, review_id, tag_id) VALUES
+INSERT IGNORE INTO review_tag (review_tag_id, review_id, tag_id) VALUES
 (1, 1, 1), -- 리뷰1: 친절해요
 (2, 1, 4), -- 리뷰1: 효과가 좋아요
 (3, 1, 8); -- 리뷰1: 맞춤 운동을 제공해요
 
 -- 리뷰 이미지 review_image
-INSERT IGNORE INTO review_image (id, review_id, image_url, display_order, is_active, upload_date, updated_at, file_name, file_type, file_size) VALUES
+INSERT IGNORE INTO review_image (review_image_id, review_id, image_url, display_order, is_active, upload_date, updated_at, file_name, file_type, file_size) VALUES
 (1, 1, 'https://example.com/images/review1_1.jpg', 1, 1, '2023-11-10 09:30:00', '2023-11-10 09:30:00', 'before_after1.jpg', 'image/jpeg', 256000);
 
 -- 리뷰 반응 review_reaction
-INSERT IGNORE INTO review_reaction (review_id, account_id, reaction, created_at, updated_at) VALUES
+INSERT IGNORE INTO review_reaction (review_reaction_id, account_id, reaction, created_at, updated_at) VALUES
 (1, @user_id2, 'thumbs_up', '2023-11-11 08:20:00', '2023-11-11 08:20:00'),
 (1, @trainer_id1, 'fire', '2023-11-11 12:45:00', '2023-11-11 12:45:00'),
 (1, @trainer_id2, 'muscle', '2023-11-11 15:35:00', '2023-11-11 15:35:00');
 
 -- 리뷰 답글 review_reply
-INSERT IGNORE INTO review_reply (id, review_id, trainer_id, content, created_at, updated_at) VALUES
+INSERT IGNORE INTO review_reply (review_reply_id, review_id, trainer_id, content, created_at, updated_at) VALUES
 (1, 1, @trainer_id1, '김회원님, 좋은 리뷰 감사합니다! 앞으로도 더 좋은 결과를 위해 노력하겠습니다.', '2023-11-10 15:20:00', '2023-11-10 15:20:00');
 
 -- 1. Payment 테이블 (결제 정보)
-INSERT INTO Payment (account_id, product_id, payment_method, payment_money, status)
+INSERT IGNORE INTO Payment (account_id, product_id, payment_method, payment_money, status)
 VALUES (@user_id1, 'PROD0', '간편결제', 15000, 'SUCCESS');
 
 SET @payment_id := LAST_INSERT_ID();
 
 -- 2. ExternalPayment 테이블 (외부 결제 연동 정보)
-INSERT INTO ExternalPayment (payment_id, gateway_type, external_payment_key, cid, approved_at, cancelled_at, amount)
+INSERT IGNORE INTO ExternalPayment (payment_id, gateway_type, external_payment_key, cid, approved_at, cancelled_at, amount)
 VALUES (@payment_id, 'KAKAOPAY', 'T1234567890123456789', '18FCCB1CFCFC3E5ED89F', '2025-03-30 10:00:00', NULL, '{"total": 15000}');
 
 -- 3. 크레딧 구매 내역 (구매 시 trainer_id는 필요 없음)

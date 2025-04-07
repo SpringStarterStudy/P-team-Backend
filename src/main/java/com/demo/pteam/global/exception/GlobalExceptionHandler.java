@@ -17,8 +17,8 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     // CustomException 처리
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ApiResponse<String>> handleCustomException(CustomException e) {
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<ApiResponse<String>> handleCustomException(ApiException e) {
         log.error("CustomException: {}", e.getErrorCode().getMessage());
         return ResponseEntity
             .status(e.getErrorCode().getStatus())

@@ -1,7 +1,7 @@
 package com.demo.pteam.authentication.repository.entity;
 
 import com.demo.pteam.authentication.repository.converter.RoleConverter;
-import com.demo.pteam.authentication.service.domain.Role;
+import com.demo.pteam.authentication.domain.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

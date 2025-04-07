@@ -1,6 +1,6 @@
 package com.demo.pteam.authentication.repository.converter;
 
-import com.demo.pteam.authentication.service.domain.Role;
+import com.demo.pteam.authentication.domain.Role;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

@@ -1,6 +1,6 @@
 package com.demo.pteam.credit.repository.entity;
 
-import com.demo.pteam.credit.service.domain.CreditInfo;
+import com.demo.pteam.credit.domain.CreditInfo;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
