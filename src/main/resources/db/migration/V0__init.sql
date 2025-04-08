@@ -273,24 +273,23 @@ CREATE TABLE `review_reply` (
 -- 1. Payment 테이블 (결제 정보)
 -- ---------------------------------------------------------
 
-CREATE TABLE `Payment` (
+CREATE TABLE `payment` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Primary key, AUTO_INCREMENT',
     `account_id` BIGINT NOT NULL COMMENT '계정 테이블(Account)의 id 참조',
-    `payment_id` VARCHAR(255) DEFAULT NULL,
     `product_id` VARCHAR(255) DEFAULT NULL COMMENT '제품 식별자',
     `payment_method` ENUM('간편결제', '카드결제') NOT NULL COMMENT '결제 수단',
     `payment_money` BIGINT NOT NULL COMMENT '결제된 금액 (원 단위)',
     `transaction_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '결제 일시',
     `status` ENUM('SUCCESS', 'CANCELLED', 'FAILED') NOT NULL COMMENT '결제 상태',
     PRIMARY KEY (`id`),
-    CONSTRAINT `fk_payment_account` FOREIGN KEY (`account_id`) REFERENCES `Accounts`(`id`) -- 계정 accounts
+    CONSTRAINT `fk_payment_account` FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) -- 계정 accounts
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- ---------------------------------------------------------
 -- 2. ExternalPayment 테이블 (외부 결제 연동 정보)
 -- ---------------------------------------------------------
-CREATE TABLE `ExternalPayment` (
+CREATE TABLE `external_payment` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Primary key, AUTO_INCREMENT',
     `payment_id` BIGINT NOT NULL COMMENT 'Payment 테이블의 id 참조',
     `gateway_type` ENUM('KAKAOPAY', 'TOSS') NOT NULL,
@@ -300,43 +299,40 @@ CREATE TABLE `ExternalPayment` (
     `cancelled_at` DATETIME DEFAULT NULL,
     `amount` JSON NOT NULL,
     PRIMARY KEY (`id`),
-    CONSTRAINT `fk_externalpayment_payment` FOREIGN KEY (`payment_id`) REFERENCES `Payment`(`id`)
+    CONSTRAINT `fk_externalpayment_payment` FOREIGN KEY (`payment_id`) REFERENCES `payment`(`id`)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- ---------------------------------------------------------
 -- 3. Credit 테이블 (계정별 크레딧 정보)
 -- ---------------------------------------------------------
-CREATE TABLE `Credit` (
+CREATE TABLE `credit` (
     `id` BIGINT NOT NULL COMMENT 'Primary key (고유 식별자, 상황에 따라 계정 id와 동일하게 할 수도 있음)',
     `account_id` BIGINT NOT NULL COMMENT '계정 테이블(Account)의 id 참조',
     `credit_balance` INT NOT NULL DEFAULT 0,
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_credit_account` (`account_id`),
-    CONSTRAINT `fk_credit_account` FOREIGN KEY (`account_id`) REFERENCES `Accounts`(`id`)
+    CONSTRAINT `fk_credit_account` FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
 -- ---------------------------------------------------------
 -- 4. CreditLog 테이블 (크레딧 변경 내역)
 -- ---------------------------------------------------------
-CREATE TABLE `CreditLog` (
+CREATE TABLE `credit_log` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Primary key, AUTO_INCREMENT',
     `account_id` BIGINT NOT NULL COMMENT '계정 테이블(Account)의 id 참조',
     `credit_difference` INT NOT NULL COMMENT '크레딧 변동량',
     `credit_info` ENUM('크레딧구입', '운동신청') NOT NULL COMMENT '크레딧 변화 사유',
     `credit_balance` INT NOT NULL COMMENT '변경 후 크레딧 잔액',
     PRIMARY KEY (`id`),
-    CONSTRAINT `fk_creditlog_account` FOREIGN KEY (`account_id`) REFERENCES `Accounts`(`id`)
+    CONSTRAINT `fk_creditlog_account` FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-ALTER TABLE `ExternalPayment`
+ALTER TABLE `external_payment`
 MODIFY COLUMN `external_payment_key` VARCHAR(20) NOT NULL COMMENT '상세 결제 정보 조회 키',
 MODIFY COLUMN `cid` VARCHAR(20) NOT NULL;
 
-ALTER TABLE Credit
+ALTER TABLE credit
 MODIFY COLUMN id BIGINT NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE Payment
-MODIFY COLUMN payment_id BIGINT DEFAULT NULL;
