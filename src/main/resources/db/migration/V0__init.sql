@@ -277,7 +277,7 @@ CREATE TABLE `payment` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Primary key, AUTO_INCREMENT',
     `account_id` BIGINT NOT NULL COMMENT '계정 테이블(Account)의 id 참조',
     `product_id` VARCHAR(255) DEFAULT NULL COMMENT '제품 식별자',
-    `payment_method` ENUM('간편결제', '카드결제') NOT NULL COMMENT '결제 수단',
+    `payment_method` ENUM('SIMPLE_PAYMENT', 'CARD_PAYMENT') NOT NULL COMMENT '결제 수단',
     `payment_money` BIGINT NOT NULL COMMENT '결제된 금액 (원 단위)',
     `transaction_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '결제 일시',
     `status` ENUM('SUCCESS', 'CANCELLED', 'FAILED') NOT NULL COMMENT '결제 상태',
@@ -292,7 +292,7 @@ CREATE TABLE `payment` (
 CREATE TABLE `external_payment` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Primary key, AUTO_INCREMENT',
     `payment_id` BIGINT NOT NULL COMMENT 'Payment 테이블의 id 참조',
-    `gateway_type` ENUM('KAKAOPAY', 'TOSS') NOT NULL,
+    `gateway_type` ENUM('KAKAO', 'TOSS') NOT NULL,
     `external_payment_key` BIGINT NOT NULL COMMENT '상세 결제 정보 조회 키',
     `cid` BIGINT NOT NULL,
     `approved_at` DATETIME NOT NULL,
@@ -323,7 +323,7 @@ CREATE TABLE `credit_log` (
     `id` BIGINT NOT NULL AUTO_INCREMENT COMMENT 'Primary key, AUTO_INCREMENT',
     `account_id` BIGINT NOT NULL COMMENT '계정 테이블(Account)의 id 참조',
     `credit_difference` INT NOT NULL COMMENT '크레딧 변동량',
-    `credit_info` ENUM('크레딧구입', '운동신청') NOT NULL COMMENT '크레딧 변화 사유',
+    `credit_info` ENUM('PURCHASING', 'TRAINING') NOT NULL COMMENT '크레딧 변화 사유',
     `credit_balance` INT NOT NULL COMMENT '변경 후 크레딧 잔액',
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_creditlog_account` FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`)
