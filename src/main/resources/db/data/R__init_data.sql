@@ -52,7 +52,7 @@ INSERT IGNORE INTO workout_request (id, trainer_accounts_id, user_accounts_id, s
 
 
 -- 트레이너 주소
-INSERT IGNORE INTO trainer_address (address_id, number_address, road_address, detail_address, postal_code, latitude, longitude)
+INSERT IGNORE INTO trainer_address (id, number_address, road_address, detail_address, postal_code, latitude, longitude)
 VALUES
 (201, '서울특별시 서초구 방배동 451-11', '서울 서초구 방배로4길 15', '301호', '06500', 37.4999, 127.0346),
 (202, '서울특별시 강남구 역삼동 567-8', '서울 강남구 테헤란로 12', '202호', '06178', 37.4849, 127.0151),
@@ -61,7 +61,7 @@ VALUES
 (205, '광주광역시 동구 지산동 876-5', '광주 동구 중앙로 102', '401호', '61478', 35.1445, 126.9234);
 
 -- 트레이너 프로필
-INSERT IGNORE INTO trainer_profile (profile_id, user_id, address_id, profile_img, intro, credit, contact_start_time, contact_end_time, is_name_public, created_at, updated_at, deleted_at)
+INSERT IGNORE INTO trainer_profile (id, user_id, address_id, profile_img, intro, credit, contact_start_time, contact_end_time, is_name_public, created_at, updated_at, deleted_at)
 VALUES
 (1, @trainer_id1, 201, NULL, '자기 소개, 운동 방향, 이력 등', 50000, '09:00:00', '18:00:00', TRUE, '2025-03-01 12:00', NULL, NULL),
 (2, @trainer_id2, 202, NULL, '체형 교정 전문가', 30000, '10:00:00', '19:00:00', FALSE, '2025-03-03 15:00', NULL, NULL);
@@ -69,8 +69,8 @@ VALUES
 -- 트레이너 즐겨찾기
 INSERT IGNORE INTO favorites (user_id, profile_id, created_at, deleted_at)
 VALUES
-(@user_id1, 1, '2025-03-20', NULL),
-(@user_id2, 2, '2025-03-29', NULL);
+(@user_id1, @trainer_id1, '2025-03-20', NULL),
+(@user_id2, @trainer_id2, '2025-03-29', NULL);
 
 
 -- 일정
