@@ -1,10 +1,15 @@
 package com.demo.pteam.security.config;
 
+import com.demo.pteam.authentication.service.AccountService;
 import com.demo.pteam.security.filter.JwtLoginFilter;
+import com.demo.pteam.security.provider.LoginAuthenticationProvider;
+import com.demo.pteam.security.service.CustomUserDetailsService;
+import jakarta.servlet.Filter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,11 +19,14 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+@RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
             new AntPathRequestMatcher("/api/auths/login", "POST");
+
+    private final AccountService accountService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -39,13 +47,19 @@ public class SecurityConfig {
         return http.build();
     }
 
-    private static AuthenticationManager getAuthenticationManager(HttpSecurity http) throws Exception {
+    private AuthenticationManager getAuthenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.authenticationProvider(new DaoAuthenticationProvider());   // TODO: 나중에 CustomAuthenticationProvider 로 변경
+        authenticationManagerBuilder.authenticationProvider(getAuthenticationProvider());
         return authenticationManagerBuilder.build();
     }
 
-    private JwtLoginFilter jwtLoginFilter(AuthenticationManager authenticationManager) {
+    private AuthenticationProvider getAuthenticationProvider() {
+        LoginAuthenticationProvider loginAuthenticationProvider = new LoginAuthenticationProvider();
+        loginAuthenticationProvider.setUserDetailsService(new CustomUserDetailsService(accountService));
+        return loginAuthenticationProvider;
+    }
+
+    private Filter jwtLoginFilter(AuthenticationManager authenticationManager) {
         JwtLoginFilter filter = new JwtLoginFilter(DEFAULT_ANT_PATH_REQUEST_MATCHER);
         filter.setAuthenticationManager(authenticationManager);
         return filter;
