@@ -12,7 +12,6 @@ public enum AccountStatus {
     ACTIVE(1),      // 활성
     UNVERIFIED(2);  // 미인증
 
-
     private final byte code;
     private static final Map<Byte, AccountStatus> CODE_MAP =
             Arrays.stream(AccountStatus.values())
@@ -33,5 +32,21 @@ public enum AccountStatus {
     public static AccountStatus getType(Byte code) {
         Objects.requireNonNull(code, "code is null");
         return Objects.requireNonNull(CODE_MAP.get(code), "Invalid code! Not Found AccountStatus");
+    }
+
+    public boolean isDeleted() {
+        return this == DELETED;
+    }
+
+    public boolean isSuspended() {
+        return this == SUSPENDED;
+    }
+
+    public boolean isActive() {
+        return this == ACTIVE;
+    }
+
+    public boolean isUnverified() {
+        return this == UNVERIFIED;
     }
 }
