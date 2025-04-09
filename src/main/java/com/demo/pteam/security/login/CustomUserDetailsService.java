@@ -1,9 +1,9 @@
-package com.demo.pteam.security.service;
+package com.demo.pteam.security.login;
 
 import com.demo.pteam.authentication.exception.UserNotFoundException;
 import com.demo.pteam.authentication.service.AccountService;
-import com.demo.pteam.security.dto.CustomUserDetails;
-import com.demo.pteam.security.dto.LocalAccountDto;
+import com.demo.pteam.security.principal.CustomUserDetails;
+import com.demo.pteam.security.login.dto.LocalAccountDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

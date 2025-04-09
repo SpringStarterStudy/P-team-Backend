@@ -1,4 +1,4 @@
-package com.demo.pteam.security.dto;
+package com.demo.pteam.security.login.dto;
 
 import com.demo.pteam.authentication.domain.AccountStatus;
 import com.demo.pteam.authentication.domain.Role;

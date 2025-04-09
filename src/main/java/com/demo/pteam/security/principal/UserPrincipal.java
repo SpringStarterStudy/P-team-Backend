@@ -1,4 +1,4 @@
-package com.demo.pteam.security.dto;
+package com.demo.pteam.security.principal;
 
 public record UserPrincipal(
         Long id,

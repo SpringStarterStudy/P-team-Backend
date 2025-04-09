@@ -1,8 +1,6 @@
-package com.demo.pteam.security.factory;
+package com.demo.pteam.security.principal;
 
-import com.demo.pteam.security.dto.CustomUserDetails;
-import com.demo.pteam.security.dto.LocalAccountDto;
-import com.demo.pteam.security.dto.UserPrincipal;
+import com.demo.pteam.security.login.dto.LocalAccountDto;
 
 public class PrincipalFactory {
     public static UserPrincipal fromUser(CustomUserDetails userDetails) {

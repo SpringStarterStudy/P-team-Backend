@@ -1,9 +1,9 @@
 package com.demo.pteam.security.config;
 
 import com.demo.pteam.authentication.service.AccountService;
-import com.demo.pteam.security.filter.JwtLoginFilter;
-import com.demo.pteam.security.provider.LoginAuthenticationProvider;
-import com.demo.pteam.security.service.CustomUserDetailsService;
+import com.demo.pteam.security.login.JwtLoginFilter;
+import com.demo.pteam.security.login.LoginAuthenticationProvider;
+import com.demo.pteam.security.login.CustomUserDetailsService;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

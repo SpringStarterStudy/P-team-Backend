@@ -1,8 +1,8 @@
-package com.demo.pteam.security.provider;
+package com.demo.pteam.security.login;
 
-import com.demo.pteam.security.dto.CustomUserDetails;
-import com.demo.pteam.security.dto.UserPrincipal;
-import com.demo.pteam.security.factory.PrincipalFactory;
+import com.demo.pteam.security.principal.CustomUserDetails;
+import com.demo.pteam.security.principal.UserPrincipal;
+import com.demo.pteam.security.principal.PrincipalFactory;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;

@@ -1,5 +1,6 @@
-package com.demo.pteam.security.dto;
+package com.demo.pteam.security.principal;
 
+import com.demo.pteam.security.login.dto.LocalAccountDto;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

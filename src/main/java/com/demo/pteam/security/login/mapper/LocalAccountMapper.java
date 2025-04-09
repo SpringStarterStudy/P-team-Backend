@@ -1,7 +1,7 @@
-package com.demo.pteam.security.mapper;
+package com.demo.pteam.security.login.mapper;
 
 import com.demo.pteam.authentication.repository.entity.LocalAccountEntity;
-import com.demo.pteam.security.dto.LocalAccountDto;
+import com.demo.pteam.security.login.dto.LocalAccountDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

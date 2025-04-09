@@ -3,8 +3,8 @@ package com.demo.pteam.authentication.service;
 import com.demo.pteam.authentication.exception.UserNotFoundException;
 import com.demo.pteam.authentication.repository.LocalAccountRepository;
 import com.demo.pteam.authentication.repository.entity.LocalAccountEntity;
-import com.demo.pteam.security.dto.LocalAccountDto;
-import com.demo.pteam.security.mapper.LocalAccountMapper;
+import com.demo.pteam.security.login.dto.LocalAccountDto;
+import com.demo.pteam.security.login.mapper.LocalAccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
