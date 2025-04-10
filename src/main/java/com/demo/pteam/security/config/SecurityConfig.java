@@ -1,7 +1,7 @@
 package com.demo.pteam.security.config;
 
 import com.demo.pteam.authentication.service.AccountService;
-import com.demo.pteam.security.login.JwtLoginFilter;
+import com.demo.pteam.security.login.ApiLoginFilter;
 import com.demo.pteam.security.login.LoginAuthenticationProvider;
 import com.demo.pteam.security.login.CustomUserDetailsService;
 import jakarta.servlet.Filter;
@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationManager(authenticationManager)
-                .addFilterAt(jwtLoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(apiLoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(DEFAULT_ANT_PATH_REQUEST_MATCHER).permitAll()
                         .anyRequest().authenticated());
@@ -49,18 +49,18 @@ public class SecurityConfig {
 
     private AuthenticationManager getAuthenticationManager(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.authenticationProvider(getAuthenticationProvider());
+        authenticationManagerBuilder.authenticationProvider(getLoginAuthenticationProvider());
         return authenticationManagerBuilder.build();
     }
 
-    private AuthenticationProvider getAuthenticationProvider() {
+    private AuthenticationProvider getLoginAuthenticationProvider() {
         LoginAuthenticationProvider loginAuthenticationProvider = new LoginAuthenticationProvider();
         loginAuthenticationProvider.setUserDetailsService(new CustomUserDetailsService(accountService));
         return loginAuthenticationProvider;
     }
 
-    private Filter jwtLoginFilter(AuthenticationManager authenticationManager) {
-        JwtLoginFilter filter = new JwtLoginFilter(DEFAULT_ANT_PATH_REQUEST_MATCHER);
+    private Filter apiLoginFilter(AuthenticationManager authenticationManager) {
+        ApiLoginFilter filter = new ApiLoginFilter(DEFAULT_ANT_PATH_REQUEST_MATCHER);
         filter.setAuthenticationManager(authenticationManager);
         return filter;
     }

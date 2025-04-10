@@ -15,14 +15,14 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.io.IOException;
 
-public class JwtLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    public JwtLoginFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
+    public ApiLoginFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
         super(requiresAuthenticationRequestMatcher);
     }
 
-    protected JwtLoginFilter(RequestMatcher requiresAuthenticationRequestMatcher, AuthenticationManager authenticationManager) {
+    protected ApiLoginFilter(RequestMatcher requiresAuthenticationRequestMatcher, AuthenticationManager authenticationManager) {
         super(requiresAuthenticationRequestMatcher, authenticationManager);
     }
 
