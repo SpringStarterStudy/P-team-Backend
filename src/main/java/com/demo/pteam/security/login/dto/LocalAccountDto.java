@@ -7,10 +7,8 @@ public record LocalAccountDto(
         Long id,
         String username,
         String password,
-        String email,
-        String name,
-        String nickname,
         AccountStatus status,
-        Role role
+        Role role,
+        boolean verified
 ) {
 }
