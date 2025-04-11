@@ -7,6 +7,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,5 +21,12 @@ public class WorkoutController {
     @GetMapping("")
     public ResponseEntity<ApiResponse<List<ResponseWorkout>>> getWorkoutRequests() {
         return ResponseEntity.ok(ApiResponse.success(workoutService.getWorkoutRequests(4L)));
+    }
+
+    @GetMapping("/{requestId}")
+    public ResponseEntity<ApiResponse<ResponseWorkout>> getWorkoutRequests(
+        @PathVariable Long requestId) {
+        return ResponseEntity.ok(
+            ApiResponse.success(workoutService.getWorkoutRequestDetail(requestId)));
     }
 }

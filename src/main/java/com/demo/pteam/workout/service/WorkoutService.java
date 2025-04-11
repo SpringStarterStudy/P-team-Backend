@@ -21,4 +21,9 @@ public class WorkoutService {
             .map(ResponseWorkout::from)
             .toList();
     }
+
+    public ResponseWorkout getWorkoutRequestDetail(Long requestId) {
+            WorkoutEntity workoutEntity = workoutRepository.findById(requestId);
+            return ResponseWorkout.from(workoutEntity);
+    }
 }

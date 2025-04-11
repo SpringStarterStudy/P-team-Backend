@@ -6,4 +6,6 @@ import java.util.List;
 public interface WorkoutRepository {
 
     List<WorkoutEntity> findByTrainerId(Long trainerId);
+
+    WorkoutEntity findById(Long requestId);
 }
