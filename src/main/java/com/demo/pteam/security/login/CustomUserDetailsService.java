@@ -25,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             LocalAccountDto localAccount = accountService.getLocalAccount(username);
             return new CustomUserDetails(localAccount, List.of(createGrantedAuthority(localAccount)));
         } catch (UserNotFoundException e) {
-            throw new UsernameNotFoundException(e.getMessage());
+            throw new UsernameNotFoundException(e.getMessage(), e);
         }
     }
 
