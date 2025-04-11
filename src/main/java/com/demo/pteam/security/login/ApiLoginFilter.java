@@ -22,10 +22,6 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
         super(requiresAuthenticationRequestMatcher);
     }
 
-    protected ApiLoginFilter(RequestMatcher requiresAuthenticationRequestMatcher, AuthenticationManager authenticationManager) {
-        super(requiresAuthenticationRequestMatcher, authenticationManager);
-    }
-
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
         if (!request.getMethod().equals("POST")) {
