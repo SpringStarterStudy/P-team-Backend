@@ -7,7 +7,11 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
 
     // ValidationException
-    VALIDATION_EXCEPTION(HttpStatus.BAD_REQUEST, "V_001", "잘못된 입력 형식입니다.");
+    VALIDATION_EXCEPTION(HttpStatus.BAD_REQUEST, "V_001", "잘못된 입력 형식입니다."),
+
+    // Payment
+    // 400
+    PAYMENT_EXCEPTION(HttpStatus.BAD_REQUEST,"P_001","유효하지 않은 주문 상태입니다.");
 
     private final HttpStatus status;
     private final String code;
