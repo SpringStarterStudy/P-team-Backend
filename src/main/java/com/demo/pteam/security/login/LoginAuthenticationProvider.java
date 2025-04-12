@@ -12,15 +12,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class LoginAuthenticationProvider extends DaoAuthenticationProvider {
     private static final String USERNAME_PATTERN = "^[a-zA-Z0-9]{4,12}$";
+    private static final String PASSWORD_PATTERN = "(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}";
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        validateUsernameFormat(authentication.getName());
+        validateUsernameFormat(authentication.getName(), authentication.getCredentials().toString());
         return super.authenticate(authentication);
     }
 
-    private void validateUsernameFormat(String username) {
-        if (!username.matches(USERNAME_PATTERN)) {
+    private void validateUsernameFormat(String username, String password) {
+        if (!username.matches(USERNAME_PATTERN) || !password.matches(PASSWORD_PATTERN)) {
             throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
     }
