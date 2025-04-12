@@ -2,10 +2,7 @@ package com.demo.pteam.security.config;
 
 import com.demo.pteam.authentication.service.AccountService;
 import com.demo.pteam.security.jwt.JwtProvider;
-import com.demo.pteam.security.login.ApiLoginFilter;
-import com.demo.pteam.security.login.LoginAuthenticationProvider;
-import com.demo.pteam.security.login.CustomUserDetailsService;
-import com.demo.pteam.security.login.LoginAuthenticationSuccessHandler;
+import com.demo.pteam.security.login.*;
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -66,11 +62,8 @@ public class SecurityConfig {
     private Filter apiLoginFilter(AuthenticationManager authenticationManager) {
         ApiLoginFilter filter = new ApiLoginFilter(DEFAULT_ANT_PATH_REQUEST_MATCHER);
         filter.setAuthenticationManager(authenticationManager);
-        filter.setAuthenticationSuccessHandler(getLoginAuthenticationSuccessHandler());
+        filter.setAuthenticationSuccessHandler(new LoginAuthenticationSuccessHandler(jwtProvider));
+        filter.setAuthenticationFailureHandler(new LoginAuthenticationFailureHandler());
         return filter;
-    }
-
-    private AuthenticationSuccessHandler getLoginAuthenticationSuccessHandler() {
-        return new LoginAuthenticationSuccessHandler(jwtProvider);
     }
 }
