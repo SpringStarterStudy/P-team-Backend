@@ -1,12 +1,13 @@
 package com.demo.pteam.security.config;
 
 import com.demo.pteam.authentication.service.AccountService;
+import com.demo.pteam.security.configurer.ApiLoginConfigurer;
 import com.demo.pteam.security.jwt.JwtProvider;
 import com.demo.pteam.security.login.*;
-import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,16 +16,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
-    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
-            new AntPathRequestMatcher("/api/auths/login", "POST");
-
     private final AccountService accountService;
     private final JwtProvider jwtProvider;
 
@@ -39,17 +35,21 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationManager(authenticationManager)
-                .addFilterAt(apiLoginFilter(authenticationManager), UsernamePasswordAuthenticationFilter.class)
+                .with(ApiLoginConfigurer.create(), config -> config
+                        .loginProcessingUrl("/api/auths/login")
+                        .successHandler(new LoginAuthenticationSuccessHandler(jwtProvider))
+                        .failureHandler(new LoginAuthenticationFailureHandler())
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(DEFAULT_ANT_PATH_REQUEST_MATCHER).permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auths/login").permitAll()
                         .anyRequest().authenticated());
 
         return http.build();
     }
 
     private AuthenticationManager getAuthenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.authenticationProvider(getLoginAuthenticationProvider());
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(getLoginAuthenticationProvider());
         return authenticationManagerBuilder.build();
     }
 
@@ -57,13 +57,5 @@ public class SecurityConfig {
         LoginAuthenticationProvider loginAuthenticationProvider = new LoginAuthenticationProvider();
         loginAuthenticationProvider.setUserDetailsService(new CustomUserDetailsService(accountService));
         return loginAuthenticationProvider;
-    }
-
-    private Filter apiLoginFilter(AuthenticationManager authenticationManager) {
-        ApiLoginFilter filter = new ApiLoginFilter(DEFAULT_ANT_PATH_REQUEST_MATCHER);
-        filter.setAuthenticationManager(authenticationManager);
-        filter.setAuthenticationSuccessHandler(new LoginAuthenticationSuccessHandler(jwtProvider));
-        filter.setAuthenticationFailureHandler(new LoginAuthenticationFailureHandler());
-        return filter;
     }
 }

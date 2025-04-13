@@ -5,21 +5,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.Nullable;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
-import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
 
 public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
+            new AntPathRequestMatcher("/api/auths/login", "POST");
 
-    public ApiLoginFilter(RequestMatcher requiresAuthenticationRequestMatcher) {
-        super(requiresAuthenticationRequestMatcher);
+    public ApiLoginFilter() {
+        super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
     }
 
     @Override
