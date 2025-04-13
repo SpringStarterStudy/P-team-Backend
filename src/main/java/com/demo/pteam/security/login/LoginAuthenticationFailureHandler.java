@@ -2,6 +2,7 @@ package com.demo.pteam.security.login;
 
 import com.demo.pteam.global.exception.ErrorCode;
 import com.demo.pteam.global.response.ApiResponse;
+import com.demo.pteam.security.exception.LoginErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,11 +23,11 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         if (exception instanceof BadCredentialsException || exception instanceof UsernameNotFoundException) {   // 로그인 실패
-            writeLoginFailureResponse(response, ErrorCode.INVALID_CREDENTIALS);
+            writeLoginFailureResponse(response, LoginErrorCode.INVALID_CREDENTIALS);
         } else if (exception instanceof DisabledException) {    // 계정 정지
-            writeLoginFailureResponse(response, ErrorCode.ACCOUNT_SUSPENDED);
+            writeLoginFailureResponse(response, LoginErrorCode.ACCOUNT_SUSPENDED);
         } else {
-            writeLoginFailureResponse(response, ErrorCode.LOGIN_FAILED); // 로그인 에러
+            writeLoginFailureResponse(response, LoginErrorCode.LOGIN_FAILED); // 로그인 에러
         }
     }
 
