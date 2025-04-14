@@ -1,6 +1,6 @@
 package com.demo.pteam.security.principal;
 
-import com.demo.pteam.security.login.dto.LocalAccountDto;
+import com.demo.pteam.security.login.dto.LoginAccountInfo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,10 +8,10 @@ import java.util.Collection;
 import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
-    private final LocalAccountDto account;
+    private final LoginAccountInfo account;
     private final List<GrantedAuthority> authorities;
 
-    public CustomUserDetails(LocalAccountDto account, List<GrantedAuthority> authorities) {
+    public CustomUserDetails(LoginAccountInfo account, List<GrantedAuthority> authorities) {
         this.account = account;
         this.authorities = authorities;
     }
@@ -21,7 +21,7 @@ public class CustomUserDetails implements UserDetails {
         return authorities;
     }
 
-    public LocalAccountDto getAccount() {
+    public LoginAccountInfo getAccount() {
         return account;
     }
 

@@ -2,12 +2,12 @@ package com.demo.pteam.security.principal;
 
 import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.security.exception.InvalidJwtException;
-import com.demo.pteam.security.login.dto.LocalAccountDto;
+import com.demo.pteam.security.login.dto.LoginAccountInfo;
 import io.jsonwebtoken.Claims;
 
 public class PrincipalFactory {
     public static UserPrincipal fromUser(CustomUserDetails userDetails) {
-        LocalAccountDto account = userDetails.getAccount();
+        LoginAccountInfo account = userDetails.getAccount();
         boolean verified = !userDetails.isUnverified();
         return new UserPrincipal(account.id(), account.role(), verified);
     }
