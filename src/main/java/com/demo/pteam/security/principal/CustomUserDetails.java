@@ -37,7 +37,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return account.status().isActive();
+        return !isSuspended();
     }
 
     public boolean isDeleted() {
