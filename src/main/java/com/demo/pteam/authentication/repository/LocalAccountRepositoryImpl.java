@@ -1,6 +1,6 @@
 package com.demo.pteam.authentication.repository;
 
-import com.demo.pteam.authentication.repository.entity.LocalAccountEntity;
+import com.demo.pteam.authentication.repository.dto.LocalAccountDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -12,7 +12,7 @@ public class LocalAccountRepositoryImpl implements LocalAccountRepository {
     private final LocalAccountJPARepository localAccountJPARepository;
 
     @Override
-    public Optional<LocalAccountEntity> findByUsername(String username) {
+    public Optional<LocalAccountDto> findByUsername(String username) {
         return localAccountJPARepository.findByActiveUsername(username);
     }
 }

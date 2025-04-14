@@ -4,6 +4,6 @@ import com.demo.pteam.authentication.repository.dto.LocalAccountDto;
 
 import java.util.Optional;
 
-public interface LocalAccountRepository {
-    Optional<LocalAccountDto> findByUsername(String username);
+public interface LocalAccountJPARepositoryCustom {
+    Optional<LocalAccountDto> findByActiveUsername(String username);
 }
