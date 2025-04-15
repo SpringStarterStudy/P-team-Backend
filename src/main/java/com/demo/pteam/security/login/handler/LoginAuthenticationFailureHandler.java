@@ -1,4 +1,4 @@
-package com.demo.pteam.security.login;
+package com.demo.pteam.security.login.handler;
 
 import com.demo.pteam.global.exception.ErrorCode;
 import com.demo.pteam.global.response.ApiResponse;

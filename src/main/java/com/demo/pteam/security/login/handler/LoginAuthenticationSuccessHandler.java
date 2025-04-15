@@ -1,4 +1,4 @@
-package com.demo.pteam.security.login;
+package com.demo.pteam.security.login.handler;
 
 import com.demo.pteam.global.response.ApiResponse;
 import com.demo.pteam.security.jwt.JwtProvider;
