@@ -22,14 +22,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
-            LoginAccountInfo account = accountService.getLoginAccount(username);
-            return new CustomUserDetails(account, List.of(createGrantedAuthority(account)));
+            LoginAccountInfo accountInfo = accountService.getLoginAccount(username);
+            return new CustomUserDetails(accountInfo, List.of(createGrantedAuthority(accountInfo)));
         } catch (UserNotFoundException e) {
             throw new UsernameNotFoundException(e.getMessage(), e);
         }
     }
 
-    private GrantedAuthority createGrantedAuthority(LoginAccountInfo localAccount) {
-        return new SimpleGrantedAuthority(localAccount.role().name());
+    private GrantedAuthority createGrantedAuthority(LoginAccountInfo accountInfo) {
+        return new SimpleGrantedAuthority(accountInfo.role().name());
     }
 }
