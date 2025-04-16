@@ -45,7 +45,7 @@ public class ApiLoginConfigurer extends AbstractHttpConfigurer<ApiLoginConfigure
     }
 
     private RequestMatcher createLoginProcessingUrlMatcher(String loginProcessingUrl) {
-        return new AntPathRequestMatcher(loginProcessingUrl, "POST");
+        return new AntPathRequestMatcher(loginProcessingUrl);
     }
 
     public static ApiLoginConfigurer create() {

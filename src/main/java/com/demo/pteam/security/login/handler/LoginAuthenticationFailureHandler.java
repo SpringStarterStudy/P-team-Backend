@@ -1,12 +1,16 @@
 package com.demo.pteam.security.login.handler;
 
 import com.demo.pteam.global.exception.ErrorCode;
+import com.demo.pteam.global.exception.GlobalErrorCode;
 import com.demo.pteam.global.response.ApiResponse;
+import com.demo.pteam.security.exception.InvalidJsonFieldException;
 import com.demo.pteam.security.exception.LoginErrorCode;
+import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -26,6 +30,11 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
             writeLoginFailureResponse(response, LoginErrorCode.INVALID_CREDENTIALS);
         } else if (exception instanceof DisabledException) {    // 계정 정지
             writeLoginFailureResponse(response, LoginErrorCode.ACCOUNT_SUSPENDED);
+        } else if (exception instanceof MethodNotAllowedException) {   // post 메서드 x
+            response.setHeader("Allow", HttpMethod.POST.name());
+            writeLoginFailureResponse(response, LoginErrorCode.METHOD_NOT_ALLOWED);
+        } else if (exception instanceof InvalidJsonFieldException) {    // 잘못된 json 요청
+            writeLoginFailureResponse(response, GlobalErrorCode.VALIDATION_EXCEPTION);
         } else {
             writeLoginFailureResponse(response, LoginErrorCode.LOGIN_FAILED); // 로그인 에러
         }
