@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -43,7 +44,7 @@ class ApiLoginFilterTest {
 
     @DisplayName("로그인 요청")
     @Test
-    void attemptAuthentication() throws JsonProcessingException {
+    void attemptAuthentication() throws IOException {
         // given
         String username = "username";
         String password = "1234567aA!";
@@ -86,7 +87,27 @@ class ApiLoginFilterTest {
     @Test
     void attemptAuthentication_invalidJson() {
         // given
-        MockHttpServletRequest mockRequest = getMockHttpServletRequest("invalid request body");
+        String invalidJson = "invalid request body";
+        MockHttpServletRequest mockRequest = getMockHttpServletRequest(invalidJson);
+        MockHttpServletResponse mockResponse = new MockHttpServletResponse();
+
+        // when
+        ThrowingCallable action = () -> apiLoginFilter.attemptAuthentication(mockRequest, mockResponse);
+
+        // then
+        assertThatThrownBy(action).isInstanceOf(JsonProcessingException.class);
+    }
+
+    @DisplayName("로그인 요청 - json property가 올바르지 않은 경우")
+    @Test
+    void attemptAuthentication_invalidJsonProperty() {
+        // given
+        String invalidJson = """
+                {
+                    "test": "a"
+                }
+                """;
+        MockHttpServletRequest mockRequest = getMockHttpServletRequest(invalidJson);
         MockHttpServletResponse mockResponse = new MockHttpServletResponse();
 
         // when
