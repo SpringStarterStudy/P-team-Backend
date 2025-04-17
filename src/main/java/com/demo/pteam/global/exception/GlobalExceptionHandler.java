@@ -1,10 +1,12 @@
 package com.demo.pteam.global.exception;
 
 import com.demo.pteam.global.response.ApiResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -45,6 +47,25 @@ public class GlobalExceptionHandler {
         log.error("Validation 예외 발생: {}", errorMessage);
         return ResponseEntity.badRequest().body(
                 ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION, errorMessage));
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<String>> handleJsonParseException(HttpMessageNotReadableException ex) {
+        log.error("요청 파싱 예외 발생: {}", ex.getMessage());
+
+        Throwable cause = ex.getCause();
+        if (cause instanceof InvalidFormatException invalidFormatEx &&
+            invalidFormatEx.getTargetType().isEnum()) {
+
+            // enum 변환 실패
+            String message = "올바르지 않은 상태값입니다. [허용 값: PENDING, APPROVED, REJECTED]";
+            return ResponseEntity
+                .status(ErrorCode.VALIDATION_EXCEPTION.getStatus())
+                .body(ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION, message));
+        }
+        return ResponseEntity
+            .status(ErrorCode.VALIDATION_EXCEPTION.getStatus())
+            .body(ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION));
     }
 
     private String formatViolationMessage(ConstraintViolation<?> violation) {
