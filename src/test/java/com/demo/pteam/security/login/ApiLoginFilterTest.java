@@ -123,6 +123,6 @@ class ApiLoginFilterTest {
 
     private static UsernamePasswordAuthenticationToken getTestAuthenticated() {
         return UsernamePasswordAuthenticationToken.authenticated(
-                getTestPrincipal(), null, List.of(new SimpleGrantedAuthority(AccountStatus.ACTIVE.name())));
+                getTestPrincipal(), "test123!", List.of(new SimpleGrantedAuthority(AccountStatus.ACTIVE.name())));
     }
 }

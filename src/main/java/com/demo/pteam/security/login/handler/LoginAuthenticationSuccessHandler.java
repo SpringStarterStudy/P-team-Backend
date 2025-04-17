@@ -4,7 +4,6 @@ import com.demo.pteam.global.response.ApiResponse;
 import com.demo.pteam.security.jwt.JwtProvider;
 import com.demo.pteam.security.principal.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
@@ -24,7 +23,7 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
     }
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserPrincipal userPrincipal) {
             String accessToken = jwtProvider.generateAccessToken(userPrincipal);
