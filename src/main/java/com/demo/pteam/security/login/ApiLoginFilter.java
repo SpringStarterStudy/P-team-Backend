@@ -4,10 +4,10 @@ import com.demo.pteam.security.exception.InvalidJsonFieldException;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.demo.pteam.security.login.dto.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.Nullable;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -26,7 +26,7 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
         if (!request.getMethod().equals("POST")) {
             throw new MethodNotAllowedException("Authentication method not supported: " + request.getMethod());
         } else {
@@ -39,8 +39,9 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
                 UsernamePasswordAuthenticationToken authRequest = UsernamePasswordAuthenticationToken.unauthenticated(username, password);
                 this.setDetails(request, authRequest);
                 return this.getAuthenticationManager().authenticate(authRequest);
-            } catch (IOException e) {
-                throw new InvalidJsonFieldException(e.getMessage(), e);
+            } catch (UnrecognizedPropertyException e) {
+                String propertyName = e.getPropertyName();
+                throw new InvalidJsonFieldException(e.getMessage(), e, propertyName);
             }
         }
     }

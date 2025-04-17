@@ -1,13 +1,11 @@
 package com.demo.pteam.security.login.handler;
 
 import com.demo.pteam.global.exception.ErrorCode;
-import com.demo.pteam.global.exception.GlobalErrorCode;
 import com.demo.pteam.global.response.ApiResponse;
 import com.demo.pteam.security.exception.InvalidJsonFieldException;
 import com.demo.pteam.security.exception.LoginErrorCode;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpMethod;
@@ -15,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import java.io.IOException;
@@ -25,27 +22,32 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
     private final static ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        if (exception instanceof BadCredentialsException || exception instanceof UsernameNotFoundException) {   // 로그인 실패
-            writeLoginFailureResponse(response, LoginErrorCode.INVALID_CREDENTIALS);
+    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
+        if (exception instanceof BadCredentialsException) {   // 로그인 정보 불일치
+            ErrorCode errorCode = LoginErrorCode.INVALID_CREDENTIALS;
+            writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
         } else if (exception instanceof DisabledException) {    // 계정 정지
-            writeLoginFailureResponse(response, LoginErrorCode.ACCOUNT_SUSPENDED);
-        } else if (exception instanceof MethodNotAllowedException) {   // post 메서드 x
+            ErrorCode errorCode = LoginErrorCode.INVALID_CREDENTIALS;
+            writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
+        } else if (exception instanceof MethodNotAllowedException) {   // post 요청 x
+            ErrorCode errorCode = LoginErrorCode.METHOD_NOT_ALLOWED;
             response.setHeader("Allow", HttpMethod.POST.name());
-            writeLoginFailureResponse(response, LoginErrorCode.METHOD_NOT_ALLOWED);
-        } else if (exception instanceof InvalidJsonFieldException) {    // 잘못된 json 요청
-            writeLoginFailureResponse(response, GlobalErrorCode.VALIDATION_EXCEPTION);
+            writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
+        } else if (exception instanceof InvalidJsonFieldException e) {    // 잘못된 json 요청
+            ErrorCode errorCode = LoginErrorCode.INVALID_FIELD;
+            String message = String.format(errorCode.getMessage(), e.getPropertyName());
+            writeLoginFailureResponse(response, errorCode, message);
         } else {
-            writeLoginFailureResponse(response, LoginErrorCode.LOGIN_FAILED); // 로그인 에러
+            ErrorCode errorCode = LoginErrorCode.LOGIN_FAILED;
+            writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
         }
     }
 
-    private static void writeLoginFailureResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
-        response.setStatus(errorCode.getStatus().value());
+    private static void writeLoginFailureResponse(HttpServletResponse response, ErrorCode errorCode, String message) throws IOException {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-
-        String body = objectMapper.writeValueAsString(ApiResponse.error(errorCode, errorCode.getMessage()));
+        response.setStatus(errorCode.getStatus().value());
+        String body = objectMapper.writeValueAsString(ApiResponse.error(errorCode, message));
         response.getWriter().write(body);
     }
 }

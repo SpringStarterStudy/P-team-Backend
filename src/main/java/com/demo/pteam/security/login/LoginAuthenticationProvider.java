@@ -50,7 +50,7 @@ public class LoginAuthenticationProvider extends DaoAuthenticationProvider {
         public void check(UserDetails user) {
             if (!user.isEnabled()) {
                 LoginAuthenticationProvider.super.logger.debug("Failed to authenticate since user account is disabled");
-                throw new DisabledException(LoginAuthenticationProvider.super.messages.getMessage("AbstractUserDetailsAuthenticationProvider.disabled", "User is disabled"));
+                throw new DisabledException(LoginAuthenticationProvider.super.messages.getMessage("AbstractUserDetailsAuthenticationProvider.disabled", "Account is disabled"));
             }
         }
     }
