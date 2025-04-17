@@ -27,7 +27,7 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
             ErrorCode errorCode = LoginErrorCode.INVALID_CREDENTIALS;
             writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
         } else if (exception instanceof DisabledException) {    // 계정 정지
-            ErrorCode errorCode = LoginErrorCode.INVALID_CREDENTIALS;
+            ErrorCode errorCode = LoginErrorCode.ACCOUNT_SUSPENDED;
             writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
         } else if (exception instanceof MethodNotAllowedException) {   // post 요청 x
             ErrorCode errorCode = LoginErrorCode.METHOD_NOT_ALLOWED;
