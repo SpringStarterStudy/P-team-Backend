@@ -2,7 +2,7 @@ package com.demo.pteam.security.login;
 
 import com.demo.pteam.authentication.domain.AccountStatus;
 import com.demo.pteam.authentication.domain.Role;
-import com.demo.pteam.security.exception.InvalidJsonFieldException;
+import com.demo.pteam.security.exception.InvalidJsonPropertyException;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.demo.pteam.security.login.dto.LoginRequest;
 import com.demo.pteam.security.principal.UserPrincipal;
@@ -114,7 +114,7 @@ class ApiLoginFilterTest {
         ThrowingCallable action = () -> apiLoginFilter.attemptAuthentication(mockRequest, mockResponse);
 
         // then
-        assertThatThrownBy(action).isInstanceOf(InvalidJsonFieldException.class);
+        assertThatThrownBy(action).isInstanceOf(InvalidJsonPropertyException.class);
     }
 
     private static MockHttpServletRequest getMockHttpServletRequest(String requestBody) {

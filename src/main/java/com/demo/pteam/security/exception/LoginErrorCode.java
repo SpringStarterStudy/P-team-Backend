@@ -10,7 +10,7 @@ public enum LoginErrorCode implements ErrorCode {
     ACCOUNT_SUSPENDED(HttpStatus.FORBIDDEN, "A_006", "계정이 정지된 상태입니다."),
     LOGIN_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "A_017", "로그인에 실패했습니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "A_018", "POST 요청만 허용됩니다."),
-    INVALID_FIELD(HttpStatus.BAD_REQUEST, "A_019", "입력한 '%s' 필드가 유효하지 않습니다.");
+    INVALID_JSON_PROPERTY(HttpStatus.BAD_REQUEST, "A_019", "입력한 '%s' 속성이 유효하지 않습니다.");
 
     private final HttpStatus status;
     private final String code;

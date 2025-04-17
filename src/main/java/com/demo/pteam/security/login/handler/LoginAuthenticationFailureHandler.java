@@ -2,7 +2,7 @@ package com.demo.pteam.security.login.handler;
 
 import com.demo.pteam.global.exception.ErrorCode;
 import com.demo.pteam.global.response.ApiResponse;
-import com.demo.pteam.security.exception.InvalidJsonFieldException;
+import com.demo.pteam.security.exception.InvalidJsonPropertyException;
 import com.demo.pteam.security.exception.LoginErrorCode;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,8 +33,8 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
             ErrorCode errorCode = LoginErrorCode.METHOD_NOT_ALLOWED;
             response.setHeader("Allow", HttpMethod.POST.name());
             writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
-        } else if (exception instanceof InvalidJsonFieldException e) {    // 잘못된 json 요청
-            ErrorCode errorCode = LoginErrorCode.INVALID_FIELD;
+        } else if (exception instanceof InvalidJsonPropertyException e) {    // 잘못된 json property
+            ErrorCode errorCode = LoginErrorCode.INVALID_JSON_PROPERTY;
             String message = String.format(errorCode.getMessage(), e.getPropertyName());
             writeLoginFailureResponse(response, errorCode, message);
         } else {

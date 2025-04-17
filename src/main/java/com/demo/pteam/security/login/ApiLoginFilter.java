@@ -1,6 +1,6 @@
 package com.demo.pteam.security.login;
 
-import com.demo.pteam.security.exception.InvalidJsonFieldException;
+import com.demo.pteam.security.exception.InvalidJsonPropertyException;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.demo.pteam.security.login.dto.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,7 +41,7 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
                 return this.getAuthenticationManager().authenticate(authRequest);
             } catch (UnrecognizedPropertyException e) {
                 String propertyName = e.getPropertyName();
-                throw new InvalidJsonFieldException(e.getMessage(), e, propertyName);
+                throw new InvalidJsonPropertyException(e.getMessage(), e, propertyName);
             }
         }
     }
