@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.lang.Nullable;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -26,7 +27,7 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
         if (!request.getMethod().equals("POST")) {
             throw new MethodNotAllowedException("Authentication method not supported: " + request.getMethod());
         } else {
@@ -42,6 +43,8 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
             } catch (UnrecognizedPropertyException e) {
                 String propertyName = e.getPropertyName();
                 throw new InvalidJsonPropertyException(e.getMessage(), e, propertyName);
+            } catch (IOException e) {
+                throw new AuthenticationServiceException(e.getMessage(), e);
             }
         }
     }
