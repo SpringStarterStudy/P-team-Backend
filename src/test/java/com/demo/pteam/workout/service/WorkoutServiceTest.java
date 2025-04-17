@@ -1,18 +1,23 @@
 package com.demo.pteam.workout.service;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+
 import com.demo.pteam.authentication.repository.entity.AccountEntity;
 import com.demo.pteam.global.exception.ApiException;
 import com.demo.pteam.global.exception.ErrorCode;
 import com.demo.pteam.workout.controller.dto.ResponseWorkout;
 import com.demo.pteam.workout.domain.WorkoutRepository;
-import com.demo.pteam.workout.repository.entity.StatusType;
+import com.demo.pteam.workout.domain.WorkoutStatus;
 import com.demo.pteam.workout.repository.entity.WorkoutEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +47,7 @@ class WorkoutServiceTest {
         WorkoutEntity workout = WorkoutEntity.builder()
             .trainer(mockTrainer)
             .user(mockUser)
-            .status(StatusType.PENDING)
+            .status(WorkoutStatus.PENDING)
             .trainingDate(LocalDate.now())
             .startTime(LocalDateTime.now())
             .endTime(LocalDateTime.now().plusHours(1))
@@ -78,13 +83,14 @@ class WorkoutServiceTest {
             .id(requestId)
             .trainer(mockTrainer)
             .user(mockUser)
-            .status(StatusType.PENDING)
+            .status(WorkoutStatus.PENDING)
             .trainingDate(LocalDate.now())
             .startTime(LocalDateTime.now())
             .endTime(LocalDateTime.now().plusHours(1))
             .build();
 
-        Mockito.when(workoutRepository.findById(requestId)).thenReturn(fakeWorkout);
+        Mockito.when(workoutRepository.findById(requestId)).thenReturn(
+            Optional.ofNullable(fakeWorkout));
         ResponseWorkout expected = ResponseWorkout.builder()
             .id(1L)
             .trainerName("트레이너1")
