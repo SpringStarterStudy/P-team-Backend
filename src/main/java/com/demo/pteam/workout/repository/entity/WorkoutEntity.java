@@ -2,6 +2,7 @@ package com.demo.pteam.workout.repository.entity;
 
 import com.demo.pteam.authentication.repository.entity.AccountEntity;
 import com.demo.pteam.global.entity.SoftDeletableEntity;
+import com.demo.pteam.workout.domain.WorkoutStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -41,7 +42,7 @@ public class WorkoutEntity extends SoftDeletableEntity {
     private AccountEntity user;
 
     @Enumerated(EnumType.STRING)
-    private StatusType status;
+    private WorkoutStatus status;
 
     private LocalDate trainingDate;
     private LocalDateTime startTime;
