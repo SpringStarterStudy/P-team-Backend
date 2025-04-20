@@ -2,19 +2,21 @@ package com.demo.pteam.trainer.repository.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "trainer_address")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TrainerAddressEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "address_id")
-    private Long addressId;
+    private Long id;
 
     @Column(nullable = false, length = 255)
     private String numberAddress;
@@ -28,9 +30,19 @@ public class TrainerAddressEntity {
     @Column(nullable = false, length = 20)
     private String postalCode;
 
-    @Column(nullable = false, precision = 10, scale = 8)
+    @Column(nullable = false, precision = 16, scale = 14)
     private BigDecimal latitude;
 
-    @Column(nullable = false, precision = 11, scale = 8)
+    @Column(nullable = false, precision = 17, scale = 14)
     private BigDecimal longitude;
+
+    @Builder
+    public TrainerAddressEntity(String numberAddress, String roadAddress, String detailAddress, String postalCode, BigDecimal latitude, BigDecimal longitude) {
+        this.numberAddress = numberAddress;
+        this.roadAddress = roadAddress;
+        this.detailAddress = detailAddress;
+        this.postalCode = postalCode;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 }
