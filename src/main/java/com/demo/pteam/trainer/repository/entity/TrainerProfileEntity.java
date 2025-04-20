@@ -1,27 +1,28 @@
 package com.demo.pteam.trainer.repository.entity;
 
+import com.demo.pteam.authentication.repository.entity.AccountEntity;
+import com.demo.pteam.global.entity.SoftDeletableEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
 @Table(name = "trainer_profile")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TrainerProfileEntity {
+public class TrainerProfileEntity extends SoftDeletableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "profile_id")
-    private Long profileId;
+    private Long id;
 
-    /* TODO: 회원 관계 설정
-
-     */
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private AccountEntity trainer;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "address_id")
@@ -42,5 +43,18 @@ public class TrainerProfileEntity {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean isNamePublic;
 
-    // TODO: BaseEntity 상속
+    @Builder
+    public TrainerProfileEntity(AccountEntity trainer, TrainerAddressEntity address, String profileImg,
+                                String intro, Integer credit, LocalTime contactStartTime,
+                                LocalTime contactEndTime, Boolean isNamePublic) {
+        this.trainer = trainer;
+        this.address = address;
+        this.profileImg = profileImg;
+        this.intro = intro;
+        this.credit = credit != null ? credit : 0;
+        this.contactStartTime = contactStartTime;
+        this.contactEndTime = contactEndTime;
+        this.isNamePublic = isNamePublic != null ? isNamePublic : true;
+    }
+
 }
