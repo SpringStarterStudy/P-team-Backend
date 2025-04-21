@@ -1,5 +1,6 @@
-package com.demo.pteam.trainer.repository.entity;
+package com.demo.pteam.trainer.address.repository.entity;
 
+import com.demo.pteam.global.entity.SoftDeletableEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,8 +11,8 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "trainer_address")
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class TrainerAddressEntity {
 
     @Id
@@ -46,3 +47,5 @@ public class TrainerAddressEntity {
         this.longitude = longitude;
     }
 }
+
+
