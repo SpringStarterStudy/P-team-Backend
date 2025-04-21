@@ -6,6 +6,7 @@ import com.demo.pteam.security.exception.InvalidJsonPropertyException;
 import com.demo.pteam.security.exception.LoginErrorCode;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +32,11 @@ class LoginAuthenticationFailureHandlerTest {
 
     @InjectMocks
     private LoginAuthenticationFailureHandler loginAuthenticationFailureHandler;
+
+    @BeforeEach
+    public void setUp() {
+        loginAuthenticationFailureHandler.setObjectMapper(objectMapper);
+    }
 
     @DisplayName("계정 정보 불일치")   // 비밀번호 불일치, username 패턴 불일치, password 패턴 불일치, 존재하지 않는 계정
     @Test

@@ -8,6 +8,7 @@ import com.demo.pteam.security.principal.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +39,11 @@ class LoginAuthenticationSuccessHandlerTest {
 
     @Mock
     JwtProvider jwtProvider;
+
+    @BeforeEach
+    public void setUp() {
+        loginAuthenticationSuccessHandler.setObjectMapper(objectMapper);
+    }
 
     @DisplayName("로그인 응답")
     @Test

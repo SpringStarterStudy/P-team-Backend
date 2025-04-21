@@ -9,17 +9,20 @@ import com.demo.pteam.security.principal.UserPrincipal;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,13 +37,19 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ApiLoginFilterTest {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
     @InjectMocks
     private ApiLoginFilter apiLoginFilter;
 
     @Mock
     private AuthenticationManager authenticationManager;
+
+    @Spy
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeEach
+    public void setUp() {
+        apiLoginFilter.setAuthenticationManager(authenticationManager);
+    }
 
     @DisplayName("로그인 요청")
     @Test
@@ -95,7 +104,7 @@ class ApiLoginFilterTest {
         ThrowingCallable action = () -> apiLoginFilter.attemptAuthentication(mockRequest, mockResponse);
 
         // then
-        assertThatThrownBy(action).isInstanceOf(JsonProcessingException.class);
+        assertThatThrownBy(action).isInstanceOf(AuthenticationServiceException.class);
     }
 
     @DisplayName("로그인 요청 - json property가 올바르지 않은 경우")
