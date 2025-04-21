@@ -18,12 +18,14 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import java.io.IOException;
 
 public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER =
             new AntPathRequestMatcher("/api/auths/login");
 
-    public ApiLoginFilter() {
+    private final ObjectMapper objectMapper;
+
+    public ApiLoginFilter(ObjectMapper objectMapper) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
+        this.objectMapper = objectMapper;
     }
 
     @Override

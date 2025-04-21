@@ -1,6 +1,9 @@
 package com.demo.pteam.security.configurer;
 
 import com.demo.pteam.security.login.ApiLoginFilter;
+import com.demo.pteam.security.login.handler.LoginAuthenticationFailureHandler;
+import com.demo.pteam.security.login.handler.LoginAuthenticationSuccessHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -11,12 +14,14 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 public class ApiLoginConfigurer extends AbstractHttpConfigurer<ApiLoginConfigurer, HttpSecurity> {
+    private final ObjectMapper objectMapper;
+    private final ApiLoginFilter authenticationFilter;
     private AuthenticationSuccessHandler successHandler;
     private AuthenticationFailureHandler failureHandler;
-    private ApiLoginFilter authenticationFilter;
 
-    public ApiLoginConfigurer() {
-        this.authenticationFilter = new ApiLoginFilter();
+    public ApiLoginConfigurer(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+        this.authenticationFilter = new ApiLoginFilter(objectMapper);
     }
 
     @Override
@@ -27,6 +32,13 @@ public class ApiLoginConfigurer extends AbstractHttpConfigurer<ApiLoginConfigure
         authenticationFilter.setAuthenticationFailureHandler(failureHandler);
         http.setSharedObject(ApiLoginFilter.class, authenticationFilter);
         http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        if (successHandler instanceof LoginAuthenticationSuccessHandler loginSuccessHandler) {
+            loginSuccessHandler.setObjectMapper(objectMapper);
+        }
+        if (failureHandler instanceof LoginAuthenticationFailureHandler loginFailureHandler) {
+            loginFailureHandler.setObjectMapper(objectMapper);
+        }
     }
 
     public ApiLoginConfigurer successHandler(AuthenticationSuccessHandler successHandler) {
@@ -46,9 +58,5 @@ public class ApiLoginConfigurer extends AbstractHttpConfigurer<ApiLoginConfigure
 
     private RequestMatcher createLoginProcessingUrlMatcher(String loginProcessingUrl) {
         return new AntPathRequestMatcher(loginProcessingUrl);
-    }
-
-    public static ApiLoginConfigurer create() {
-        return new ApiLoginConfigurer();
     }
 }

@@ -15,11 +15,15 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-    private final static ObjectMapper objectMapper = new ObjectMapper();
     private final JwtProvider jwtProvider;
+    private ObjectMapper objectMapper;
 
     public LoginAuthenticationSuccessHandler(JwtProvider jwtProvider) {
         this.jwtProvider = jwtProvider;
+    }
+
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -34,7 +38,7 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
         }
     }
 
-    private static void writeLoginSuccessResponse(HttpServletResponse response, String accessToken, String refreshToken) throws IOException {
+    private void writeLoginSuccessResponse(HttpServletResponse response, String accessToken, String refreshToken) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setHeader("Authorization", "Bearer " + accessToken);
         response.setHeader("Refresh-Token", "Bearer " + refreshToken);

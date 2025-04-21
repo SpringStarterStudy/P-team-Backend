@@ -19,7 +19,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class LoginAuthenticationFailureHandler implements AuthenticationFailureHandler {
-    private final static ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper;
+
+    public void setObjectMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
@@ -43,7 +47,7 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
         }
     }
 
-    private static void writeLoginFailureResponse(HttpServletResponse response, ErrorCode errorCode, String message) throws IOException {
+    private void writeLoginFailureResponse(HttpServletResponse response, ErrorCode errorCode, String message) throws IOException {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(errorCode.getStatus().value());

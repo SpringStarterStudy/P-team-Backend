@@ -7,6 +7,7 @@ import com.demo.pteam.security.login.handler.LoginAuthenticationFailureHandler;
 import com.demo.pteam.security.login.handler.LoginAuthenticationSuccessHandler;
 import com.demo.pteam.security.login.LoginAuthenticationProvider;
 import com.demo.pteam.security.login.CustomUserDetailsService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
     private final AccountService accountService;
     private final JwtProvider jwtProvider;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,7 +39,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationManager(authenticationManager)
-                .with(ApiLoginConfigurer.create(), config -> config
+                .with(new ApiLoginConfigurer(objectMapper), config -> config
                         .loginProcessingUrl("/api/auths/login")
                         .successHandler(new LoginAuthenticationSuccessHandler(jwtProvider))
                         .failureHandler(new LoginAuthenticationFailureHandler())
