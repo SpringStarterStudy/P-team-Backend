@@ -23,11 +23,11 @@ public class LoginAuthenticationProvider extends DaoAuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        validateUsernameFormat(authentication.getName(), authentication.getCredentials().toString());
+        validateLoginPattern(authentication.getName(), authentication.getCredentials().toString());
         return super.authenticate(authentication);
     }
 
-    private void validateUsernameFormat(String username, String password) {
+    private void validateLoginPattern(String username, String password) {
         if (!username.matches(USERNAME_PATTERN) || !password.matches(PASSWORD_PATTERN)) {
             throw new BadCredentialsException(this.messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
