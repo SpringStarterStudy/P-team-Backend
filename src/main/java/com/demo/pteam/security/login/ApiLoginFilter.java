@@ -1,8 +1,10 @@
 package com.demo.pteam.security.login;
 
+import com.demo.pteam.security.exception.InvalidJsonFormatException;
 import com.demo.pteam.security.exception.InvalidJsonPropertyException;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.demo.pteam.security.login.dto.LoginRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,6 +47,8 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
             } catch (UnrecognizedPropertyException e) {
                 String propertyName = e.getPropertyName();
                 throw new InvalidJsonPropertyException(e.getMessage(), e, propertyName);
+            } catch (JsonProcessingException e) {
+                throw new InvalidJsonFormatException(e.getMessage(), e);
             } catch (IOException e) {
                 throw new AuthenticationServiceException(e.getMessage(), e);
             }

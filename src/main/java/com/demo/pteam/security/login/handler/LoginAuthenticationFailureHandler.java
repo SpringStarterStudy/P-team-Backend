@@ -2,6 +2,7 @@ package com.demo.pteam.security.login.handler;
 
 import com.demo.pteam.global.exception.ErrorCode;
 import com.demo.pteam.global.response.ApiResponse;
+import com.demo.pteam.security.exception.InvalidJsonFormatException;
 import com.demo.pteam.security.exception.InvalidJsonPropertyException;
 import com.demo.pteam.security.exception.LoginErrorCode;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
@@ -41,6 +42,9 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
             ErrorCode errorCode = LoginErrorCode.INVALID_JSON_PROPERTY;
             String message = String.format(errorCode.getMessage(), e.getPropertyName());
             writeLoginFailureResponse(response, errorCode, message);
+        } else if (exception instanceof InvalidJsonFormatException) {   // 잘못된 요청 형식(json parsing 실패)
+            ErrorCode errorCode = LoginErrorCode.INVALID_JSON_FORMAT;
+            writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
         } else {
             ErrorCode errorCode = LoginErrorCode.LOGIN_FAILED;
             writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
