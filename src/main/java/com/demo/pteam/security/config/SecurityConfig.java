@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -30,7 +30,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        AuthenticationManager authenticationManager = getAuthenticationManager(http);
+        AuthenticationManager apiLoginAuthenticationManager = getApiLoginAuthenticationManager();
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -38,8 +38,8 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationManager(authenticationManager)
                 .with(new ApiLoginConfigurer(objectMapper), config -> config
+                        .authenticationManager(apiLoginAuthenticationManager)
                         .loginProcessingUrl("/api/auths/login")
                         .successHandler(new LoginAuthenticationSuccessHandler(jwtProvider))
                         .failureHandler(new LoginAuthenticationFailureHandler())
@@ -51,10 +51,8 @@ public class SecurityConfig {
         return http.build();
     }
 
-    private AuthenticationManager getAuthenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class)
-                .authenticationProvider(getLoginAuthenticationProvider());
-        return authenticationManagerBuilder.build();
+    private AuthenticationManager getApiLoginAuthenticationManager() {
+        return new ProviderManager(getLoginAuthenticationProvider());
     }
 
     private AuthenticationProvider getLoginAuthenticationProvider() {

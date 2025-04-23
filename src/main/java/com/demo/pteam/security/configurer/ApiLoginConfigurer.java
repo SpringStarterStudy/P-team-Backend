@@ -16,6 +16,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 public class ApiLoginConfigurer extends AbstractHttpConfigurer<ApiLoginConfigurer, HttpSecurity> {
     private final ObjectMapper objectMapper;
     private final ApiLoginFilter authenticationFilter;
+    private AuthenticationManager authenticationManager;
     private AuthenticationSuccessHandler successHandler;
     private AuthenticationFailureHandler failureHandler;
 
@@ -26,7 +27,6 @@ public class ApiLoginConfigurer extends AbstractHttpConfigurer<ApiLoginConfigure
 
     @Override
     public void configure(HttpSecurity http) {
-        AuthenticationManager authenticationManager = http.getSharedObject(AuthenticationManager.class);
         authenticationFilter.setAuthenticationManager(authenticationManager);
         authenticationFilter.setAuthenticationSuccessHandler(successHandler);
         authenticationFilter.setAuthenticationFailureHandler(failureHandler);
@@ -39,6 +39,11 @@ public class ApiLoginConfigurer extends AbstractHttpConfigurer<ApiLoginConfigure
         if (failureHandler instanceof LoginAuthenticationFailureHandler loginFailureHandler) {
             loginFailureHandler.setObjectMapper(objectMapper);
         }
+    }
+
+    public ApiLoginConfigurer authenticationManager(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+        return this;
     }
 
     public ApiLoginConfigurer successHandler(AuthenticationSuccessHandler successHandler) {
