@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
         log.error("CustomException: {}", e.getErrorCode().getMessage());
         return ResponseEntity
             .status(e.getErrorCode().getStatus())
-            .body(ApiResponse.error(e.getErrorCode()));
+            .body(ApiResponse.error((CommonErrorCode) e.getErrorCode()));
     }
 
     // ValidationException 처리

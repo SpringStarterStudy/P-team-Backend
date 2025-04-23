@@ -2,9 +2,7 @@ package com.demo.pteam.review.repository.entity;
 
 import com.demo.pteam.global.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Table(name = "review_image")
@@ -12,7 +10,9 @@ import lombok.Setter;
         @AttributeOverride(name = "createdAt", column = @Column(name = "upload_date"))
 })
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class ReviewImageEntity extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,4 +40,9 @@ public class ReviewImageEntity extends BaseEntity {
 
     @Column(name = "file_size")
     private Integer fileSize;
+
+    public ReviewImageEntity updateReview(ReviewEntity review) {
+        this.review = review;
+        return this;
+    }
 }

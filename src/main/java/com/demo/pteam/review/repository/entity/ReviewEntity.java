@@ -5,15 +5,16 @@ import com.demo.pteam.global.entity.BaseEntity;
 import com.demo.pteam.review.repository.type.PtPurpose;
 import com.demo.pteam.schedule.repository.entity.ScheduleEntity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "review")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class ReviewEntity extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,4 +45,18 @@ public class ReviewEntity extends BaseEntity {
 
     @Column(name = "pt_session_count", nullable = false)
     private Integer ptSessionCount;
+
+    public static ReviewEntity createReview(AccountEntity trainer, AccountEntity user,
+                                            ScheduleEntity schedule, BigDecimal rating,
+                                            String content, PtPurpose ptPurpose, Integer ptSessionCount) {
+        return ReviewEntity.builder()
+                .trainer(trainer)
+                .user(user)
+                .schedule(schedule)
+                .rating(rating)
+                .content(content)
+                .ptPurpose(ptPurpose)
+                .ptSessionCount(ptSessionCount)
+                .build();
+    }
 }
