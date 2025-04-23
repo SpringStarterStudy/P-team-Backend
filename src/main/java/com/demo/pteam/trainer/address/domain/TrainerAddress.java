@@ -1,5 +1,7 @@
 package com.demo.pteam.trainer.address.domain;
 
+import com.demo.pteam.global.exception.ApiException;
+import com.demo.pteam.trainer.address.exception.TrainerAddressErrorCode;
 import lombok.Getter;
 import java.math.BigDecimal;
 
@@ -33,13 +35,13 @@ public class TrainerAddress {
 
     private void validateCoordinates(BigDecimal latitude, BigDecimal longitude) {
         if(latitude == null || longitude == null) {
-            throw new IllegalArgumentException("위도, 경도 값은 null일 수 없습니다.");
+            throw new ApiException(TrainerAddressErrorCode.COORDINATES_NULL);
         }
         if (latitude.abs().compareTo(BigDecimal.valueOf(90)) > 0) {
-            throw new IllegalArgumentException("위도 값은 -90 ~ 90 사이여야 합니다.");
+            throw new ApiException(TrainerAddressErrorCode.INVALID_LATITUDE);
         }
         if (longitude.abs().compareTo(BigDecimal.valueOf(180)) > 0) {
-            throw new IllegalArgumentException("경도 값은 -180 ~ 180 사이여야 합니다.");
+            throw new ApiException(TrainerAddressErrorCode.INVALID_LONGITUDE);
         }
     }
 
