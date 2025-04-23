@@ -1,6 +1,6 @@
 package com.demo.pteam.global.response;
 
-import com.demo.pteam.global.exception.ErrorCode;
+import com.demo.pteam.global.exception.CommonErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
@@ -41,13 +41,13 @@ public class ApiResponse<T> {
         return new ApiResponse<>(HttpStatus.OK, null, message, data);
     }
 
-    public static ApiResponse<String> error(ErrorCode errorCode) {
+    public static ApiResponse<String> error(CommonErrorCode errorCode) {
         return new ApiResponse<>(errorCode.getStatus(), errorCode.getCode(),
             errorCode.getMessage());
     }
 
     // MethodArgumentNotValidException 발생 시 사용됨
-    public static ApiResponse<String> error(ErrorCode errorCode, String customMessage) {
+    public static ApiResponse<String> error(CommonErrorCode errorCode, String customMessage) {
         return new ApiResponse<>(errorCode.getStatus(), errorCode.getCode(), customMessage);
     }
 }
