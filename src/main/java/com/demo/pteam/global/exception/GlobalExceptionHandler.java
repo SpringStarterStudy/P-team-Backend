@@ -31,8 +31,8 @@ public class GlobalExceptionHandler {
         BindingResult bindingResult) {
         log.error("Validation 예외 발생: {}", bindingResult.getAllErrors());
         return ResponseEntity
-            .status(ErrorCode.VALIDATION_EXCEPTION.getStatus())
-            .body(ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION,
+            .status(CommonErrorCode.VALIDATION_EXCEPTION.getStatus())
+            .body(ApiResponse.error(CommonErrorCode.VALIDATION_EXCEPTION,
                 bindingResult.getAllErrors().get(0).getDefaultMessage()));
     }
 
@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
         log.error("Validation 예외 발생: {}", errorMessage);
         return ResponseEntity.badRequest().body(
-                ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION, errorMessage));
+                ApiResponse.error(CommonErrorCode.VALIDATION_EXCEPTION, errorMessage));
     }
 
     private String formatViolationMessage(ConstraintViolation<?> violation) {
