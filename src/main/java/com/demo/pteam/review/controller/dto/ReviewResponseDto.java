@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
 public class ReviewResponseDto {
 
     private Long id;
