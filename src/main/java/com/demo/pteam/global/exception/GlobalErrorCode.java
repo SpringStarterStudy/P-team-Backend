@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 public enum GlobalErrorCode implements ErrorCode {
 
     // ValidationException
-    VALIDATION_EXCEPTION(HttpStatus.BAD_REQUEST, "V_001", "잘못된 요청 형식입니다.");
+    VALIDATION_EXCEPTION(HttpStatus.BAD_REQUEST, "V_001", "잘못된 입력 형식입니다.");
 
     private final HttpStatus status;
     private final String code;

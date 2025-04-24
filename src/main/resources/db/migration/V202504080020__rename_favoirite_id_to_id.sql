@@ -1,0 +1,4 @@
+ALTER TABLE favorites ADD COLUMN id BIGINT;
+UPDATE favorites SET id = favorite_id;
+ALTER TABLE favorites DROP COLUMN favorite_id;
+ALTER TABLE favorites MODIFY COLUMN id BIGINT AUTO_INCREMENT PRIMARY KEY;
