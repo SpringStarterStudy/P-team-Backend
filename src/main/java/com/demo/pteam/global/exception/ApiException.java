@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public class ApiException extends RuntimeException {
 
-    private final CommonErrorCode errorCode;
+    private final GlobalErrorCode errorCode;
 
-    public ApiException(CommonErrorCode errorCode) {
+    public ApiException(GlobalErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 
