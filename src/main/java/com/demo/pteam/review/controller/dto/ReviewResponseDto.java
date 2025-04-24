@@ -35,15 +35,11 @@ public class ReviewResponseDto {
     private LocalDateTime createdAt;
     private List<ReviewImageResponseDto> images;
 
-    /**
-     * 리뷰 엔티티와 리뷰 이미지 엔티티를 DTO로 변환하는 생성자
-     * @param entity 변환할 리뷰 엔티티
-     * @param reviewImages 리뷰 이미지 엔티티 목록
-     */
+
     public ReviewResponseDto(ReviewEntity entity, List<ReviewImageEntity> reviewImages) {
         this.id = entity.getId();
         this.trainerId = entity.getTrainer().getId();
-        this.trainerName = entity.getUser().getName();
+        this.trainerName = entity.getTrainer().getName();
         this.userId = entity.getUser().getId();
         this.userName = entity.getUser().getName();
         this.scheduleId = entity.getSchedule().getId();
