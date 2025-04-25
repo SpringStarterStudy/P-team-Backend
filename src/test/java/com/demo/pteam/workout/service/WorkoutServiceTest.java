@@ -9,10 +9,11 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.demo.pteam.authentication.repository.entity.AccountEntity;
 import com.demo.pteam.global.exception.ApiException;
-import com.demo.pteam.global.exception.ErrorCode;
 import com.demo.pteam.workout.controller.dto.ResponseWorkout;
 import com.demo.pteam.workout.domain.WorkoutRepository;
 import com.demo.pteam.workout.domain.WorkoutStatus;
+import com.demo.pteam.workout.exception.WorkoutErrorCode;
+import com.demo.pteam.workout.exception.WorkoutException;
 import com.demo.pteam.workout.repository.entity.WorkoutEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -115,7 +116,8 @@ class WorkoutServiceTest {
 
         // given
         Long requestId = 999L;
-        Mockito.when(workoutRepository.findById(requestId)).thenThrow(new ApiException(ErrorCode.WORKOUT_REQUEST_NOT_FOUND));
+        Mockito.when(workoutRepository.findById(requestId)).thenThrow(new WorkoutException(
+            WorkoutErrorCode.WORKOUT_REQUEST_NOT_FOUND));
 
         // when
         ApiException ex = assertThrows(ApiException.class, () -> {
@@ -123,7 +125,7 @@ class WorkoutServiceTest {
         });
 
         // then
-        assertThat(ex.getErrorCode()).isEqualTo(ErrorCode.WORKOUT_REQUEST_NOT_FOUND);
+        assertThat(ex.getErrorCode()).isEqualTo(WorkoutErrorCode.WORKOUT_REQUEST_NOT_FOUND);
 
         verify(workoutRepository, times(1)).findById(requestId);
 

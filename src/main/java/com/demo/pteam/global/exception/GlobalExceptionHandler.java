@@ -48,16 +48,15 @@ public class GlobalExceptionHandler {
             .collect(Collectors.joining(", "));
         log.error("Validation 예외 발생: {}", errorMessage);
         return ResponseEntity.badRequest().body(
-            ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION, errorMessage));
+            ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION, errorMessage));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse<String>> handleTypeMismatchException(
         MethodArgumentTypeMismatchException ex) {
         log.error("입력 형식 예외 : {}", ex.getMessage());
-        return ResponseEntity.status(ErrorCode.VALIDATION_EXCEPTION.getStatus())
-            .body(ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION));
-                ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION, errorMessage));
+        return ResponseEntity.status(GlobalErrorCode.VALIDATION_EXCEPTION.getStatus())
+            .body(ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION));
     }
 
     private String formatViolationMessage(ConstraintViolation<?> violation) {
