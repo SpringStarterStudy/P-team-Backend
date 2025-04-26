@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(errorCode));
     }
 
+    // ValidationException 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<String>> handleValidationException(
             MethodArgumentNotValidException ex) {
@@ -39,13 +41,22 @@ public class GlobalExceptionHandler {
 
     // ValidationException 처리
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(ConstraintViolationException ex) {
+    public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(
+            ConstraintViolationException ex) {
         String errorMessage = ex.getConstraintViolations().stream()
                 .map(this::formatViolationMessage)
                 .collect(Collectors.joining(", "));
         log.error("Validation 예외 발생: {}", errorMessage);
         return ResponseEntity.badRequest().body(
                 ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION, errorMessage));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<String>> handleTypeMismatchException(
+            MethodArgumentTypeMismatchException ex) {
+        log.error("입력 형식 예외 : {}", ex.getMessage());
+        return ResponseEntity.status(GlobalErrorCode.VALIDATION_EXCEPTION.getStatus())
+                .body(ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION));
     }
 
     private String formatViolationMessage(ConstraintViolation<?> violation) {
