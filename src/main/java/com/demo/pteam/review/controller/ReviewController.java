@@ -30,6 +30,10 @@ public class ReviewController {
     @PostMapping
     public ResponseEntity<ReviewResponseDto> createReview(@Valid @RequestBody ReviewCreateRequestDto requestDto,
                                                           @AuthenticationPrincipal UserDetails userDetails) {
+
+        // 추가 검증
+        requestDto.validateFormat();
+
         // 현재 인증된 사용자 ID 가져오기
         Long userId = ((CustomUserDetails) userDetails).getId();
 
