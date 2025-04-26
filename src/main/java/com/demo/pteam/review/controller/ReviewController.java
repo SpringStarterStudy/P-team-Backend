@@ -34,8 +34,10 @@ public class ReviewController {
         // 추가 검증
         requestDto.validateFormat();
 
+        // TODO
         // 현재 인증된 사용자 ID 가져오기
-        Long userId = ((CustomUserDetails) userDetails).getId();
+//        Long userId = ((CustomUserDetails) userDetails).getId();
+        Long userId = null;
 
         ReviewResponseDto responseDto = reviewService.createReview(requestDto, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
