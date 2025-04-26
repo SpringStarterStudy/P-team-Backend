@@ -26,7 +26,7 @@ public class ApiResponse<T> {
     }
 
     public static ApiResponse<Void> success() {
-        return new ApiResponse<>(HttpStatus.OK, null,"success");
+        return new ApiResponse<>(HttpStatus.OK, null, "success");
     }
 
     public static ApiResponse<Void> success(String message) {
@@ -41,12 +41,18 @@ public class ApiResponse<T> {
         return new ApiResponse<>(HttpStatus.OK, null, message, data);
     }
 
-    public static ApiResponse<String> error(ErrorCode errorCode) {
-        return new ApiResponse<>(errorCode.getStatus(), errorCode.getCode(),
-            errorCode.getMessage());
+    public static ApiResponse<Void> created(String message) {
+        return new ApiResponse<>(HttpStatus.CREATED, null, message);
     }
 
-    // MethodArgumentNotValidException 발생 시 사용됨
+    public static <T> ApiResponse<T> created(String message, T data) {
+        return new ApiResponse<>(HttpStatus.CREATED, null, message, data);
+    }
+
+    public static ApiResponse<String> error(ErrorCode errorCode) {
+        return new ApiResponse<>(errorCode.getStatus(), errorCode.getCode(), errorCode.getMessage());
+    }
+
     public static ApiResponse<String> error(ErrorCode errorCode, String customMessage) {
         return new ApiResponse<>(errorCode.getStatus(), errorCode.getCode(), customMessage);
     }
