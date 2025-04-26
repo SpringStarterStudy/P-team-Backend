@@ -15,6 +15,9 @@ public interface ReviewRepository {
     // 사용자와 스케줄 ID로 리뷰 존재 여부 확인
     boolean existsByUserAndSchedule(Long userId, Long scheduleId);
 
+    // 사용자가 작성한 리뷰 수를 반환
+    long countByUserId(Long userId);
+
     // 리뷰 조회
 
     // 리뷰 수정

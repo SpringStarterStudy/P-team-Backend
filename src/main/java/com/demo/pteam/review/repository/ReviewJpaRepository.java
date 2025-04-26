@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewJpaRepository extends JpaRepository<ReviewEntity, Long> {
     boolean existsByUserAndSchedule(Long userId, Long scheduleId);
+    long countByUserId(Long userId);
 }
