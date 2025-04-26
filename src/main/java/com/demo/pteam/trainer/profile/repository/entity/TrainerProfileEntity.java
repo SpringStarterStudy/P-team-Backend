@@ -1,7 +1,8 @@
-package com.demo.pteam.trainer.repository.entity;
+package com.demo.pteam.trainer.profile.repository.entity;
 
 import com.demo.pteam.authentication.repository.entity.AccountEntity;
 import com.demo.pteam.global.entity.SoftDeletableEntity;
+import com.demo.pteam.trainer.address.repository.entity.TrainerAddressEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
