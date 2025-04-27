@@ -1,5 +1,6 @@
 package com.demo.pteam.review.controller;
 
+import com.demo.pteam.global.response.ApiResponse;
 import com.demo.pteam.review.controller.dto.ReviewCreateRequestDto;
 import com.demo.pteam.review.controller.dto.ReviewResponseDto;
 import com.demo.pteam.review.service.ReviewService;
@@ -28,8 +29,8 @@ public class ReviewController {
      * @return 생성된 리뷰 정보
      */
     @PostMapping
-    public ResponseEntity<ReviewResponseDto> createReview(@Valid @RequestBody ReviewCreateRequestDto requestDto,
-                                                          @AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<ApiResponse<ReviewResponseDto>> createReview(@Valid @RequestBody ReviewCreateRequestDto requestDto,
+                                                                       @AuthenticationPrincipal UserDetails userDetails) {
 
         // 추가 검증
         requestDto.validateFormat();
@@ -40,6 +41,9 @@ public class ReviewController {
         Long userId = null;
 
         ReviewResponseDto responseDto = reviewService.createReview(requestDto, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+
+        ApiResponse<ReviewResponseDto> apiResponse = ApiResponse.success("리뷰가 성공적으로 생성되었습니다.", responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
+
     }
 }
