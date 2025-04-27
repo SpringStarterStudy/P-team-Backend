@@ -6,6 +6,7 @@ import com.demo.pteam.review.controller.dto.ReviewCreateRequestDto;
 import com.demo.pteam.review.controller.dto.ReviewResponseDto;
 import com.demo.pteam.review.domain.ReviewDomain;
 import com.demo.pteam.review.exception.ReviewErrorCode;
+import com.demo.pteam.review.mapper.ReviewMapper;
 import com.demo.pteam.review.repository.ReviewImageRepository;
 import com.demo.pteam.review.repository.ReviewRepository;
 import com.demo.pteam.review.repository.entity.ReviewEntity;
@@ -31,6 +32,7 @@ public class ReviewService {
     private final ReviewImageRepository reviewImageRepository;
 //    private final AccountRepository accountRepository;
     private final ScheduleRepository scheduleRepository;
+    private final ReviewMapper reviewMapper;
 
     /**
      * 리뷰를 생성하는 메서드
@@ -55,7 +57,7 @@ public class ReviewService {
         Integer ptSessionCount = calculatePtSessionCount(user, trainer, schedule);
 
         // Domain 객체 생성
-        ReviewDomain reviewDomain = ReviewDomain.fromRequestDto(requestDto, ptSessionCount, userId);
+        ReviewDomain reviewDomain = reviewMapper.fromRequestDto(requestDto, ptSessionCount, userId);
 
         // PT 완료 여부 확인
         if (!reviewDomain.isCompletedSchedule(schedule.getEndTime())) {
@@ -63,7 +65,7 @@ public class ReviewService {
         }
 
         // 리뷰 생성
-        ReviewEntity review = reviewDomain.toEntity(trainer, user, schedule);
+        ReviewEntity review = reviewMapper.toEntity(reviewDomain, trainer, user, schedule);
         ReviewEntity savedReview = reviewRepository.save(review);
 
         // TODO: 크레딧 서비스 코드 구현 확인 후 수정
