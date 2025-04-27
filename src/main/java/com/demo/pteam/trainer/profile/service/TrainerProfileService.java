@@ -1,5 +1,6 @@
 package com.demo.pteam.trainer.profile.service;
 
+import com.demo.pteam.external.kakao.service.KakaoMapService;
 import com.demo.pteam.trainer.address.domain.TrainerAddress;
 import com.demo.pteam.trainer.address.repository.TrainerAddressRepository;
 import com.demo.pteam.trainer.profile.controller.dto.TrainerProfileRequest;
@@ -17,20 +18,23 @@ public class TrainerProfileService {
 
     private final TrainerProfileRepository trainerProfileRepository;
     private final TrainerAddressRepository trainerAddressRepository;
+    private final KakaoMapService kakaoMapService;
 
     @Transactional
     public void createProfile(TrainerProfileRequest request, Long userId) {
 
-        TrainerAddress savedAddress = trainerAddressRepository.save(
-                TrainerAddress.of(
-                        request.getAddress().getNumberAddress(),
-                        request.getAddress().getStreetAddress(),
-                        request.getAddress().getDetailAddress(),
-                        request.getAddress().getPostalCode(),
-                        request.getAddress().getLatitude(),
-                        request.getAddress().getLongitude()
-                )
+        TrainerAddress newAddress = TrainerAddress.of(
+                request.getAddress().getNumberAddress(),
+                request.getAddress().getStreetAddress(),
+                request.getAddress().getDetailAddress(),
+                request.getAddress().getPostalCode(),
+                request.getAddress().getLatitude(),
+                request.getAddress().getLongitude()
         );
+
+        newAddress.validateAddressWithKakao(kakaoMapService);
+
+        TrainerAddress savedAddress = trainerAddressRepository.save(newAddress);
 
 
         trainerProfileRepository.save(
