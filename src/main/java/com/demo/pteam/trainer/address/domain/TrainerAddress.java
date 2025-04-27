@@ -1,5 +1,6 @@
 package com.demo.pteam.trainer.address.domain;
 
+import com.demo.pteam.external.kakao.service.KakaoMapService;
 import com.demo.pteam.global.exception.ApiException;
 import com.demo.pteam.trainer.address.exception.TrainerAddressErrorCode;
 import lombok.Getter;
@@ -42,6 +43,13 @@ public class TrainerAddress {
         }
         if (longitude.abs().compareTo(BigDecimal.valueOf(180)) > 0) {
             throw new ApiException(TrainerAddressErrorCode.INVALID_LONGITUDE);
+        }
+    }
+
+    public void validateAddressWithKakao(KakaoMapService kakaoMapService) {
+        boolean isValid = kakaoMapService.isValidAddressByCoordinates(this.latitude, this.longitude, this.roadAddress);
+        if(!isValid) {
+            throw new ApiException(TrainerAddressErrorCode.ADDRESS_COORDINATE_MISMATCH);
         }
     }
 
