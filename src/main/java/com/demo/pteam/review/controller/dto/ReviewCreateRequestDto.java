@@ -19,7 +19,7 @@ import java.util.Objects;
  * 클라이언트로부터 입력 받은 리뷰 생성 정보
  */
 
-@Getter @Setter
+@Getter
 @NoArgsConstructor
 public class ReviewCreateRequestDto {
 
