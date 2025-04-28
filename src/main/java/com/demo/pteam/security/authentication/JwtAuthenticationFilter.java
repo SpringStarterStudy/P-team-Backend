@@ -1,4 +1,4 @@
-package com.demo.pteam.security.authorization;
+package com.demo.pteam.security.authentication;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

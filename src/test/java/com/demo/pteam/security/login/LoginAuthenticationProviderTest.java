@@ -2,8 +2,7 @@ package com.demo.pteam.security.login;
 
 import com.demo.pteam.authentication.domain.AccountStatus;
 import com.demo.pteam.authentication.domain.Role;
-import com.demo.pteam.security.login.dto.LoginAccountInfo;
-import com.demo.pteam.security.principal.CustomUserDetails;
+import com.demo.pteam.security.dto.LoginAccountInfo;
 import com.demo.pteam.security.principal.PrincipalFactory;
 import com.demo.pteam.security.principal.UserPrincipal;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -56,11 +55,11 @@ class LoginAuthenticationProviderTest {
         );
     }
 
-    private CustomUserDetails getTestUserDetails(LoginAccountInfo accountInfo) {
-        return new CustomUserDetails(accountInfo, List.of(new SimpleGrantedAuthority(accountInfo.role().name())));
+    private LoginUserDetails getTestUserDetails(LoginAccountInfo accountInfo) {
+        return new LoginUserDetails(accountInfo, List.of(new SimpleGrantedAuthority(accountInfo.role().name())));
     }
 
-    private UserPrincipal getTestPrincipal(CustomUserDetails userDetails) {
+    private UserPrincipal getTestPrincipal(LoginUserDetails userDetails) {
         return PrincipalFactory.fromUser(userDetails);
     }
 
@@ -69,7 +68,7 @@ class LoginAuthenticationProviderTest {
     void authenticate_success() {
         // given
         LoginAccountInfo testAccountInfo = getTestLoginAccountInfo();
-        CustomUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
+        LoginUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
         UserPrincipal testPrincipal = getTestPrincipal(testUserDetails);
         String requestUsername = "username";
         String requestPassword = "1234567aA!";
@@ -91,7 +90,7 @@ class LoginAuthenticationProviderTest {
     void authenticate_passwordMismatch() {
         // given
         LoginAccountInfo testAccountInfo = getTestLoginAccountInfo();
-        CustomUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
+        LoginUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
         String requestUsername = "username";
         String requestPassword = "12345aA!";
         when(userDetailsService.loadUserByUsername(requestUsername)).thenReturn(testUserDetails);
@@ -126,7 +125,7 @@ class LoginAuthenticationProviderTest {
     void authenticate_suspended() {
         // given
         LoginAccountInfo testAccountInfo = getTestLoginAccountInfo(AccountStatus.SUSPENDED);
-        CustomUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
+        LoginUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
         String requestUsername = "username";
         String requestPassword = "1234567aA!";
         when(userDetailsService.loadUserByUsername(requestUsername)).thenReturn(testUserDetails);

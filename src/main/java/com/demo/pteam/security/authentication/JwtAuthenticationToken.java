@@ -1,4 +1,4 @@
-package com.demo.pteam.security.authorization;
+package com.demo.pteam.security.authentication;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;

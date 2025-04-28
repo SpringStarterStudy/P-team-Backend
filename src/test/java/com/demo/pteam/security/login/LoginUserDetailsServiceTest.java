@@ -4,8 +4,7 @@ import com.demo.pteam.authentication.domain.AccountStatus;
 import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.authentication.exception.UserNotFoundException;
 import com.demo.pteam.authentication.service.AccountService;
-import com.demo.pteam.security.login.dto.LoginAccountInfo;
-import com.demo.pteam.security.principal.CustomUserDetails;
+import com.demo.pteam.security.dto.LoginAccountInfo;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CustomUserDetailsServiceTest {
+class LoginUserDetailsServiceTest {
     @InjectMocks
     private CustomUserDetailsService customUserDetailsService;
 
@@ -53,18 +52,18 @@ class CustomUserDetailsServiceTest {
 
         // then
         assertThat(userDetails).isNotNull();
-        assertThat(userDetails).isInstanceOf(CustomUserDetails.class);
-        CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-        assertThat(customUserDetails.getAccount()).isEqualTo(testAccountInfo);
-        assertThat(customUserDetails.getPassword()).isEqualTo(testAccountInfo.password());
-        assertThat(customUserDetails.getUsername()).isEqualTo(testAccountInfo.username());
-        assertThat(customUserDetails.getAuthorities()).hasSize(1);
-        assertThat(customUserDetails.getAuthorities().iterator().next().getAuthority())
+        assertThat(userDetails).isInstanceOf(LoginUserDetails.class);
+        LoginUserDetails loginUserDetails = (LoginUserDetails) userDetails;
+        assertThat(loginUserDetails.getAccount()).isEqualTo(testAccountInfo);
+        assertThat(loginUserDetails.getPassword()).isEqualTo(testAccountInfo.password());
+        assertThat(loginUserDetails.getUsername()).isEqualTo(testAccountInfo.username());
+        assertThat(loginUserDetails.getAuthorities()).hasSize(1);
+        assertThat(loginUserDetails.getAuthorities().iterator().next().getAuthority())
                 .isEqualTo(testAccountInfo.role().name());
-        assertThat(customUserDetails.isEnabled()).isTrue();
-        assertThat(customUserDetails.isDeleted()).isFalse();
-        assertThat(customUserDetails.isUnverified()).isFalse();
-        assertThat(customUserDetails.isSuspended()).isFalse();
+        assertThat(loginUserDetails.isEnabled()).isTrue();
+        assertThat(loginUserDetails.isDeleted()).isFalse();
+        assertThat(loginUserDetails.isUnverified()).isFalse();
+        assertThat(loginUserDetails.isSuspended()).isFalse();
     }
 
     @DisplayName("계정 조회 - 계정이 없는 경우")

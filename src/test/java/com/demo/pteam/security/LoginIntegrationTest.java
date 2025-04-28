@@ -3,7 +3,7 @@ package com.demo.pteam.security;
 import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.security.exception.LoginErrorCode;
 import com.demo.pteam.security.login.ApiLoginFilter;
-import com.demo.pteam.security.login.dto.LoginRequest;
+import com.demo.pteam.security.dto.LoginRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;

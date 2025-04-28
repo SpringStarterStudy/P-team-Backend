@@ -5,7 +5,7 @@ import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.authentication.exception.UserNotFoundException;
 import com.demo.pteam.authentication.repository.LocalAccountRepository;
 import com.demo.pteam.authentication.repository.dto.LocalAccountDto;
-import com.demo.pteam.security.login.dto.LoginAccountInfo;
+import com.demo.pteam.security.dto.LoginAccountInfo;
 import com.demo.pteam.security.login.mapper.LocalAccountMapper;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.DisplayName;

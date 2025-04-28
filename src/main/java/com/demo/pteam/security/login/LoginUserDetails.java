@@ -1,16 +1,18 @@
-package com.demo.pteam.security.authorization;
+package com.demo.pteam.security.login;
 
-import com.demo.pteam.security.authorization.dto.JwtAccountInfo;
+import com.demo.pteam.security.authentication.JwtUserDetails;
+import com.demo.pteam.security.dto.LoginAccountInfo;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
-public class JwtUserDetailsImpl implements JwtUserDetails<JwtAccountInfo> {
-    private final JwtAccountInfo account;
+public class LoginUserDetails implements UserDetails, JwtUserDetails<LoginAccountInfo> {
+    private final LoginAccountInfo account;
     private final List<GrantedAuthority> authorities;
 
-    public JwtUserDetailsImpl(JwtAccountInfo account, List<GrantedAuthority> authorities) {
+    public LoginUserDetails(LoginAccountInfo account, List<GrantedAuthority> authorities) {
         this.account = account;
         this.authorities = authorities;
     }
@@ -21,8 +23,18 @@ public class JwtUserDetailsImpl implements JwtUserDetails<JwtAccountInfo> {
     }
 
     @Override
-    public JwtAccountInfo getAccount() {
+    public LoginAccountInfo getAccount() {
         return account;
+    }
+
+    @Override
+    public String getPassword() {
+        return account.password();
+    }
+
+    @Override
+    public String getUsername() {
+        return account.username();
     }
 
     @Override

@@ -3,7 +3,7 @@ package com.demo.pteam.security.login;
 import com.demo.pteam.security.exception.InvalidJsonFormatException;
 import com.demo.pteam.security.exception.InvalidJsonPropertyException;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
-import com.demo.pteam.security.login.dto.LoginRequest;
+import com.demo.pteam.security.dto.LoginRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
@@ -36,7 +36,7 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
             throw new MethodNotAllowedException("Authentication method not supported: " + request.getMethod());
         } else {
             try {
-                LoginRequest loginRequest = getLoginRequest(request);
+                LoginRequest loginRequest = obtainLoginRequest(request);
                 String username = this.obtainUsername(loginRequest);
                 username = username != null ? username.trim() : "";
                 String password = this.obtainPassword(loginRequest);
@@ -55,7 +55,7 @@ public class ApiLoginFilter extends AbstractAuthenticationProcessingFilter {
         }
     }
 
-    private LoginRequest getLoginRequest(HttpServletRequest request) throws IOException {
+    private LoginRequest obtainLoginRequest(HttpServletRequest request) throws IOException {
         return objectMapper.readValue(request.getInputStream(), LoginRequest.class);
     }
 

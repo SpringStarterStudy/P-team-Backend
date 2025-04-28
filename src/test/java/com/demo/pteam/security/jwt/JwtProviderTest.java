@@ -71,7 +71,7 @@ class JwtProviderTest {
     }
 
     @Test
-    void getPrincipal() {
+    void obtainPrincipal() {
         // TODO: 나중에 사용할 때 작성 예정
     }
 }

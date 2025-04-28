@@ -4,7 +4,7 @@ import com.demo.pteam.authentication.domain.AccountStatus;
 import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.security.exception.InvalidJsonPropertyException;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
-import com.demo.pteam.security.login.dto.LoginRequest;
+import com.demo.pteam.security.dto.LoginRequest;
 import com.demo.pteam.security.principal.UserPrincipal;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,8 +1,8 @@
 package com.demo.pteam.security.principal;
 
 import com.demo.pteam.authentication.domain.Role;
-import com.demo.pteam.security.authorization.JwtUserDetails;
-import com.demo.pteam.security.authorization.dto.AccountInfo;
+import com.demo.pteam.security.authentication.JwtUserDetails;
+import com.demo.pteam.security.dto.AccountInfo;
 import io.jsonwebtoken.Claims;
 
 public class PrincipalFactory {

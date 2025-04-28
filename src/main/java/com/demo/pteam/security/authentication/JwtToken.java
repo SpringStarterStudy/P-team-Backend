@@ -1,4 +1,4 @@
-package com.demo.pteam.security.authorization;
+package com.demo.pteam.security.authentication;
 
 public record JwtToken(
         String accessToken,

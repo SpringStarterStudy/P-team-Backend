@@ -1,9 +1,9 @@
-package com.demo.pteam.security.authorization;
+package com.demo.pteam.security.authentication;
 
 import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.authentication.exception.UserNotFoundException;
 import com.demo.pteam.authentication.service.AccountService;
-import com.demo.pteam.security.authorization.dto.JwtAccountInfo;
+import com.demo.pteam.security.dto.JwtAccountInfo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

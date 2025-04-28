@@ -1,9 +1,9 @@
 package com.demo.pteam.security.config;
 
 import com.demo.pteam.authentication.service.AccountService;
-import com.demo.pteam.security.authorization.JwtAuthenticationProvider;
-import com.demo.pteam.security.authorization.JwtAuthenticationFilter;
-import com.demo.pteam.security.authorization.JwtUserDetailsService;
+import com.demo.pteam.security.authentication.JwtAuthenticationProvider;
+import com.demo.pteam.security.authentication.JwtAuthenticationFilter;
+import com.demo.pteam.security.authentication.JwtUserDetailsService;
 import com.demo.pteam.security.configurer.ApiLoginConfigurer;
 import com.demo.pteam.security.jwt.JwtProvider;
 import com.demo.pteam.security.login.handler.LoginAuthenticationFailureHandler;

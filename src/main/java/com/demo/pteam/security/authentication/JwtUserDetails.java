@@ -1,6 +1,6 @@
-package com.demo.pteam.security.authorization;
+package com.demo.pteam.security.authentication;
 
-import com.demo.pteam.security.authorization.dto.AccountInfo;
+import com.demo.pteam.security.dto.AccountInfo;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;

@@ -1,7 +1,7 @@
-package com.demo.pteam.security.authorization.mapper;
+package com.demo.pteam.security.authentication.mapper;
 
 import com.demo.pteam.authentication.repository.dto.AccountDto;
-import com.demo.pteam.security.authorization.dto.JwtAccountInfo;
+import com.demo.pteam.security.dto.JwtAccountInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
