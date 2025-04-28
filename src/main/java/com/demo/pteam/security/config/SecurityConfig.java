@@ -1,6 +1,9 @@
 package com.demo.pteam.security.config;
 
 import com.demo.pteam.authentication.service.AccountService;
+import com.demo.pteam.security.authorization.JwtAuthenticationProvider;
+import com.demo.pteam.security.authorization.JwtAuthenticationFilter;
+import com.demo.pteam.security.authorization.JwtUserDetailsService;
 import com.demo.pteam.security.configurer.ApiLoginConfigurer;
 import com.demo.pteam.security.jwt.JwtProvider;
 import com.demo.pteam.security.login.handler.LoginAuthenticationFailureHandler;
@@ -19,6 +22,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @RequiredArgsConstructor
 @EnableWebSecurity
@@ -30,7 +34,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        AuthenticationManager apiLoginAuthenticationManager = getApiLoginAuthenticationManager();
+        AuthenticationManager authenticationManager = getApiLoginAuthenticationManager();
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
@@ -39,11 +43,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .with(new ApiLoginConfigurer(objectMapper), config -> config
-                        .authenticationManager(apiLoginAuthenticationManager)
+                        .authenticationManager(authenticationManager)
                         .loginProcessingUrl("/api/auths/login")
                         .successHandler(new LoginAuthenticationSuccessHandler(jwtProvider))
                         .failureHandler(new LoginAuthenticationFailureHandler())
                 )
+                .addFilterBefore(getJwtAuthenticationFilter(authenticationManager),
+                        UsernamePasswordAuthenticationFilter.class)     // TODO: 나중에 configurer 사용하도록 변경
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auths/login").permitAll()
                         .anyRequest().authenticated());
@@ -52,12 +58,24 @@ public class SecurityConfig {
     }
 
     private AuthenticationManager getApiLoginAuthenticationManager() {
-        return new ProviderManager(getLoginAuthenticationProvider());
+        return new ProviderManager(getJwtAuthenticationProvider(), getLoginAuthenticationProvider());
     }
 
     private AuthenticationProvider getLoginAuthenticationProvider() {
         LoginAuthenticationProvider loginAuthenticationProvider = new LoginAuthenticationProvider();
         loginAuthenticationProvider.setUserDetailsService(new CustomUserDetailsService(accountService));
         return loginAuthenticationProvider;
+    }
+
+    private JwtAuthenticationFilter getJwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter();
+        jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
+        return jwtAuthenticationFilter;
+    }
+
+    private JwtAuthenticationProvider getJwtAuthenticationProvider() {
+        JwtAuthenticationProvider jwtAuthenticationProvider = new JwtAuthenticationProvider(jwtProvider);
+        jwtAuthenticationProvider.setJwtUserDetailsService(new JwtUserDetailsService(accountService));
+        return jwtAuthenticationProvider;
     }
 }
