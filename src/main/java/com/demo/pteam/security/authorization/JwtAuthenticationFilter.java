@@ -14,7 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-public class JwtAuthorizationFilter extends OncePerRequestFilter {
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
     private AuthenticationManager authenticationManager;
 
@@ -29,9 +29,12 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private Authentication attemptAuthentication(HttpServletRequest request) {
         String accessToken = this.obtainAccessToken(request);
-        accessToken = accessToken != null ? accessToken.trim() : "";
         String refreshToken = this.obtainRefreshToken(request);
+        accessToken = accessToken != null ? accessToken.trim() : "";
         refreshToken = refreshToken != null ? refreshToken.trim() : "";
+        if (accessToken.isEmpty() && refreshToken.isEmpty()) {  // 토큰이 없을 경우
+            return null;
+        }
         JwtAuthenticationToken authRequest = JwtAuthenticationToken.unauthenticated(new JwtToken(accessToken, refreshToken));
         return this.authenticationManager.authenticate(authRequest);
     }
