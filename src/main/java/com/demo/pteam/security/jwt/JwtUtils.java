@@ -48,12 +48,4 @@ public class JwtUtils {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
     }
-
-    public static boolean isExpired(Claims claims) {
-        try {
-            return claims.getExpiration().before(new Date());
-        } catch (JwtException e) {
-            return true;
-        }
-    }
 }

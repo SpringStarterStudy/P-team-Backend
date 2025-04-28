@@ -1,6 +1,5 @@
 package com.demo.pteam.security.jwt;
 
-import com.demo.pteam.security.principal.PrincipalFactory;
 import com.demo.pteam.security.principal.UserPrincipal;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +8,7 @@ import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Map;
 
 @Component
@@ -39,8 +39,12 @@ public class JwtProvider {
         return JwtUtils.encode(sub, secretKey, refreshTokenExpiration);
     }
 
-    public UserPrincipal getPrincipal(String token) throws JwtException {
-        Claims claims = JwtUtils.decode(token, secretKey);
-        return PrincipalFactory.fromClaims(claims);
+    public boolean isExpired(Claims claims) {
+        Date expiration = claims.getExpiration();
+        return expiration == null || expiration.before(new Date());
+    }
+
+    public Claims parseClaims(String token) throws JwtException {
+        return JwtUtils.decode(token, secretKey);
     }
 }

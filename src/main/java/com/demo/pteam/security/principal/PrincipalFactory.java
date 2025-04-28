@@ -1,25 +1,21 @@
 package com.demo.pteam.security.principal;
 
 import com.demo.pteam.authentication.domain.Role;
-import com.demo.pteam.security.exception.InvalidJwtException;
-import com.demo.pteam.security.login.dto.LoginAccountInfo;
+import com.demo.pteam.security.authorization.JwtUserDetails;
+import com.demo.pteam.security.authorization.dto.AccountInfo;
 import io.jsonwebtoken.Claims;
 
 public class PrincipalFactory {
-    public static UserPrincipal fromUser(CustomUserDetails userDetails) {
-        LoginAccountInfo account = userDetails.getAccount();
+    public static <T extends AccountInfo>UserPrincipal fromUser(JwtUserDetails<T> userDetails) {
+        T account = userDetails.getAccount();
         boolean verified = !userDetails.isUnverified();
         return new UserPrincipal(account.id(), account.role(), verified);
     }
 
-    public static UserPrincipal fromClaims(Claims claims) {
-        try {
-            Long id = Long.valueOf(claims.getSubject());
-            Role role = claims.get("role", Role.class);
-            Boolean verified = claims.get("verified", Boolean.class);
-            return new UserPrincipal(id, role, verified);
-        } catch (NullPointerException | NumberFormatException | ClassCastException e) {
-            throw new InvalidJwtException("JWT Claims parsing failed.", e);
-        }
+    public static UserPrincipal fromClaims(Claims claims) throws NullPointerException, IllegalArgumentException {
+        Long id = Long.valueOf(claims.getSubject());
+        Role role = Role.valueOf(claims.get("role", String.class));
+        Boolean verified = claims.get("verified", Boolean.class);
+        return new UserPrincipal(id, role, verified);
     }
 }
