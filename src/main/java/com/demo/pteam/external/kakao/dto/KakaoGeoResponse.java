@@ -21,11 +21,22 @@ public class KakaoGeoResponse {
     public static class Document {
         @JsonProperty("road_address")
         private RoadAddress roadAddress;
+        @JsonProperty("address")
+        private Address address;
     }
 
     @Getter
     public static class RoadAddress {
         @JsonProperty("address_name")
         private String addressName;
+        @JsonProperty("zone_no")
+        private String zoneNo;
     }
+
+    @Getter
+    public static class Address {
+        @JsonProperty("address_name")
+        private String addressName;
+    }
+
 }

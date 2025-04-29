@@ -23,19 +23,16 @@ public class TrainerProfileService {
     @Transactional
     public void createProfile(TrainerProfileRequest request, Long userId) {
 
-        TrainerAddress newAddress = TrainerAddress.of(
-                request.getAddress().getNumberAddress(),
-                request.getAddress().getStreetAddress(),
+        TrainerAddress newAddress = TrainerAddress.from(
+                request.getAddress().getRoadAddress(),
                 request.getAddress().getDetailAddress(),
-                request.getAddress().getPostalCode(),
                 request.getAddress().getLatitude(),
                 request.getAddress().getLongitude()
         );
 
-        newAddress.validateAddressWithKakao(kakaoMapService);
+        newAddress.verifyAndCompleteAddressWithKakao(kakaoMapService);
 
         TrainerAddress savedAddress = trainerAddressRepository.save(newAddress);
-
 
         trainerProfileRepository.save(
                 TrainerProfile.of(
