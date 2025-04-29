@@ -3,6 +3,7 @@ package com.demo.pteam.trainer.profile.controller;
 import com.demo.pteam.global.response.ApiResponse;
 import com.demo.pteam.trainer.profile.controller.dto.TrainerProfileRequest;
 import com.demo.pteam.trainer.profile.service.TrainerProfileService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,9 +20,9 @@ public class TrainerProfileController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> createProfile(
-            @RequestBody TrainerProfileRequest request
+            @RequestBody @Valid TrainerProfileRequest request
     ) {
-        Long userId = 4L; // TODO: 임시
+        Long userId = 4L; // TODO: 로그인 사용자 임시
 
         trainerProfileService.createProfile(request, userId);
         return ResponseEntity.status(201).body(ApiResponse.created("트레이너 프로필이 성공적으로 등록되었습니다."));

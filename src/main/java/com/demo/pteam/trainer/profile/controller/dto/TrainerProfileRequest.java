@@ -1,5 +1,9 @@
 package com.demo.pteam.trainer.profile.controller.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
@@ -14,12 +18,14 @@ public class TrainerProfileRequest {
 
     private String profileImg;
     private String intro;
+    @PositiveOrZero(message = "크레딧은 0 이상이어야 합니다.")
     private Integer credit;
     private String contactStartTime;
     private String contactEndTime;
+    @NotNull(message = "이름 공개 선택 여부는 필수입니다.")
     private Boolean isNamePublic;
 
-    private Address address;
+    @Valid private Address address;
     private List<Certification> certifications;
     private List<String> hashtags;
 
@@ -27,12 +33,17 @@ public class TrainerProfileRequest {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Address {
-        private String numberAddress;
-        private String streetAddress;
+
+        @NotBlank(message = "도로명 주소는 필수 입니다.")
+        private String roadAddress;
+
         private String detailAddress;
-        private String postalCode;
+
+        @NotNull(message = "경도 값은 필수 입니다.")
         private BigDecimal latitude;
+        @NotNull(message = "위도 값은 필수 입니다.")
         private BigDecimal longitude;
+
     }
 
     @Getter
