@@ -19,11 +19,24 @@ public class WorkoutController {
 
     private final WorkoutService workoutService;
 
+
     @PatchMapping("/{requestId}")
     public ResponseEntity<ApiResponse<ResponseWorkout>> updateWorkoutStatus(
         @PathVariable Long requestId, @RequestBody RequestWorkout workout) {
         return ResponseEntity.ok(
             ApiResponse.success(workoutService.changeStatus(requestId, workout)));
+    }
+
+    @GetMapping("")
+    public ResponseEntity<ApiResponse<List<ResponseWorkout>>> getWorkoutRequests() {
+        return ResponseEntity.ok(ApiResponse.success(workoutService.getWorkoutRequests(4L)));
+    }
+
+    @GetMapping("/{requestId}")
+    public ResponseEntity<ApiResponse<ResponseWorkout>> getWorkoutRequests(
+        @PathVariable Long requestId) {
+        return ResponseEntity.ok(
+            ApiResponse.success(workoutService.getWorkoutRequestDetail(requestId)));
     }
 
 }

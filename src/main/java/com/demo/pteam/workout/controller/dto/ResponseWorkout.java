@@ -1,5 +1,6 @@
 package com.demo.pteam.workout.controller.dto;
 
+
 import com.demo.pteam.workout.domain.WorkoutStatus;
 import com.demo.pteam.workout.repository.entity.WorkoutEntity;
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ public class ResponseWorkout {
     private final LocalDateTime startTime;
     private final LocalDateTime endTime;
     private final LocalDateTime createdAt;
+
 
     public static ResponseWorkout from (WorkoutEntity entity) {
         return ResponseWorkout.builder()

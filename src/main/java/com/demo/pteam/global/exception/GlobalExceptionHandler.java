@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.stream.Collectors;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
@@ -22,32 +23,43 @@ public class GlobalExceptionHandler {
     // CustomException 처리
     @ExceptionHandler(ApiException.class)
     public ResponseEntity<ApiResponse<String>> handleCustomException(ApiException e) {
-        log.error("CustomException: {}", e.getErrorCode().getMessage());
+        ErrorCode errorCode = e.getErrorCode();
+        log.error("CustomException: {}", errorCode.getMessage());
         return ResponseEntity
-            .status(e.getErrorCode().getStatus())
-            .body(ApiResponse.error(e.getErrorCode()));
+                .status(errorCode.getStatus())
+                .body(ApiResponse.error(errorCode));
     }
 
     // ValidationException 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<String>> handleValidationException(
-        BindingResult bindingResult) {
+            MethodArgumentNotValidException ex) {
+        BindingResult bindingResult = ex.getBindingResult();
         log.error("Validation 예외 발생: {}", bindingResult.getAllErrors());
         return ResponseEntity
-            .status(ErrorCode.VALIDATION_EXCEPTION.getStatus())
-            .body(ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION,
-                bindingResult.getAllErrors().get(0).getDefaultMessage()));
+                .status(GlobalErrorCode.VALIDATION_EXCEPTION.getStatus())
+                .body(ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION,
+                        bindingResult.getAllErrors().get(0).getDefaultMessage()));
     }
 
     // ValidationException 처리
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(ConstraintViolationException ex) {
+    public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(
+        ConstraintViolationException ex) {
         String errorMessage = ex.getConstraintViolations().stream()
-                .map(this::formatViolationMessage)
-                .collect(Collectors.joining(", "));
+            .map(this::formatViolationMessage)
+            .collect(Collectors.joining(", "));
         log.error("Validation 예외 발생: {}", errorMessage);
         return ResponseEntity.badRequest().body(
-                ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION, errorMessage));
+            ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION, errorMessage));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse<String>> handleTypeMismatchException(
+        MethodArgumentTypeMismatchException ex) {
+        log.error("입력 형식 예외 : {}", ex.getMessage());
+        return ResponseEntity.status(GlobalErrorCode.VALIDATION_EXCEPTION.getStatus())
+            .body(ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
