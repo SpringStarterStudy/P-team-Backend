@@ -178,7 +178,7 @@ class WorkoutServiceTest {
 
         // then
         assertEquals(1, result.size());
-        assertEquals("PENDING", result.get(0).getStatus());
+        assertEquals(WorkoutStatus.PENDING, result.get(0).getStatus());
         assertEquals(4L, mockTrainer.getId());
 
     }

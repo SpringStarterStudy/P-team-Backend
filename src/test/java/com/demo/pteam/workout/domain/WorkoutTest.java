@@ -3,7 +3,7 @@ package com.demo.pteam.workout.domain;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.demo.pteam.global.exception.ApiException;
-import com.demo.pteam.global.exception.ErrorCode;
+import com.demo.pteam.workout.exception.WorkoutErrorCode;
 import com.demo.pteam.workout.repository.entity.WorkoutEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,7 +41,7 @@ class WorkoutTest {
         ApiException exception = assertThrows(ApiException.class, () -> {
             workout.changeStatus(WorkoutStatus.APPROVED);
         });
-        assertEquals(ErrorCode.WORKOUT_REQUEST_ALREADY_PROCESSED, exception.getErrorCode());
+        assertEquals(WorkoutErrorCode.WORKOUT_REQUEST_ALREADY_PROCESSED, exception.getErrorCode());
     }
 
     @DisplayName("Workout 상태 변경 테스트 - 이미 완료된 상태(거절)에서 상태 변경 시 예외 발생")
@@ -58,6 +58,6 @@ class WorkoutTest {
         ApiException exception = assertThrows(ApiException.class, () -> {
             workout.changeStatus(WorkoutStatus.APPROVED);
         });
-        assertEquals(ErrorCode.WORKOUT_REQUEST_ALREADY_PROCESSED, exception.getErrorCode());
+        assertEquals(WorkoutErrorCode.WORKOUT_REQUEST_ALREADY_PROCESSED, exception.getErrorCode());
     }
 }
