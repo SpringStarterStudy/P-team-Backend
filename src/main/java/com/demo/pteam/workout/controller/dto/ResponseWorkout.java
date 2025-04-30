@@ -11,14 +11,14 @@ import lombok.Getter;
 @Builder
 public class ResponseWorkout {
 
-    private Long id;
-    private String trainerName;
-    private String userName;
-    private WorkoutStatus status;
-    private LocalDate trainingDate;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-    private LocalDateTime createAt;
+    private final Long id;
+    private final String trainerName;
+    private final String userName;
+    private final WorkoutStatus status;
+    private final LocalDate trainingDate;
+    private final LocalDateTime startTime;
+    private final LocalDateTime endTime;
+    private final LocalDateTime createdAt;
 
     public static ResponseWorkout from (WorkoutEntity entity) {
         return ResponseWorkout.builder()
@@ -29,7 +29,7 @@ public class ResponseWorkout {
             .trainingDate(entity.getTrainingDate())
             .startTime(entity.getStartTime())
             .endTime(entity.getEndTime())
-            .createAt(entity.getCreatedAt())
+            .createdAt(entity.getCreatedAt())
             .build();
     }
 }

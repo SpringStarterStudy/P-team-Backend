@@ -61,6 +61,34 @@ class WorkoutServiceTest {
         assertEquals(WorkoutStatus.APPROVED, workoutEntity.getStatus());
     }
 
+    @DisplayName("상태 변경 성공 - PENDING → REJECTED")
+    @Test
+    void changeStatusSuccess_FromPendingToRejected() {
+
+        // given
+        AccountEntity mockTrainer = Mockito.mock(AccountEntity.class);
+        AccountEntity mockUser = Mockito.mock(AccountEntity.class);
+
+        WorkoutEntity workoutEntity = WorkoutEntity.builder()
+            .id(1L)
+            .trainer(mockTrainer)
+            .user(mockUser)
+            .status(WorkoutStatus.PENDING)
+            .build();
+
+        RequestWorkout requestWorkout = mock(RequestWorkout.class);
+        when(requestWorkout.getStatus()).thenReturn(WorkoutStatus.REJECTED);
+
+        when(workoutRepository.findById(1L)).thenReturn(Optional.of(workoutEntity));
+
+        // when
+        ResponseWorkout response = workoutService.changeStatus(1L, requestWorkout);
+
+        // then
+        assertEquals(WorkoutStatus.REJECTED, response.getStatus());
+        assertEquals(WorkoutStatus.REJECTED, workoutEntity.getStatus());
+    }
+
     @DisplayName("상태 변경 실패 - 이미 완료된 상태(승인)에서 변경 시 예외 발생")
     @Test
     void changeStatusFail_whenAlreadyApproved() {

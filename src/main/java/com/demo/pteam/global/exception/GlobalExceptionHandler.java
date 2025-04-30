@@ -4,6 +4,7 @@ import com.demo.pteam.global.response.ApiResponse;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -53,12 +54,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleJsonParseException(HttpMessageNotReadableException ex) {
         log.error("요청 파싱 예외 발생: {}", ex.getMessage());
 
+
         Throwable cause = ex.getCause();
         if (cause instanceof InvalidFormatException invalidFormatEx &&
             invalidFormatEx.getTargetType().isEnum()) {
 
+            Object[] enumConstants = invalidFormatEx.getTargetType().getEnumConstants();
+            String allowedValues = Arrays.stream(enumConstants)
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+
             // enum 변환 실패
-            String message = "올바르지 않은 상태값입니다. [허용 값: PENDING, APPROVED, REJECTED]";
+            String message = String.format(ErrorCode.VALIDATION_EXCEPTION.getMessage(), allowedValues);
+
             return ResponseEntity
                 .status(ErrorCode.VALIDATION_EXCEPTION.getStatus())
                 .body(ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION, message));
