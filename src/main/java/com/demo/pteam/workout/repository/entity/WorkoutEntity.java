@@ -48,4 +48,8 @@ public class WorkoutEntity extends SoftDeletableEntity {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
+    public void updateStatus(WorkoutStatus newStatus) {
+        this.status = newStatus;
+    }
+
 }

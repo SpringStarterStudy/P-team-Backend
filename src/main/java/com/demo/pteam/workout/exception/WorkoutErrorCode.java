@@ -6,7 +6,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum WorkoutErrorCode implements ErrorCode {
-    WORKOUT_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "W_001", "존재하지 않는 신청 ID입니다.");
+    WORKOUT_REQUEST_NOT_FOUND(HttpStatus.NOT_FOUND, "W_001", "존재하지 않는 신청 ID입니다."),
+    WORKOUT_REQUEST_ALREADY_PROCESSED(HttpStatus.CONFLICT, "W_002", "이미 처리된 신청입니다.");
 
 
     private final HttpStatus status;

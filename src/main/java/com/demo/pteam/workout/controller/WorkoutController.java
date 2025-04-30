@@ -1,13 +1,16 @@
 package com.demo.pteam.workout.controller;
 
 import com.demo.pteam.global.response.ApiResponse;
+import com.demo.pteam.workout.controller.dto.RequestWorkout;
 import com.demo.pteam.workout.controller.dto.ResponseWorkout;
 import com.demo.pteam.workout.service.WorkoutService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class WorkoutController {
 
     private final WorkoutService workoutService;
+
+
+    @PatchMapping("/{requestId}")
+    public ResponseEntity<ApiResponse<ResponseWorkout>> updateWorkoutStatus(
+        @PathVariable Long requestId, @RequestBody RequestWorkout workout) {
+        return ResponseEntity.ok(
+            ApiResponse.success(workoutService.changeStatus(requestId, workout)));
+    }
 
     @GetMapping("")
     public ResponseEntity<ApiResponse<List<ResponseWorkout>>> getWorkoutRequests() {
@@ -29,4 +40,5 @@ public class WorkoutController {
         return ResponseEntity.ok(
             ApiResponse.success(workoutService.getWorkoutRequestDetail(requestId)));
     }
+
 }

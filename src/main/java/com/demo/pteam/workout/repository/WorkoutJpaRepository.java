@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface WorkoutJpaRepository extends JpaRepository<WorkoutEntity, Long> {
 
     List<WorkoutEntity> findByTrainerId(Long trainerId);
+
 }

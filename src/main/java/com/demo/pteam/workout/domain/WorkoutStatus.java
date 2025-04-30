@@ -1,6 +1,5 @@
 package com.demo.pteam.workout.domain;
 
-
 public enum WorkoutStatus {
     PENDING("대기"),
     APPROVED("승인"),
@@ -16,6 +15,5 @@ public enum WorkoutStatus {
     public boolean isFinished() {
         return this == APPROVED || this == REJECTED;
     }
-
 
 }
