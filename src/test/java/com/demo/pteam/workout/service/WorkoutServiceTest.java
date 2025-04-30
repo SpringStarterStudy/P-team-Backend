@@ -1,13 +1,16 @@
 package com.demo.pteam.workout.service;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.demo.pteam.authentication.repository.entity.AccountEntity;
 import com.demo.pteam.global.exception.ApiException;
-import com.demo.pteam.global.exception.ErrorCode;
 import com.demo.pteam.workout.controller.dto.RequestWorkout;
 import com.demo.pteam.workout.controller.dto.ResponseWorkout;
 import com.demo.pteam.workout.domain.WorkoutRepository;
@@ -15,26 +18,9 @@ import com.demo.pteam.workout.domain.WorkoutStatus;
 import com.demo.pteam.workout.repository.entity.WorkoutEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-import com.demo.pteam.authentication.repository.entity.AccountEntity;
-import com.demo.pteam.global.exception.ApiException;
-import com.demo.pteam.workout.controller.dto.ResponseWorkout;
-import com.demo.pteam.workout.domain.WorkoutRepository;
-import com.demo.pteam.workout.domain.WorkoutStatus;
 import com.demo.pteam.workout.exception.WorkoutErrorCode;
 import com.demo.pteam.workout.exception.WorkoutException;
-import com.demo.pteam.workout.repository.entity.WorkoutEntity;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
-
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -135,7 +121,7 @@ class WorkoutServiceTest {
             workoutService.changeStatus(1L, requestWorkout);
         });
 
-        assertEquals(ErrorCode.WORKOUT_REQUEST_ALREADY_PROCESSED, exception.getErrorCode());
+        assertEquals(WorkoutErrorCode.WORKOUT_REQUEST_ALREADY_PROCESSED, exception.getErrorCode());
     }
 
     @DisplayName("상태 변경 실패 - 이미 완료된 상태(거절)에서 변경 시 예외 발생")
@@ -162,7 +148,7 @@ class WorkoutServiceTest {
             workoutService.changeStatus(1L, requestWorkout);
         });
 
-        assertEquals(ErrorCode.WORKOUT_REQUEST_ALREADY_PROCESSED, exception.getErrorCode());
+        assertEquals(WorkoutErrorCode.WORKOUT_REQUEST_ALREADY_PROCESSED, exception.getErrorCode());
     }
 
 
@@ -226,7 +212,7 @@ class WorkoutServiceTest {
             .id(1L)
             .trainerName("트레이너1")
             .userName("회원1")
-            .status("PENDING")
+            .status(WorkoutStatus.PENDING)
             .trainingDate(fakeWorkout.getTrainingDate())
             .startTime(fakeWorkout.getStartTime())
             .endTime(fakeWorkout.getEndTime())

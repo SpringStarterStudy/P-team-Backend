@@ -77,15 +77,15 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
 
             // enum 변환 실패
-            String message = String.format(ErrorCode.VALIDATION_EXCEPTION.getMessage(), allowedValues);
+            String message = String.format(GlobalErrorCode.VALIDATION_EXCEPTION.getMessage(), allowedValues);
 
             return ResponseEntity
-                .status(ErrorCode.VALIDATION_EXCEPTION.getStatus())
-                .body(ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION, message));
+                .status(GlobalErrorCode.VALIDATION_EXCEPTION.getStatus())
+                .body(ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION, message));
         }
         return ResponseEntity
-            .status(ErrorCode.VALIDATION_EXCEPTION.getStatus())
-            .body(ApiResponse.error(ErrorCode.VALIDATION_EXCEPTION));
+            .status(GlobalErrorCode.VALIDATION_EXCEPTION.getStatus())
+            .body(ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION));
     }
 
     private String formatViolationMessage(ConstraintViolation<?> violation) {

@@ -23,8 +23,8 @@ public class WorkoutService {
     @Transactional
     public ResponseWorkout changeStatus(Long requestId, RequestWorkout requestWorkout) {
         WorkoutEntity workoutEntity = workoutRepository.findById(requestId)
-            .orElseThrow(() -> new ApiException(
-                ErrorCode.WORKOUT_REQUEST_NOT_FOUND));
+            .orElseThrow(() -> new WorkoutException(
+                WorkoutErrorCode.WORKOUT_REQUEST_NOT_FOUND));
 
         Workout workout = new Workout(workoutEntity);
         workout.changeStatus(requestWorkout.getStatus());
@@ -35,9 +35,9 @@ public class WorkoutService {
 //        }
 
         workoutEntity.updateStatus(workout.getStatus());
-      
-        return ResponseWorkout.from(workoutEntity);
 
+        return ResponseWorkout.from(workoutEntity);
+    }
 
     public List<ResponseWorkout> getWorkoutRequests(Long userId) {
 

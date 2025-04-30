@@ -1,7 +1,7 @@
 package com.demo.pteam.workout.domain;
 
-import com.demo.pteam.global.exception.ApiException;
-import com.demo.pteam.global.exception.ErrorCode;
+import com.demo.pteam.workout.exception.WorkoutErrorCode;
+import com.demo.pteam.workout.exception.WorkoutException;
 import com.demo.pteam.workout.repository.entity.WorkoutEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,7 +27,7 @@ public class Workout {
 
     public void changeStatus(WorkoutStatus newStatus) {
         if (this.status.isFinished()) {
-            throw new ApiException(ErrorCode.WORKOUT_REQUEST_ALREADY_PROCESSED);
+            throw new WorkoutException(WorkoutErrorCode.WORKOUT_REQUEST_ALREADY_PROCESSED);
         }
         this.status = newStatus;
     }
