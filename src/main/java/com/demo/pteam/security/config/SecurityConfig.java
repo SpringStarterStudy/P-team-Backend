@@ -1,15 +1,15 @@
 package com.demo.pteam.security.config;
 
 import com.demo.pteam.authentication.service.AccountService;
+import com.demo.pteam.security.JwtService;
 import com.demo.pteam.security.authentication.JwtAuthenticationProvider;
 import com.demo.pteam.security.authentication.JwtAuthenticationFilter;
-import com.demo.pteam.security.authentication.JwtUserDetailsService;
 import com.demo.pteam.security.configurer.ApiLoginConfigurer;
 import com.demo.pteam.security.jwt.JwtProvider;
 import com.demo.pteam.security.login.handler.LoginAuthenticationFailureHandler;
 import com.demo.pteam.security.login.handler.LoginAuthenticationSuccessHandler;
 import com.demo.pteam.security.login.LoginAuthenticationProvider;
-import com.demo.pteam.security.login.CustomUserDetailsService;
+import com.demo.pteam.security.login.LoginUserDetailsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,6 +31,7 @@ public class SecurityConfig {
     private final AccountService accountService;
     private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
+    private final JwtService jwtService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -48,7 +49,7 @@ public class SecurityConfig {
                         .successHandler(new LoginAuthenticationSuccessHandler(jwtProvider))
                         .failureHandler(new LoginAuthenticationFailureHandler())
                 )
-                .addFilterBefore(getJwtAuthenticationFilter(authenticationManager),
+                .addFilterBefore(new JwtAuthenticationFilter(authenticationManager),
                         UsernamePasswordAuthenticationFilter.class)     // TODO: 나중에 configurer 사용하도록 변경
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auths/login").permitAll()
@@ -63,19 +64,11 @@ public class SecurityConfig {
 
     private AuthenticationProvider getLoginAuthenticationProvider() {
         LoginAuthenticationProvider loginAuthenticationProvider = new LoginAuthenticationProvider();
-        loginAuthenticationProvider.setUserDetailsService(new CustomUserDetailsService(accountService));
+        loginAuthenticationProvider.setUserDetailsService(new LoginUserDetailsService(accountService));
         return loginAuthenticationProvider;
     }
 
-    private JwtAuthenticationFilter getJwtAuthenticationFilter(AuthenticationManager authenticationManager) {
-        JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter();
-        jwtAuthenticationFilter.setAuthenticationManager(authenticationManager);
-        return jwtAuthenticationFilter;
-    }
-
     private JwtAuthenticationProvider getJwtAuthenticationProvider() {
-        JwtAuthenticationProvider jwtAuthenticationProvider = new JwtAuthenticationProvider(jwtProvider);
-        jwtAuthenticationProvider.setJwtUserDetailsService(new JwtUserDetailsService(accountService));
-        return jwtAuthenticationProvider;
+        return new JwtAuthenticationProvider(jwtService);
     }
 }

@@ -12,7 +12,7 @@ public class PrincipalFactory {
         return new UserPrincipal(account.id(), account.role(), verified);
     }
 
-    public static UserPrincipal fromClaims(Claims claims) throws NullPointerException, IllegalArgumentException {
+    public static UserPrincipal fromClaims(Claims claims) throws IllegalArgumentException {
         Long id = Long.valueOf(claims.getSubject());
         Role role = Role.valueOf(claims.get("role", String.class));
         Boolean verified = claims.get("verified", Boolean.class);

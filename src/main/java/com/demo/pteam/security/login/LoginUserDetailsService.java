@@ -12,10 +12,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 
-public class CustomUserDetailsService implements UserDetailsService {
+public class LoginUserDetailsService implements UserDetailsService {
     private final AccountService accountService;
 
-    public CustomUserDetailsService(AccountService accountService) {
+    public LoginUserDetailsService(AccountService accountService) {
         this.accountService = accountService;
     }
 

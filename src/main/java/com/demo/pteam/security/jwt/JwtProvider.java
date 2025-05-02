@@ -8,7 +8,6 @@ import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.Map;
 
 @Component
@@ -37,11 +36,6 @@ public class JwtProvider {
     public String generateRefreshToken(UserPrincipal principal) {
         String sub = String.valueOf(principal.id());
         return JwtUtils.encode(sub, secretKey, refreshTokenExpiration);
-    }
-
-    public boolean isExpired(Claims claims) {
-        Date expiration = claims.getExpiration();
-        return expiration == null || expiration.before(new Date());
     }
 
     public Claims parseClaims(String token) throws JwtException {

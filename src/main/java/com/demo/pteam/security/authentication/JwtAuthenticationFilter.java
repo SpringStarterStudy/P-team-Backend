@@ -1,5 +1,6 @@
 package com.demo.pteam.security.authentication;
 
+import com.demo.pteam.security.authentication.dto.JwtToken;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,11 +17,15 @@ import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+
+    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+        this.authenticationManager = authenticationManager;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException, AuthenticationException {
-        Authentication authResult = this.attemptAuthentication(request);
+        Authentication authResult = this.attemptAuthentication(request);    // TODO: response header에 토큰 추가하기!!
         SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
         context.setAuthentication(authResult);
         this.securityContextHolderStrategy.setContext(context);
@@ -30,12 +35,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private Authentication attemptAuthentication(HttpServletRequest request) {
         String accessToken = this.obtainAccessToken(request);
         String refreshToken = this.obtainRefreshToken(request);
-        accessToken = accessToken != null ? accessToken.trim() : "";
-        refreshToken = refreshToken != null ? refreshToken.trim() : "";
-        if (accessToken.isEmpty() && refreshToken.isEmpty()) {  // 토큰이 없을 경우
+        JwtToken token = new JwtToken(accessToken, refreshToken);
+        if (token.isEmpty()) {  // 토큰이 없을 경우
             return null;
         }
-        JwtAuthenticationToken authRequest = JwtAuthenticationToken.unauthenticated(new JwtToken(accessToken, refreshToken));
+        JwtAuthenticationToken authRequest = JwtAuthenticationToken.unauthenticated(token);
         return this.authenticationManager.authenticate(authRequest);
     }
 
@@ -45,9 +49,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String obtainRefreshToken(HttpServletRequest request) {
         return request.getHeader("Refresh-Token");
-    }
-
-    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
     }
 }

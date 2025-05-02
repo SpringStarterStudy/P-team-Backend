@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class LoginUserDetailsServiceTest {
     @InjectMocks
-    private CustomUserDetailsService customUserDetailsService;
+    private LoginUserDetailsService loginUserDetailsService;
 
     @Mock
     private AccountService accountService;
@@ -48,7 +48,7 @@ class LoginUserDetailsServiceTest {
         when(accountService.getLoginAccount(username)).thenReturn(testAccountInfo);
 
         // when
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+        UserDetails userDetails = loginUserDetailsService.loadUserByUsername(username);
 
         // then
         assertThat(userDetails).isNotNull();
@@ -75,7 +75,7 @@ class LoginUserDetailsServiceTest {
                 .thenThrow(new UserNotFoundException("User not found: " + unregisteredUsername));
 
         // when
-        ThrowingCallable action = () -> customUserDetailsService.loadUserByUsername(unregisteredUsername);
+        ThrowingCallable action = () -> loginUserDetailsService.loadUserByUsername(unregisteredUsername);
 
         // then
         assertThatExceptionOfType(UsernameNotFoundException.class)
