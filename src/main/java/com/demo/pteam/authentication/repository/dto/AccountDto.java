@@ -6,10 +6,6 @@ import com.demo.pteam.authentication.domain.Role;
 public record AccountDto(
         Long id,
         Role role,
-        AccountStatus localStatus,
-        AccountStatus socialStatus
+        AccountStatus status
 ) {
-    public AccountStatus status() {
-        return localStatus != null ? localStatus : socialStatus;
-    }
 }

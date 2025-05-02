@@ -24,11 +24,12 @@ public class AccountJPARepositoryCustomImpl implements AccountJPARepositoryCusto
                         .select(Projections.constructor(AccountDto.class,
                                 accountEntity.id,
                                 accountEntity.role,
-                                localAccountEntity.status,
-                                socialAccountEntity.status))
+                                localAccountEntity.status
+                                        .coalesce(socialAccountEntity.status).as("status")))
                         .from(accountEntity)
-                        .join(localAccountEntity).on(accountEntity.id.eq(localAccountEntity.id))
-                        .join(socialAccountEntity).on(accountEntity.id.eq(socialAccountEntity.id))
+                        .leftJoin(localAccountEntity).on(localAccountEntity.id.eq(accountEntity.id))
+                        .leftJoin(socialAccountEntity).on(socialAccountEntity.id.eq(accountEntity.id))
+                        .where(accountEntity.id.eq(id))
                         .fetchOne()
         );
     }
