@@ -1,7 +1,6 @@
 package com.demo.pteam.security.authentication;
 
 import com.demo.pteam.authentication.domain.Role;
-import com.demo.pteam.security.JwtService;
 import com.demo.pteam.security.authentication.dto.JwtReissueResult;
 import com.demo.pteam.security.authentication.dto.JwtToken;
 import com.demo.pteam.security.exception.ExpiredTokenException;

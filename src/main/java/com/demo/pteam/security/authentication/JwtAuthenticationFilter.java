@@ -11,24 +11,30 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
-    private final AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
+    private AuthenticationSuccessHandler successHandler;
 
-    public JwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+    public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
+    }
+
+    public void setSuccessHandler(AuthenticationSuccessHandler successHandler) {
+        this.successHandler = successHandler;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException, AuthenticationException {
-        Authentication authResult = this.attemptAuthentication(request);    // TODO: response header에 토큰 추가하기!!
-        SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
-        context.setAuthentication(authResult);
-        this.securityContextHolderStrategy.setContext(context);
+        Authentication authResult = this.attemptAuthentication(request);
+        if (authResult != null) {
+            this.successfulAuthentication(request, response, authResult);
+        }
         chain.doFilter(request, response);
     }
 
@@ -49,5 +55,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private String obtainRefreshToken(HttpServletRequest request) {
         return request.getHeader("Refresh-Token");
+    }
+
+    private void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
+        SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
+        context.setAuthentication(authentication);
+        this.securityContextHolderStrategy.setContext(context);
+        successHandler.onAuthenticationSuccess(request, response, authentication);
     }
 }

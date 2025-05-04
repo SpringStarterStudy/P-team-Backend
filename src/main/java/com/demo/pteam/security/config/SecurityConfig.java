@@ -1,9 +1,10 @@
 package com.demo.pteam.security.config;
 
 import com.demo.pteam.authentication.service.AccountService;
-import com.demo.pteam.security.JwtService;
+import com.demo.pteam.security.authentication.JwtService;
 import com.demo.pteam.security.authentication.JwtAuthenticationProvider;
 import com.demo.pteam.security.authentication.JwtAuthenticationFilter;
+import com.demo.pteam.security.authentication.JwtAuthenticationSuccessHandler;
 import com.demo.pteam.security.configurer.ApiLoginConfigurer;
 import com.demo.pteam.security.jwt.JwtProvider;
 import com.demo.pteam.security.login.handler.LoginAuthenticationFailureHandler;
@@ -49,7 +50,7 @@ public class SecurityConfig {
                         .successHandler(new LoginAuthenticationSuccessHandler(jwtProvider))
                         .failureHandler(new LoginAuthenticationFailureHandler())
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(authenticationManager),
+                .addFilterBefore(getJwtAuthenticationFilter(authenticationManager),
                         UsernamePasswordAuthenticationFilter.class)     // TODO: 나중에 configurer 사용하도록 변경
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auths/login").permitAll()
@@ -66,6 +67,13 @@ public class SecurityConfig {
         LoginAuthenticationProvider loginAuthenticationProvider = new LoginAuthenticationProvider();
         loginAuthenticationProvider.setUserDetailsService(new LoginUserDetailsService(accountService));
         return loginAuthenticationProvider;
+    }
+
+    private JwtAuthenticationFilter getJwtAuthenticationFilter(AuthenticationManager authenticationManager) {
+        JwtAuthenticationFilter authenticationFilter = new JwtAuthenticationFilter();
+        authenticationFilter.setAuthenticationManager(authenticationManager);
+        authenticationFilter.setSuccessHandler(new JwtAuthenticationSuccessHandler());
+        return authenticationFilter;
     }
 
     private JwtAuthenticationProvider getJwtAuthenticationProvider() {

@@ -52,8 +52,7 @@ public class JwtAuthenticationToken extends AbstractAuthenticationToken {
         super.setAuthenticated(false);
     }
 
-    public void eraseCredentials() {
-        super.eraseCredentials();
+    public void eraseToken() {
         this.token = null;
     }
 }

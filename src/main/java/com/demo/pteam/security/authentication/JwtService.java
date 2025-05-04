@@ -1,9 +1,7 @@
-package com.demo.pteam.security;
+package com.demo.pteam.security.authentication;
 
 import com.demo.pteam.security.authentication.dto.JwtReissueResult;
 import com.demo.pteam.security.authentication.dto.JwtToken;
-import com.demo.pteam.security.authentication.JwtUserDetails;
-import com.demo.pteam.security.authentication.JwtUserDetailsService;
 import com.demo.pteam.security.dto.JwtAccountInfo;
 import com.demo.pteam.security.jwt.JwtProvider;
 import com.demo.pteam.security.principal.PrincipalFactory;
