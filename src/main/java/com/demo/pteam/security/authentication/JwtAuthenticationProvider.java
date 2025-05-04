@@ -3,6 +3,7 @@ package com.demo.pteam.security.authentication;
 import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.security.authentication.dto.JwtReissueResult;
 import com.demo.pteam.security.authentication.dto.JwtToken;
+import com.demo.pteam.security.dto.JwtAccountInfo;
 import com.demo.pteam.security.exception.ExpiredTokenException;
 import com.demo.pteam.security.exception.InvalidJwtException;
 import com.demo.pteam.security.principal.PrincipalFactory;
@@ -12,6 +13,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -49,7 +51,11 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private JwtReissueResult reissueToken(String refreshToken) {
         try {
-            return jwtService.reissue(refreshToken);
+            JwtUserDetails<JwtAccountInfo> userDetails = jwtService.loadUser(refreshToken);
+            if (!userDetails.isEnabled()) {
+                throw new DisabledException("Disabled");
+            }
+            return jwtService.reissue(userDetails);
         } catch (ExpiredTokenException expiredTokenException) {     // refreshToken 만료
             throw new ExpiredTokenException("Expired JWT token");
         } catch (UsernameNotFoundException e) {

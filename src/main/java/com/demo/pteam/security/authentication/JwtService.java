@@ -21,16 +21,19 @@ public class JwtService {
         this.jwtUserDetailsService = jwtUserDetailsService;
     }
 
-    public JwtReissueResult reissue(String refreshToken) throws IllegalArgumentException, JwtException, UsernameNotFoundException {
+    public JwtUserDetails<JwtAccountInfo> loadUser(String refreshToken) throws IllegalArgumentException, JwtException, UsernameNotFoundException {
         Claims claims = parseClaims(refreshToken);
         Long id = Long.valueOf(claims.getSubject());
-        JwtUserDetails<JwtAccountInfo> jwtUserDetails = jwtUserDetailsService.loadUserById(id); // TODO: 계정 상태 체크 후 예외처리 필요
-        UserPrincipal principal = PrincipalFactory.fromUser(jwtUserDetails);
-        return new JwtReissueResult(principal, createJwtToken(principal));
+        return jwtUserDetailsService.loadUserById(id);
     }
 
     public Claims parseClaims(String token) throws IllegalArgumentException, JwtException {
         return jwtProvider.parseClaims(token);
+    }
+
+    public JwtReissueResult reissue(JwtUserDetails<JwtAccountInfo> userDetails) {
+        UserPrincipal principal = PrincipalFactory.fromUser(userDetails);
+        return new JwtReissueResult(principal, createJwtToken(principal));
     }
 
     private JwtToken createJwtToken(UserPrincipal principal) {
