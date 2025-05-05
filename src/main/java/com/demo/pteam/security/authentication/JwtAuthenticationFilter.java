@@ -25,7 +25,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.authenticationManager = authenticationManager;
     }
 
-    public void setSuccessHandler(AuthenticationSuccessHandler successHandler) {
+    public void setAuthenticationSuccessHandler(AuthenticationSuccessHandler successHandler) {
         this.successHandler = successHandler;
     }
 
