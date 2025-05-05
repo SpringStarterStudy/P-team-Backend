@@ -52,7 +52,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     private JwtReissueResult reissueToken(String refreshToken) {
         try {
             JwtUserDetails<JwtAccountInfo> userDetails = jwtService.loadUser(refreshToken);
-            if (!userDetails.isEnabled()) {
+            if (userDetails.isSuspended()) {
                 throw new DisabledException("Disabled");
             }
             return jwtService.reissue(userDetails);

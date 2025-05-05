@@ -1,9 +1,11 @@
 package com.demo.pteam.security.config;
 
 import com.demo.pteam.authentication.service.AccountService;
+import com.demo.pteam.security.authentication.JwtAuthenticationEntryPoint;
 import com.demo.pteam.security.authentication.JwtService;
 import com.demo.pteam.security.authentication.JwtAuthenticationProvider;
-import com.demo.pteam.security.authentication.JwtAuthenticationSuccessHandler;
+import com.demo.pteam.security.authentication.handler.JwtAuthenticationFailureHandler;
+import com.demo.pteam.security.authentication.handler.JwtAuthenticationSuccessHandler;
 import com.demo.pteam.security.configurer.ApiLoginConfigurer;
 import com.demo.pteam.security.configurer.JwtAuthenticationConfigurer;
 import com.demo.pteam.security.jwt.JwtProvider;
@@ -49,13 +51,16 @@ public class SecurityConfig {
                         .successHandler(new LoginAuthenticationSuccessHandler(jwtProvider))
                         .failureHandler(new LoginAuthenticationFailureHandler())
                 )
-                .with(new JwtAuthenticationConfigurer(), config -> config
+                .with(new JwtAuthenticationConfigurer(objectMapper), config -> config
                         .authenticationManager(authenticationManager)
                         .successHandler(new JwtAuthenticationSuccessHandler())
+                        .failureHandler(new JwtAuthenticationFailureHandler())
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auths/login").permitAll()
-                        .anyRequest().authenticated());
+                        .anyRequest().authenticated())
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper)));
 
         return http.build();
     }

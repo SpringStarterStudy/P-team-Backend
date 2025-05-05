@@ -11,6 +11,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,6 +21,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final SecurityContextHolderStrategy securityContextHolderStrategy = SecurityContextHolder.getContextHolderStrategy();
     private AuthenticationManager authenticationManager;
     private AuthenticationSuccessHandler successHandler;
+    private AuthenticationFailureHandler failureHandler;
 
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -29,13 +31,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.successHandler = successHandler;
     }
 
+    public void setAuthenticationFailureHandler(AuthenticationFailureHandler failureHandler) {
+        this.failureHandler = failureHandler;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException, AuthenticationException {
-        Authentication authResult = this.attemptAuthentication(request);
-        if (authResult != null) {
-            this.successfulAuthentication(request, response, authResult);
+        try {
+            Authentication authResult = this.attemptAuthentication(request);
+            if (authResult != null) {
+                this.successfulAuthentication(request, response, authResult);
+            }
+            chain.doFilter(request, response);
+        } catch (AuthenticationException e) {
+            this.failureHandler.onAuthenticationFailure(request, response, e);
         }
-        chain.doFilter(request, response);
     }
 
     private Authentication attemptAuthentication(HttpServletRequest request) {
@@ -61,6 +71,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContext context = this.securityContextHolderStrategy.createEmptyContext();
         context.setAuthentication(authentication);
         this.securityContextHolderStrategy.setContext(context);
-        successHandler.onAuthenticationSuccess(request, response, authentication);
+        this.successHandler.onAuthenticationSuccess(request, response, authentication);
     }
 }

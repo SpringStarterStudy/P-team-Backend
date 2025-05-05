@@ -1,5 +1,6 @@
-package com.demo.pteam.security.authentication;
+package com.demo.pteam.security.authentication.handler;
 
+import com.demo.pteam.security.authentication.JwtAuthenticationToken;
 import com.demo.pteam.security.authentication.dto.JwtToken;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
