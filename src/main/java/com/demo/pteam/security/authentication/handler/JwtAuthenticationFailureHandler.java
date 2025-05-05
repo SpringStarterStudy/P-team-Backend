@@ -4,7 +4,7 @@ import com.demo.pteam.global.exception.ErrorCode;
 import com.demo.pteam.global.response.ApiResponse;
 import com.demo.pteam.security.exception.ExpiredTokenException;
 import com.demo.pteam.security.exception.InvalidJwtException;
-import com.demo.pteam.security.exception.LoginErrorCode;
+import com.demo.pteam.security.exception.AuthenticationErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,9 +30,9 @@ public class JwtAuthenticationFailureHandler implements AuthenticationFailureHan
                 exception instanceof ExpiredTokenException ||       // 토큰 만료
                 exception instanceof BadCredentialsException ||     // 사용자 정보 x
                 exception instanceof InvalidJwtException) {         // 유효하지 않은 토큰
-            writeAuthenticationFailureResponse(response, LoginErrorCode.INVALID_AUTHENTICATION);
+            writeAuthenticationFailureResponse(response, AuthenticationErrorCode.INVALID_AUTHENTICATION);
         } else {    // 서버 에러
-            writeAuthenticationFailureResponse(response, LoginErrorCode.AUTHENTICATION_FAILED);
+            writeAuthenticationFailureResponse(response, AuthenticationErrorCode.AUTHENTICATION_FAILED);
         }
     }
 

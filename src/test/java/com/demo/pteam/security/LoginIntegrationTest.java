@@ -1,7 +1,7 @@
 package com.demo.pteam.security;
 
 import com.demo.pteam.authentication.domain.Role;
-import com.demo.pteam.security.exception.LoginErrorCode;
+import com.demo.pteam.security.exception.AuthenticationErrorCode;
 import com.demo.pteam.security.login.ApiLoginFilter;
 import com.demo.pteam.security.dto.LoginRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -137,7 +137,7 @@ public class LoginIntegrationTest {
         );
 
         // then
-        LoginErrorCode errorCode = LoginErrorCode.INVALID_CREDENTIALS;
+        AuthenticationErrorCode errorCode = AuthenticationErrorCode.INVALID_CREDENTIALS;
         resultActions.andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("status").value(errorCode.getStatus().value()))
                 .andExpect(jsonPath("code").value(errorCode.getCode()))
@@ -161,7 +161,7 @@ public class LoginIntegrationTest {
         );
 
         // then
-        LoginErrorCode errorCode = LoginErrorCode.ACCOUNT_SUSPENDED;
+        AuthenticationErrorCode errorCode = AuthenticationErrorCode.ACCOUNT_SUSPENDED;
         resultActions.andExpect(status().isForbidden())
                 .andExpect(jsonPath("status").value(errorCode.getStatus().value()))
                 .andExpect(jsonPath("code").value(errorCode.getCode()))
@@ -185,7 +185,7 @@ public class LoginIntegrationTest {
         );
 
         // then
-        LoginErrorCode errorCode = LoginErrorCode.METHOD_NOT_ALLOWED;
+        AuthenticationErrorCode errorCode = AuthenticationErrorCode.METHOD_NOT_ALLOWED;
         resultActions.andExpect(status().isMethodNotAllowed())
                 .andExpect(jsonPath("status").value(errorCode.getStatus().value()))
                 .andExpect(jsonPath("code").value(errorCode.getCode()))
@@ -212,7 +212,7 @@ public class LoginIntegrationTest {
         );
 
         // then
-        LoginErrorCode errorCode = LoginErrorCode.INVALID_JSON_PROPERTY;
+        AuthenticationErrorCode errorCode = AuthenticationErrorCode.INVALID_JSON_PROPERTY;
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status").value(errorCode.getStatus().value()))
                 .andExpect(jsonPath("code").value(errorCode.getCode()))
@@ -247,7 +247,7 @@ public class LoginIntegrationTest {
         );
 
         // then
-        LoginErrorCode errorCode = LoginErrorCode.INVALID_JSON_FORMAT;
+        AuthenticationErrorCode errorCode = AuthenticationErrorCode.INVALID_JSON_FORMAT;
         resultActions.andExpect(status().isBadRequest())
                 .andExpect(jsonPath("status").value(errorCode.getStatus().value()))
                 .andExpect(jsonPath("code").value(errorCode.getCode()))
@@ -275,7 +275,7 @@ public class LoginIntegrationTest {
         );
 
         // then
-        LoginErrorCode errorCode = LoginErrorCode.LOGIN_FAILED;
+        AuthenticationErrorCode errorCode = AuthenticationErrorCode.LOGIN_FAILED;
         resultActions.andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("status").value(errorCode.getStatus().value()))
                 .andExpect(jsonPath("code").value(errorCode.getCode()))

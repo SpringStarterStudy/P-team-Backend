@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum LoginErrorCode implements ErrorCode {
+public enum AuthenticationErrorCode implements ErrorCode {
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, "A_005", "아이디 또는 비밀번호가 잘못되었습니다."),
     ACCOUNT_SUSPENDED(HttpStatus.FORBIDDEN, "A_006", "계정이 정지된 상태입니다."),
     NOT_AUTHENTICATED(HttpStatus.UNAUTHORIZED, "A_008", "로그인이 필요합니다."),
@@ -22,7 +22,7 @@ public enum LoginErrorCode implements ErrorCode {
     private final String code;
     private final String message;
 
-    LoginErrorCode(HttpStatus status, String code, String message) {
+    AuthenticationErrorCode(HttpStatus status, String code, String message) {
         this.status = status;
         this.code = code;
         this.message = message;

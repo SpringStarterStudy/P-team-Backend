@@ -3,7 +3,7 @@ package com.demo.pteam.security.login.handler;
 import com.demo.pteam.global.exception.ErrorCode;
 import com.demo.pteam.global.response.ApiResponse;
 import com.demo.pteam.security.exception.InvalidJsonPropertyException;
-import com.demo.pteam.security.exception.LoginErrorCode;
+import com.demo.pteam.security.exception.AuthenticationErrorCode;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,7 +50,7 @@ class LoginAuthenticationFailureHandlerTest {
         loginAuthenticationFailureHandler.onAuthenticationFailure(mockRequest, mockResponse, testException);
 
         // then
-        ErrorCode expectedErrorCode = LoginErrorCode.INVALID_CREDENTIALS;
+        ErrorCode expectedErrorCode = AuthenticationErrorCode.INVALID_CREDENTIALS;
         assertThat(mockResponse.getStatus()).isEqualTo(expectedErrorCode.getStatus().value());
         assertThat(mockResponse.getCharacterEncoding()).isEqualTo(StandardCharsets.UTF_8.name());
         assertThat(mockResponse.getContentType()).contains(MediaType.APPLICATION_JSON_VALUE);
@@ -70,7 +70,7 @@ class LoginAuthenticationFailureHandlerTest {
         loginAuthenticationFailureHandler.onAuthenticationFailure(mockRequest, mockResponse, testException);
 
         // then
-        ErrorCode expectedErrorCode = LoginErrorCode.ACCOUNT_SUSPENDED;
+        ErrorCode expectedErrorCode = AuthenticationErrorCode.ACCOUNT_SUSPENDED;
         assertThat(mockResponse.getStatus()).isEqualTo(expectedErrorCode.getStatus().value());
         assertThat(mockResponse.getCharacterEncoding()).isEqualTo(StandardCharsets.UTF_8.name());
         assertThat(mockResponse.getContentType()).contains(MediaType.APPLICATION_JSON_VALUE);
@@ -91,7 +91,7 @@ class LoginAuthenticationFailureHandlerTest {
         loginAuthenticationFailureHandler.onAuthenticationFailure(mockRequest, mockResponse, testException);
 
         // then
-        ErrorCode expectedErrorCode = LoginErrorCode.METHOD_NOT_ALLOWED;
+        ErrorCode expectedErrorCode = AuthenticationErrorCode.METHOD_NOT_ALLOWED;
         assertThat(mockResponse.getStatus()).isEqualTo(expectedErrorCode.getStatus().value());
         assertThat(mockResponse.getHeader("Allow")).isEqualTo(HttpMethod.POST.name());
         assertThat(mockResponse.getCharacterEncoding()).isEqualTo(StandardCharsets.UTF_8.name());
@@ -112,7 +112,7 @@ class LoginAuthenticationFailureHandlerTest {
         loginAuthenticationFailureHandler.onAuthenticationFailure(mockRequest, mockResponse, testException);
 
         // then
-        ErrorCode expectedErrorCode = LoginErrorCode.INVALID_JSON_PROPERTY;
+        ErrorCode expectedErrorCode = AuthenticationErrorCode.INVALID_JSON_PROPERTY;
         assertThat(mockResponse.getStatus()).isEqualTo(expectedErrorCode.getStatus().value());
         assertThat(mockResponse.getCharacterEncoding()).isEqualTo(StandardCharsets.UTF_8.name());
         assertThat(mockResponse.getContentType()).contains(MediaType.APPLICATION_JSON_VALUE);
@@ -133,7 +133,7 @@ class LoginAuthenticationFailureHandlerTest {
         loginAuthenticationFailureHandler.onAuthenticationFailure(mockRequest, mockResponse, testException);
 
         // then
-        ErrorCode expectedErrorCode = LoginErrorCode.LOGIN_FAILED;
+        ErrorCode expectedErrorCode = AuthenticationErrorCode.LOGIN_FAILED;
         assertThat(mockResponse.getStatus()).isEqualTo(expectedErrorCode.getStatus().value());
         assertThat(mockResponse.getCharacterEncoding()).isEqualTo(StandardCharsets.UTF_8.name());
         assertThat(mockResponse.getContentType()).contains(MediaType.APPLICATION_JSON_VALUE);
