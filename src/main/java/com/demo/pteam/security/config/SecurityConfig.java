@@ -1,6 +1,7 @@
 package com.demo.pteam.security.config;
 
 import com.demo.pteam.authentication.service.AccountService;
+import com.demo.pteam.security.authentication.JwtAccessDeniedHandler;
 import com.demo.pteam.security.authentication.JwtAuthenticationEntryPoint;
 import com.demo.pteam.security.authentication.JwtService;
 import com.demo.pteam.security.authentication.JwtAuthenticationProvider;
@@ -60,7 +61,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/auths/login").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper)));
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint(objectMapper))
+                        .accessDeniedHandler(new JwtAccessDeniedHandler(objectMapper))
+                );
 
         return http.build();
     }
