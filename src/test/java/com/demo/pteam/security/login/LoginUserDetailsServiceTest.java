@@ -68,7 +68,7 @@ class LoginUserDetailsServiceTest {
 
     @DisplayName("계정 조회 - 계정이 없는 경우")
     @Test
-    void loadUserByUsername_unRegisteredUsername() {
+    void loadUserByUsername_unregisteredUsername() {
         // given
         String unregisteredUsername = "unregistered";
         when(accountService.getLoginAccount(unregisteredUsername))
