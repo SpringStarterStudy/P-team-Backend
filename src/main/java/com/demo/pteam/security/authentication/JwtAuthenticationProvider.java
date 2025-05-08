@@ -66,7 +66,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     }
 
     private static JwtToken removeTokenPrefix(JwtToken token) {
-        if (token.isValid()) {
+        if (token.hasPrefix()) {
             return token.removePrefix();
         } else {
             throw new InvalidJwtException("Invalid JWT token");

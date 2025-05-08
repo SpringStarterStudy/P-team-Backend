@@ -17,7 +17,7 @@ public record JwtToken(
         return accessToken.isEmpty() && refreshToken.isEmpty();
     }
 
-    public boolean isValid() {
+    public boolean hasPrefix() {
         return accessToken.startsWith(PREFIX) && refreshToken.startsWith(PREFIX);
     }
 
