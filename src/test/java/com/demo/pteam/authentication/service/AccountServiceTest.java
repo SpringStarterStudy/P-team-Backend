@@ -3,8 +3,12 @@ package com.demo.pteam.authentication.service;
 import com.demo.pteam.authentication.domain.AccountStatus;
 import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.authentication.exception.UserNotFoundException;
+import com.demo.pteam.authentication.repository.AccountRepository;
 import com.demo.pteam.authentication.repository.LocalAccountRepository;
+import com.demo.pteam.authentication.repository.dto.AccountDto;
 import com.demo.pteam.authentication.repository.dto.LocalAccountDto;
+import com.demo.pteam.security.authentication.mapper.AccountMapper;
+import com.demo.pteam.security.dto.JwtAccountInfo;
 import com.demo.pteam.security.dto.LoginAccountInfo;
 import com.demo.pteam.security.login.mapper.LocalAccountMapper;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -34,10 +38,16 @@ class AccountServiceTest {
     @Mock
     private LocalAccountMapper localAccountMapper;
 
+    @Mock
+    private AccountRepository accountRepository;
+
+    @Mock
+    private AccountMapper accountMapper;
+
     private final static PasswordEncoder passwordEncoder =
             PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
-    @DisplayName("계정 정보 조회")
+    @DisplayName("로그인 계정 정보 조회")
     @Test
     void getLoginAccount() {
         // given
@@ -65,9 +75,10 @@ class AccountServiceTest {
 
         // then
         assertThat(accountInfo).isNotNull();
+        assertThat(accountInfo).isEqualTo(testLoginAccountInfo);
     }
 
-    @DisplayName("계정 정보 조회 - 조회된 결과가 없을 경우")
+    @DisplayName("로그인 계정 정보 조회 - 조회된 결과가 없을 경우")
     @Test
     void getLoginAccount_isNotExist() {
         // given
@@ -81,5 +92,47 @@ class AccountServiceTest {
         assertThatExceptionOfType(UserNotFoundException.class)
                 .isThrownBy(action)
                 .withMessage("User not found: " + unregisteredUsername);
+    }
+
+    @DisplayName("jwt 계정 정보 조회")
+    @Test
+    void getJwtAccount() {
+        // given
+        long accountId = 1L;
+        AccountDto testAccountDto = new AccountDto(
+                1L,
+                Role.ROLE_USER,
+                AccountStatus.ACTIVE
+        );
+        JwtAccountInfo testJwtAccountInfo = new JwtAccountInfo(
+                1L,
+                Role.ROLE_USER,
+                AccountStatus.ACTIVE
+        );
+        when(accountRepository.findById(accountId)).thenReturn(Optional.of(testAccountDto));
+        when(accountMapper.toJwtAccountInfo(testAccountDto)).thenReturn(testJwtAccountInfo);
+
+        // when
+        JwtAccountInfo jwtAccountInfo = accountService.getJwtAccount(accountId);
+
+        // then
+        assertThat(jwtAccountInfo).isNotNull();
+        assertThat(jwtAccountInfo).isEqualTo(testJwtAccountInfo);
+    }
+
+    @DisplayName("jwt 계정 정보 조회 - 조회된 결과가 없을 경우")
+    @Test
+    void getJwtAccount_isNotExist() {
+        // given
+        long unregisteredAccountId = 100L;
+        when(accountRepository.findById(unregisteredAccountId)).thenReturn(Optional.empty());
+
+        // when
+        ThrowingCallable action = () -> accountService.getJwtAccount(unregisteredAccountId);
+
+        // then
+        assertThatExceptionOfType(UserNotFoundException.class)
+                .isThrownBy(action)
+                .withMessage("AccountId not found: " + unregisteredAccountId);
     }
 }
