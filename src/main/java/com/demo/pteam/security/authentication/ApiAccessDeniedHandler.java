@@ -25,13 +25,13 @@ public class ApiAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception) throws IOException, ServletException {
         if (exception instanceof AuthorizationDeniedException) {    // 권한 x
-            writeAuthenticationFailureResponse(response, AuthenticationErrorCode.INVALID_ACCESS);
+            writeAccessFailureResponse(response, AuthenticationErrorCode.INVALID_ACCESS);
         } else {    // 서버 에러
-            writeAuthenticationFailureResponse(response, AuthenticationErrorCode.AUTHORIZATION_FAILED);
+            writeAccessFailureResponse(response, AuthenticationErrorCode.AUTHORIZATION_FAILED);
         }
     }
 
-    private void writeAuthenticationFailureResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
+    private void writeAccessFailureResponse(HttpServletResponse response, ErrorCode errorCode) throws IOException {
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(errorCode.getStatus().value());
