@@ -2,6 +2,7 @@ package com.demo.pteam.security.login;
 
 import com.demo.pteam.authentication.domain.AccountStatus;
 import com.demo.pteam.authentication.domain.Role;
+import com.demo.pteam.security.exception.InvalidJsonFormatException;
 import com.demo.pteam.security.exception.InvalidJsonPropertyException;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.demo.pteam.security.dto.LoginRequest;
@@ -22,7 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -104,7 +104,7 @@ class ApiLoginFilterTest {
         ThrowingCallable action = () -> apiLoginFilter.attemptAuthentication(mockRequest, mockResponse);
 
         // then
-        assertThatThrownBy(action).isInstanceOf(AuthenticationServiceException.class);
+        assertThatThrownBy(action).isInstanceOf(InvalidJsonFormatException.class);
     }
 
     @DisplayName("로그인 요청 - json property가 올바르지 않은 경우")
