@@ -32,12 +32,12 @@ class JwtUserDetailsServiceTest {
         // given
         long testAccountId = 1L;
 
-        JwtAccountInfo testJwtAccountInfo = new JwtAccountInfo(
+        JwtAccountInfo expectedJwtAccountInfo = new JwtAccountInfo(
                 1L,
                 Role.ROLE_USER,
                 AccountStatus.ACTIVE
         );
-        when(accountService.getJwtAccount(testAccountId)).thenReturn(testJwtAccountInfo);
+        when(accountService.getJwtAccount(testAccountId)).thenReturn(expectedJwtAccountInfo);
 
         // when
         JwtUserDetails<JwtAccountInfo> userDetails = jwtUserDetailsService.loadUserById(testAccountId);
@@ -45,15 +45,14 @@ class JwtUserDetailsServiceTest {
         // then
         assertThat(userDetails).isNotNull();
         assertThat(userDetails).isInstanceOf(JwtUserDetailsImpl.class);
-        JwtUserDetailsImpl jwtUserDetails = (JwtUserDetailsImpl) userDetails;
-        assertThat(jwtUserDetails.getAccount()).isEqualTo(testJwtAccountInfo);
-        assertThat(jwtUserDetails.getAuthorities()).hasSize(1);
-        assertThat(jwtUserDetails.getAuthorities().iterator().next().getAuthority())
-                .isEqualTo(testJwtAccountInfo.role().name());
-        assertThat(jwtUserDetails.isEnabled()).isTrue();
-        assertThat(jwtUserDetails.isDeleted()).isFalse();
-        assertThat(jwtUserDetails.isUnverified()).isFalse();
-        assertThat(jwtUserDetails.isSuspended()).isFalse();
+        assertThat(userDetails.getAccount()).isEqualTo(expectedJwtAccountInfo);
+        assertThat(userDetails.getAuthorities()).hasSize(1);
+        assertThat(userDetails.getAuthorities().iterator().next().getAuthority())
+                .isEqualTo(expectedJwtAccountInfo.role().name());
+        assertThat(userDetails.isEnabled()).isTrue();
+        assertThat(userDetails.isDeleted()).isFalse();
+        assertThat(userDetails.isUnverified()).isFalse();
+        assertThat(userDetails.isSuspended()).isFalse();
     }
 
     @DisplayName("계정 조회 - 계정이 없는 경우")

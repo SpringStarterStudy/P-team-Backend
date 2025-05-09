@@ -24,8 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -100,7 +99,7 @@ class LoginAuthenticationProviderTest {
         ThrowingCallable action = () -> loginAuthenticationProvider.authenticate(testAuthentication);
 
         // then
-        assertThatThrownBy(action).isInstanceOf(BadCredentialsException.class);
+        assertThatExceptionOfType(BadCredentialsException.class).isThrownBy(action);
     }
 
     @DisplayName("로그인 인증 - 존재하지 않는 계정")
@@ -117,7 +116,7 @@ class LoginAuthenticationProviderTest {
         ThrowingCallable action = () -> loginAuthenticationProvider.authenticate(testAuthentication);
 
         // then
-        assertThatThrownBy(action).isInstanceOf(BadCredentialsException.class);
+        assertThatExceptionOfType(BadCredentialsException.class).isThrownBy(action);
     }
 
     @DisplayName("로그인 인증 - 정지된 계정")
@@ -135,6 +134,6 @@ class LoginAuthenticationProviderTest {
         ThrowingCallable action = () -> loginAuthenticationProvider.authenticate(testAuthentication);
 
         // then
-        assertThatThrownBy(action).isInstanceOf(DisabledException.class);
+        assertThatExceptionOfType(DisabledException.class).isThrownBy(action);
     }
 }
