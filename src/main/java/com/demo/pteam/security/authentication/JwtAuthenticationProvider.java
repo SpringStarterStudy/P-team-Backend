@@ -56,7 +56,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
                 throw new DisabledException("Disabled");
             }
             return jwtService.reissue(userDetails);
-        } catch (ExpiredTokenException expiredTokenException) {     // refreshToken 만료
+        } catch (ExpiredJwtException e) {     // refreshToken 만료
             throw new ExpiredTokenException("Expired JWT token");
         } catch (UsernameNotFoundException e) {
             throw new BadCredentialsException("Bad credentials");
