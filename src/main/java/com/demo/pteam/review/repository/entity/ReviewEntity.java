@@ -46,6 +46,19 @@ public class ReviewEntity extends BaseEntity {
     @Column(name = "pt_session_count", nullable = false)
     private Integer ptSessionCount;
 
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateRating(BigDecimal rating) {
+        this.rating = rating;
+    }
+
+    public void updatePtPurpose(PtPurpose ptPurpose) {
+        this.ptPurpose = ptPurpose;
+    }
+
     public static ReviewEntity createReview(AccountEntity trainer, AccountEntity user,
                                             ScheduleEntity schedule, BigDecimal rating,
                                             String content, PtPurpose ptPurpose, Integer ptSessionCount) {

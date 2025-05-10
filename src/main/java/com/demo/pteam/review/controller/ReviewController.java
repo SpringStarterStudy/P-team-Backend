@@ -3,6 +3,7 @@ package com.demo.pteam.review.controller;
 import com.demo.pteam.global.response.ApiResponse;
 import com.demo.pteam.review.controller.dto.ReviewCreateRequestDto;
 import com.demo.pteam.review.controller.dto.ReviewResponseDto;
+import com.demo.pteam.review.controller.dto.ReviewUpdateRequestDto;
 import com.demo.pteam.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class ReviewController {
 
         // TODO
         // 현재 인증된 사용자 ID 가져오기
-//        Long userId = ((CustomUserDetails) userDetails).getId();
+        // Long userId = ((CustomUserDetails) userDetails).getId();
         Long userId = null;
 
         ReviewResponseDto responseDto = reviewService.createReview(requestDto, userId);
@@ -49,6 +50,26 @@ public class ReviewController {
         ReviewResponseDto responseDto = reviewService.findById(reviewId);
 
         ApiResponse<ReviewResponseDto> apiResponse = ApiResponse.success("리뷰가 성공적으로 조회되었습니다.", responseDto);
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<ApiResponse<ReviewResponseDto>> updateReview(
+            @PathVariable Long reviewId,
+            @Valid @RequestBody ReviewUpdateRequestDto requestDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        // 추가 검증
+        requestDto.validateFormat();
+
+        // TODO
+        // 현재 인증된 사용자 ID 가져오기
+        // Long userId = ((CustomUserDetails) userDetails).getId();
+        Long userId = null;
+
+        ReviewResponseDto responseDto = reviewService.updateReview(reviewId, requestDto, userId);
+
+        ApiResponse<ReviewResponseDto> apiResponse = ApiResponse.success("리뷰가 성공적으로 수정되었습니다.", responseDto);
         return ResponseEntity.ok(apiResponse);
     }
 }

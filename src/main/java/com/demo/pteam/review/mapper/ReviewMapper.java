@@ -39,7 +39,7 @@ public class ReviewMapper {
                 .build();
     }
 
-    // Entity로부터 Domain 객체 생성
+    // Entity를 도메인 객체로 변환
     public ReviewDomain fromEntity(ReviewEntity entity) {
         return ReviewDomain.builder()
                 .id(entity.getId())

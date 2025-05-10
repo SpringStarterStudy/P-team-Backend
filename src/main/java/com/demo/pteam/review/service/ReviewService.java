@@ -4,6 +4,7 @@ import com.demo.pteam.authentication.repository.entity.AccountEntity;
 import com.demo.pteam.global.exception.ApiException;
 import com.demo.pteam.review.controller.dto.ReviewCreateRequestDto;
 import com.demo.pteam.review.controller.dto.ReviewResponseDto;
+import com.demo.pteam.review.controller.dto.ReviewUpdateRequestDto;
 import com.demo.pteam.review.domain.ReviewDomain;
 import com.demo.pteam.review.exception.ReviewErrorCode;
 import com.demo.pteam.review.mapper.ReviewMapper;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -95,6 +97,57 @@ public class ReviewService {
         List<ReviewImageEntity> reviewImages = reviewImageRepository.findByReviewId(reviewId);
 
         return new ReviewResponseDto(reviewEntity, reviewImages);
+    }
+
+
+    /**
+     * 리뷰 수정하는 메서드
+     * @param reviewId 수정할 리뷰 ID
+     * @param requestDto 리뷰 수정 요청 DTO
+     * @param userId 현재 인증된 사용자 ID
+     * @return 수정된 리뷰의 응답 DTO
+     */
+    @Transactional
+    public ReviewResponseDto updateReview(Long reviewId, ReviewUpdateRequestDto requestDto, Long userId) {
+        ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ApiException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        // 본인인지 확인
+        if (!reviewEntity.getUser().getId().equals(userId)) {
+            throw new ApiException(ReviewErrorCode.NOT_REVIEW_OWNER);
+        }
+
+        // 48시간 이내 수정 가능
+        ReviewDomain reviewDomain = reviewMapper.fromEntity(reviewEntity);
+        if (!reviewDomain.isEditable()) {
+            throw new ApiException(ReviewErrorCode.REVIEW_EDIT_TIME_EXPIRED);
+        }
+
+        if (requestDto.getContent() != null) {
+            reviewEntity.updateContent(requestDto.getContent());
+        }
+
+        if (requestDto.getRating() != null) {
+            reviewEntity.updateRating(requestDto.getRating());
+        }
+
+        if (requestDto.getPtPurpose() != null) {
+            reviewEntity.updatePtPurpose(requestDto.getPtPurpose());
+        }
+
+        if (requestDto.getImageIds() != null) {
+            // 기존 이미지 연결 해제
+            reviewImageRepository.findByReviewId(reviewId)
+                    .forEach(image -> image.updateReview(null));
+
+            // 새 이미지 연결
+            connectImagesToReview(requestDto.getImageIds(), reviewEntity);
+        }
+
+        ReviewEntity updatedReview = reviewRepository.save(reviewEntity);
+
+        List<ReviewImageEntity> reviewImages = reviewImageRepository.findByReviewId(reviewId);
+        return new ReviewResponseDto(updatedReview, reviewImages);
     }
 
 
