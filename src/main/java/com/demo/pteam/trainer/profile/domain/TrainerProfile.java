@@ -48,4 +48,19 @@ public class TrainerProfile {
         }
     }
 
+    public void validateContactTime() {
+        if ((contactStartTime == null && contactEndTime != null) ||
+                (contactStartTime != null && contactEndTime == null)) {
+            throw new ApiException(TrainerProfileErrorCode.INVALID_CONTACT_TIME_PAIR);
+        }
+
+        if (contactStartTime != null && endTimeAfterStart()) {
+            throw new ApiException(TrainerProfileErrorCode.INVALID_CONTACT_TIME_RANGE);
+        }
+    }
+
+    private boolean endTimeAfterStart() {
+        return contactStartTime.isAfter(contactEndTime);
+    }
+
 }
