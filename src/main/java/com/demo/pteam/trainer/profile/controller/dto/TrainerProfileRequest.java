@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalTime;
 import java.util.List;
 
 @Getter
@@ -18,14 +19,18 @@ public class TrainerProfileRequest {
 
     private String profileImg;
     private String intro;
+
     @PositiveOrZero(message = "크레딧은 0 이상이어야 합니다.")
     private Integer credit;
-    private String contactStartTime;
-    private String contactEndTime;
+
+    private LocalTime contactStartTime;
+    private LocalTime contactEndTime;
+
     @NotNull(message = "이름 공개 선택 여부는 필수입니다.")
     private Boolean isNamePublic;
 
     @Valid private Address address;
+
     private List<Certification> certifications;
     private List<String> hashtags;
 
@@ -41,6 +46,7 @@ public class TrainerProfileRequest {
 
         @NotNull(message = "경도 값은 필수 입니다.")
         private BigDecimal latitude;
+
         @NotNull(message = "위도 값은 필수 입니다.")
         private BigDecimal longitude;
 
