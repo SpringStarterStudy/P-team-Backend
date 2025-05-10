@@ -1,6 +1,5 @@
 package com.demo.pteam.trainer.address.repository.entity;
 
-import com.demo.pteam.global.entity.SoftDeletableEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
