@@ -55,7 +55,7 @@ class JwtUserDetailsServiceTest {
         assertThat(userDetails.isSuspended()).isFalse();
     }
 
-    @DisplayName("계정 조회 - 계정이 없는 경우")
+    @DisplayName("계정 조회 - 조회된 계정이 없는 경우")
     @Test
     void loadUserByUsername_unregisteredUsername() {
         // given

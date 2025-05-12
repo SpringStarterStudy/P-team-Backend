@@ -139,13 +139,13 @@ class JwtProviderTest {
             "eyJhbGciOiJIUzI1NiIsInppcCI6IkRFRiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDQ4OTI1NzgsImV4cCI6MTc0NDg5NjE3OH0.OhP13CUFY6YyzLTYd6imto74MD7x9PWz4p_zfHKkbNw",
             "sdfsdfs", // 유효하지 않은 형식
     })
-    void parseClaims_invalidToken(String token) {
+    void parseClaims_invalidToken(String invalidToken) {
         try (MockedStatic<JwtUtils> utilities = mockStatic(JwtUtils.class)) {
             // given
-            utilities.when(() -> JwtUtils.decode(token, TEST_SECRET_KEY)).thenThrow(new JwtException("Invalid JWT"));
+            utilities.when(() -> JwtUtils.decode(invalidToken, TEST_SECRET_KEY)).thenThrow(new JwtException("Invalid JWT"));
 
             // when
-            ThrowingCallable action = () -> jwtProvider.parseClaims(token);
+            ThrowingCallable action = () -> jwtProvider.parseClaims(invalidToken);
 
             // then
             assertThatExceptionOfType(JwtException.class)
@@ -160,13 +160,13 @@ class JwtProviderTest {
             "'',''",    // 빈 문자열
             ","  // null
     })
-    void parseClaims_nullOrEmpty(String token) {
+    void parseClaims_nullOrEmpty(String invalidToken) {
         try (MockedStatic<JwtUtils> utilities = mockStatic(JwtUtils.class)) {
             // given
-            utilities.when(() -> JwtUtils.decode(token, TEST_SECRET_KEY)).thenThrow(new IllegalArgumentException("CharSequence cannot be null or empty."));
+            utilities.when(() -> JwtUtils.decode(invalidToken, TEST_SECRET_KEY)).thenThrow(new IllegalArgumentException("CharSequence cannot be null or empty."));
 
             // when
-            ThrowingCallable action = () -> jwtProvider.parseClaims(token);
+            ThrowingCallable action = () -> jwtProvider.parseClaims(invalidToken);
 
             // then
             assertThatExceptionOfType(IllegalArgumentException.class)
