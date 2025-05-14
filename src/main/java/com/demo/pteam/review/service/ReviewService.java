@@ -37,7 +37,7 @@ public class ReviewService {
     private final ReviewMapper reviewMapper;
 
     /**
-     * 리뷰를 생성하는 메서드
+     * 리뷰 생성
      * @param requestDto 리뷰 생성 요청 DTO
      * @param userId 현재 인증된 사용자 ID
      * @return 생성된 리뷰의 응답 DTO
@@ -86,7 +86,7 @@ public class ReviewService {
 
 
     /**
-     * 리뷰 ID로 조회하는 메서드
+     * 리뷰 ID로 조회
      * @param reviewId 조회할 리뷰 ID
      * @return 조회된 리뷰의 응답 DTO
      */
@@ -101,7 +101,7 @@ public class ReviewService {
 
 
     /**
-     * 리뷰 수정하는 메서드
+     * 리뷰 수정
      * @param reviewId 수정할 리뷰 ID
      * @param requestDto 리뷰 수정 요청 DTO
      * @param userId 현재 인증된 사용자 ID
@@ -149,6 +149,29 @@ public class ReviewService {
         List<ReviewImageEntity> reviewImages = reviewImageRepository.findByReviewId(reviewId);
         return new ReviewResponseDto(updatedReview, reviewImages);
     }
+
+
+    /**
+     * 리뷰 삭제
+     * @param reviewId 삭제할 리뷰 ID
+     * @param userId 현재 인증된 사용자 ID
+     */
+    @Transactional
+    public void deleteReview(Long reviewId, Long userId) {
+        ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ApiException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        if (!reviewEntity.getUser().getId().equals(userId)) {
+            throw new ApiException(ReviewErrorCode.NOT_REVIEW_OWNER);
+        }
+
+        // 리뷰 이미지 연결 해제
+        List<ReviewImageEntity> images = reviewImageRepository.findByReviewId(reviewId);
+        images.forEach(image -> image.updateReview(null));
+
+        reviewRepository.delete(reviewEntity);
+    }
+
 
 
     // 메서드
