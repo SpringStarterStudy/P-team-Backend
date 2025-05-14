@@ -208,8 +208,8 @@ class JwtServiceTest {
             assertThat(reissue.principal()).isNotNull();
             assertThat(reissue.principal()).isEqualTo(expectedPrincipal);
             assertThat(reissue.token()).isNotNull();
-            assertThat(reissue.token().accessToken()).isEqualTo(testAccessToken);
-            assertThat(reissue.token().refreshToken()).isEqualTo(testRefreshToken);
+            assertThat(reissue.token().getAccessToken()).isEqualTo(testAccessToken);
+            assertThat(reissue.token().getRefreshToken()).isEqualTo(testRefreshToken);
         }
     }
 }
