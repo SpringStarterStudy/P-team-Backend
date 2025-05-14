@@ -9,6 +9,7 @@ import com.demo.pteam.trainer.address.mapper.TrainerAddressMapper;
 import com.demo.pteam.trainer.address.repository.TrainerAddressRepository;
 import com.demo.pteam.trainer.profile.controller.dto.TrainerProfileRequest;
 import com.demo.pteam.trainer.profile.domain.TrainerProfile;
+import com.demo.pteam.trainer.profile.exception.TrainerProfileErrorCode;
 import com.demo.pteam.trainer.profile.repository.TrainerProfileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,9 @@ public class TrainerProfileService {
       throw new ApiException(TrainerAddressErrorCode.ROAD_ADDRESS_NOT_FOUND);
     }
 
-    newAddress.validateMatchingRoadAddress(document.getRoadAddress().getAddressName());
+    if (!newAddress.matchesRoadAddress(document.getRoadAddress().getAddressName())) {
+      throw new ApiException(TrainerAddressErrorCode.ADDRESS_COORDINATE_MISMATCH);
+    }
 
     newAddress.completeAddress(
             document.getAddress().getAddressName(),
@@ -58,7 +61,17 @@ public class TrainerProfileService {
             request.getIsNamePublic()
     );
 
-    profile.validateContactTime();
+    if (!profile.isProfileComplete()) {
+      throw new ApiException(TrainerProfileErrorCode.PROFILE_INCOMPLETE);
+    }
+
+    if (!profile.isContactTimePairValid()) {
+      throw new ApiException(TrainerProfileErrorCode.INVALID_CONTACT_TIME_PAIR);
+    }
+
+    if (!profile.isValidContatTimeRange()) {
+      throw new ApiException(TrainerProfileErrorCode.INVALID_CONTACT_TIME_RANGE);
+    }
 
     trainerProfileRepository.save(profile);
   }

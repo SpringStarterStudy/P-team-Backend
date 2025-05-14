@@ -33,10 +33,8 @@ public class TrainerAddress {
     this.postalCode = postalCode;
   }
 
-  public void validateMatchingRoadAddress(String kakaoRoadAddress) {
-    if (!this.roadAddress.equals(kakaoRoadAddress)) {
-      throw new ApiException(TrainerAddressErrorCode.ADDRESS_COORDINATE_MISMATCH);
-    }
+  public boolean matchesRoadAddress(String kakaoRoadAddress) {
+    return this.roadAddress.equals(kakaoRoadAddress);
   }
 
 }
