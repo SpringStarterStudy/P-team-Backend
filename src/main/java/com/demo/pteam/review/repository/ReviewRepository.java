@@ -23,7 +23,6 @@ public interface ReviewRepository {
     // 리뷰 단일 조회
     Optional<ReviewEntity> findById(Long reviewId);
 
-    // 리뷰 수정
-
     // 리뷰 삭제
+    void delete(ReviewEntity review);
 }

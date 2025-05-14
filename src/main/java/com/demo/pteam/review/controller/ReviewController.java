@@ -72,4 +72,20 @@ public class ReviewController {
         ApiResponse<ReviewResponseDto> apiResponse = ApiResponse.success("리뷰가 성공적으로 수정되었습니다.", responseDto);
         return ResponseEntity.ok(apiResponse);
     }
+
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<ApiResponse<Void>> deleteReview(
+            @PathVariable Long reviewId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        // TODO
+        // 현재 인증된 사용자 ID 가져오기
+        // Long userId = ((CustomUserDetails) userDetails).getId();
+        Long userId = null;
+
+        reviewService.deleteReview(reviewId, userId);
+
+        ApiResponse<Void> apiResponse = ApiResponse.success("리뷰가 성공적으로 삭제되었습니다.", null);
+        return ResponseEntity.ok(apiResponse);
+    }
 }
