@@ -31,16 +31,16 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        JwtToken rawToken = (JwtToken) authentication.getCredentials();
-        JwtToken extractedToken = removeTokenPrefix(rawToken);  // prefix 제거
+        JwtToken tokenWithBearerPrefix = (JwtToken) authentication.getCredentials();
+        JwtToken rawToken = removeTokenPrefix(tokenWithBearerPrefix);  // prefix 제거
 
         try {
-            String accessToken = extractedToken.accessToken();
+            String accessToken = rawToken.getAccessToken();
             Claims claims = jwtService.parseClaims(accessToken);
             UserPrincipal principal = PrincipalFactory.fromClaims(claims);
-            return createSuccessAuthentication(principal, extractedToken);
+            return createSuccessAuthentication(principal, rawToken);
         } catch (ExpiredJwtException e) {   // accessToken 만료
-            JwtReissueResult reissueResult = reissueToken(extractedToken.refreshToken());
+            JwtReissueResult reissueResult = reissueToken(rawToken.getRefreshToken());
             return createSuccessAuthentication(reissueResult);
         } catch (UsernameNotFoundException e) {
             throw new BadCredentialsException("Bad credentials");
@@ -66,8 +66,8 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     }
 
     private static JwtToken removeTokenPrefix(JwtToken token) {
-        if (token.hasPrefix()) {
-            return token.removePrefix();
+        if (token.hasBearerPrefix()) {
+            return token.removeBearerPrefix();
         } else {
             throw new InvalidJwtException("Invalid JWT token");
         }

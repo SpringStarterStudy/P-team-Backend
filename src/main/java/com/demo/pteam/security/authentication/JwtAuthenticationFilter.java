@@ -49,9 +49,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private Authentication attemptAuthentication(HttpServletRequest request) {
-        String accessToken = this.obtainAccessToken(request);
-        String refreshToken = this.obtainRefreshToken(request);
-        JwtToken token = new JwtToken(accessToken, refreshToken);
+        String authHeader = this.obtainAuthHeader(request);
+        String refreshHeader = this.obtainRefreshHeader(request);
+        JwtToken token = JwtToken.ofBearer(authHeader, refreshHeader);
         if (token.isEmpty()) {  // 토큰이 없을 경우
             return null;
         }
@@ -59,11 +59,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return this.authenticationManager.authenticate(authRequest);
     }
 
-    private String obtainAccessToken(HttpServletRequest request) {
+    private String obtainAuthHeader(HttpServletRequest request) {
         return request.getHeader("Authorization");
     }
 
-    private String obtainRefreshToken(HttpServletRequest request) {
+    private String obtainRefreshHeader(HttpServletRequest request) {
         return request.getHeader("Refresh-Token");
     }
 

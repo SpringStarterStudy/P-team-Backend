@@ -39,6 +39,6 @@ public class JwtService {
     private JwtToken createJwtToken(UserPrincipal principal) {
         String reissueAccessToken = jwtProvider.generateAccessToken(principal);
         String reissueRefreshToken = jwtProvider.generateRefreshToken(principal);
-        return new JwtToken(reissueAccessToken, reissueRefreshToken);
+        return JwtToken.ofRaw(reissueAccessToken, reissueRefreshToken);
     }
 }

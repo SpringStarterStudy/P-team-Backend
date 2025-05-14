@@ -23,7 +23,7 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
     }
 
     private void addJwtTokenToHeader(HttpServletResponse response, JwtToken token) {
-        response.setHeader("Authorization", "Bearer " + token.extractAccessToken());
-        response.setHeader("Refresh-Token", "Bearer " + token.extractRefreshToken());
+        response.setHeader("Authorization", token.getAuthHeader());
+        response.setHeader("Refresh-Token", token.getRefreshHeader());
     }
 }

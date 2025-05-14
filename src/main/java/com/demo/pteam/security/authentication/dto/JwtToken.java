@@ -2,38 +2,65 @@ package com.demo.pteam.security.authentication.dto;
 
 import org.springframework.lang.NonNull;
 
-public record JwtToken(
-        @NonNull String accessToken,
-        @NonNull String refreshToken
-) {
+public class JwtToken {
     private static final String PREFIX = "Bearer ";
 
-    public JwtToken(String accessToken, String refreshToken) {
-        this.accessToken = accessToken != null ? accessToken.trim() : "";
-        this.refreshToken = refreshToken != null ? refreshToken.trim() : "";
+    @NonNull
+    private final String access;
+
+    @NonNull
+    private final String refresh;
+
+    private JwtToken(String access, String refresh) {
+        this.access = access != null ? access.trim() : "";
+        this.refresh = refresh != null ? refresh.trim() : "";
+    }
+
+    public static JwtToken ofBearer(String authHeader, String refreshHeader) {
+        return new JwtToken(authHeader, refreshHeader);
+    }
+
+    public static JwtToken ofRaw(String accessToken, String refreshToken) {
+        return new JwtToken(accessToken, refreshToken);
+    }
+
+    public String getAuthHeader() {
+        return ensureBearerPrefix(access);
+    }
+
+    public String getRefreshHeader() {
+        return ensureBearerPrefix(refresh);
+    }
+
+    private String ensureBearerPrefix(String token) {
+        return (token.startsWith(PREFIX) || token.isEmpty())
+                ? token
+                : PREFIX + token;
     }
 
     public boolean isEmpty() {
-        return accessToken.isEmpty() && refreshToken.isEmpty();
+        return access.isEmpty() && refresh.isEmpty();
     }
 
-    public boolean hasPrefix() {
-        return accessToken.startsWith(PREFIX) && refreshToken.startsWith(PREFIX);
+    public boolean hasBearerPrefix() {
+        return access.startsWith(PREFIX) && refresh.startsWith(PREFIX);
     }
 
-    public String extractAccessToken() {
-        return removePrefix(accessToken);
+    public String getAccessToken() {
+        return removeBearerPrefix(access);
     }
 
-    public String extractRefreshToken() {
-        return removePrefix(refreshToken);
+    public String getRefreshToken() {
+        return removeBearerPrefix(refresh);
     }
 
-    private String removePrefix(String token) {
-        return token.startsWith(PREFIX) ? token.substring(PREFIX.length()) : token;
+    private String removeBearerPrefix(String token) {
+        return token.startsWith(PREFIX)
+                ? token.substring(PREFIX.length())
+                : token;
     }
 
-    public JwtToken removePrefix() {
-        return new JwtToken(extractAccessToken(), extractRefreshToken());
+    public JwtToken removeBearerPrefix() {
+        return ofRaw(getAccessToken(), getRefreshToken());
     }
 }
