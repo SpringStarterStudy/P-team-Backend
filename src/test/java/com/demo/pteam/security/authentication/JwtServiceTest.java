@@ -144,7 +144,7 @@ class JwtServiceTest {
     @CsvSource({
             // 유효하지 않은 서명의 JWT
             "eyJhbGciOiJIUzI1NiIsInppcCI6IkRFRiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ0ODkyNTc4LCJleHAiOjE3NDQ4OTYxNzh9.KQje0sKwaDmD7ZHWrxbJ49Bp_KjPI8RfA2Xi9tNCGFM",
-            "sdfsdfs", // 유효하지 않은 형식
+            "sdfsdfs" // 유효하지 않은 형식
     })
     void loadUser_invalidToken(String invalidToken) {
         // given
