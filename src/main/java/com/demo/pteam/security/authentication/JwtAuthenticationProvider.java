@@ -42,8 +42,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         } catch (ExpiredJwtException e) {   // accessToken 만료
             JwtReissueResult reissueResult = reissueToken(rawToken.getRefreshToken());
             return createSuccessAuthentication(reissueResult);
-        } catch (UsernameNotFoundException e) {
-            throw new BadCredentialsException("Bad credentials");
         } catch (JwtException | IllegalArgumentException e) {
             throw new InvalidJwtException(e.getMessage(), e);
         }
