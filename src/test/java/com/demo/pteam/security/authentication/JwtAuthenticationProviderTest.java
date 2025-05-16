@@ -18,7 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -140,7 +140,7 @@ class JwtAuthenticationProviderTest {
 
     @DisplayName("인증 - 유효하지 않은 accessToken")
     @ParameterizedTest
-    @CsvSource({
+    @ValueSource(strings = {
             // 유효하지 않은 서명의 accessToken
             "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDcyMDc2OTksImV4cCI6MTc0NzIxMTI5OX0.YAlicbyqBqJMSfOYs1qH0hqOjPaXC6jHIdqKeB6dON8",
             "sdfsdfs" // 유효하지 않은 형식
@@ -252,7 +252,7 @@ class JwtAuthenticationProviderTest {
 
     @DisplayName("인증 - accessToken 만료로 refreshToken을 통해 토큰 재발급 - 유효하지 않은 refreshToken")
     @ParameterizedTest
-    @CsvSource({
+    @ValueSource(strings = {
             // 유효하지 않은 서명의 refreshToken
             "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ3MjA3NzAwLCJleHAiOjE3NDc4MTI1MDB9.eR2aFv_159TMilurSHSIV-3yuvE1Dpv5VbEVVSNC1NI",
             "sdfsdfs" // 유효하지 않은 형식

@@ -16,7 +16,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -141,7 +142,7 @@ class JwtServiceTest {
 
     @DisplayName("사용자 조회 - 유효하지 않은 토큰")
     @ParameterizedTest
-    @CsvSource({
+    @ValueSource(strings = {
             // 유효하지 않은 서명의 JWT
             "eyJhbGciOiJIUzI1NiIsInppcCI6IkRFRiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ0ODkyNTc4LCJleHAiOjE3NDQ4OTYxNzh9.KQje0sKwaDmD7ZHWrxbJ49Bp_KjPI8RfA2Xi9tNCGFM",
             "sdfsdfs" // 유효하지 않은 형식
@@ -161,10 +162,7 @@ class JwtServiceTest {
 
     @DisplayName("사용자 조회 - null 또는 빈 문자열 입력")
     @ParameterizedTest
-    @CsvSource({
-            "'',''",    // 빈 문자열
-            ","  // null
-    })
+    @NullAndEmptySource
     void loadUser_nullOrEmpty(String invalidToken) {
         // given
         when(jwtProvider.parseClaims(invalidToken))

@@ -14,7 +14,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -134,7 +135,7 @@ class JwtProviderTest {
 
     @DisplayName("토큰 파싱 후 Claims 반환 - 유효하지 않은 토큰")
     @ParameterizedTest
-    @CsvSource({
+    @ValueSource(strings = {
             // 유효하지 않은 서명의 JWT
             "eyJhbGciOiJIUzI1NiIsInppcCI6IkRFRiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDQ4OTI1NzgsImV4cCI6MTc0NDg5NjE3OH0.OhP13CUFY6YyzLTYd6imto74MD7x9PWz4p_zfHKkbNw",
             "sdfsdfs", // 유효하지 않은 형식
@@ -156,10 +157,7 @@ class JwtProviderTest {
 
     @DisplayName("토큰 파싱 후 Claims 반환 - null 또는 빈 문자열 입력")
     @ParameterizedTest
-    @CsvSource({
-            "'',''",    // 빈 문자열
-            ","  // null
-    })
+    @NullAndEmptySource
     void parseClaims_nullOrEmpty(String invalidToken) {
         try (MockedStatic<JwtUtils> utilities = mockStatic(JwtUtils.class)) {
             // given
