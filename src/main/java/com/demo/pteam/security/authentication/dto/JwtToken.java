@@ -1,7 +1,9 @@
 package com.demo.pteam.security.authentication.dto;
 
+import lombok.EqualsAndHashCode;
 import org.springframework.lang.NonNull;
 
+@EqualsAndHashCode
 public class JwtToken {
     private static final String PREFIX = "Bearer ";
 
