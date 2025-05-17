@@ -31,3 +31,8 @@ kakao:
 logging:
   level:
     org.springframework: info
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: 3600000    # 1시간(60 * 60 * 1000)
+  refresh-token-expiration: 604800000   # 7일(7 * 24 * 60 * 60 * 1000)

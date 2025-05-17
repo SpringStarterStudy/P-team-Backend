@@ -24,7 +24,7 @@ set @trainer_id1 = (select id from accounts where nickname = '트레이너닉네
 set @user_id2 = (select id from accounts where nickname = '회원닉네임2');
 set @trainer_id2 = (select id from accounts where nickname = '트레이너닉네임2');
 
-set @test_pwd = '$2a$10$eXthWEeajRbGgRfvlfVBl.LlD6jDWoyAgyRSDa.FdRUTM4vfnYh86';	-- password = 1234567aA!
+set @test_pwd = '{bcrypt}$2a$10$eXthWEeajRbGgRfvlfVBl.LlD6jDWoyAgyRSDa.FdRUTM4vfnYh86';	-- password = 1234567aA!
 insert ignore into local_accounts(id, username, `password`, email, `status`) values
     (@user_id1,'usertest1', @test_pwd, 'usertest1@gmail.com', 1),	-- 이메일 인증 o
     (@trainer_id1, 'trainertest1', @test_pwd, 'trainertest1@gmail.com', 1),	-- 이메일 인증 o

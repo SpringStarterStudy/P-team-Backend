@@ -1,6 +1,7 @@
 package com.demo.pteam.global.response;
 
 import com.demo.pteam.global.exception.ErrorCode;
+import com.demo.pteam.global.exception.GlobalErrorCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
