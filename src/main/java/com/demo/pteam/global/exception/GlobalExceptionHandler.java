@@ -94,4 +94,3 @@ public class GlobalExceptionHandler {
         return field + ": " + violation.getMessage();
     }
 }
-

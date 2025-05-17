@@ -19,4 +19,3 @@ public enum GlobalErrorCode implements ErrorCode {
         this.message = message;
     }
 }
-
