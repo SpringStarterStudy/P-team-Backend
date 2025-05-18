@@ -64,7 +64,7 @@ public class AuthenticationIntegrationTest {
 
     private static final String REQUEST_PATH = "/api/members";  // 사용자 인증이 필요한 경로
 
-    private static final Date NOW = getDate(2025, 5, 14, 16, 28, 20);
+    private static final Date NOW = createDate(2025, 5, 14, 16, 28, 20);
 
     @Value("${jwt.secret}")
     public String jwtSecretKey;
@@ -150,7 +150,7 @@ public class AuthenticationIntegrationTest {
     @Test
     void reissueToken_whenExpiredAccessToken() throws Exception {
         // given
-        Date now = getDate(2025, 5, 17, 0, 0, 0);
+        Date now = createDate(2025, 5, 17, 0, 0, 0);
         HttpHeaders headers = getHttpHeaders(AUTHORIZATION_HEADER, REFRESH_TOKEN_HEADER);
         when(jwtProvider.parseClaims(anyString()))
                 .thenAnswer(invocation -> {
@@ -185,7 +185,7 @@ public class AuthenticationIntegrationTest {
     @Test
     void expiredAllToken() throws Exception {
         // given
-        Date now = getDate(2025, 5, 31, 0, 0, 0);
+        Date now = createDate(2025, 5, 31, 0, 0, 0);
         HttpHeaders headers = getHttpHeaders(AUTHORIZATION_HEADER, REFRESH_TOKEN_HEADER);
         when(jwtProvider.parseClaims(anyString()))
                 .thenAnswer(invocation -> {
@@ -222,7 +222,7 @@ public class AuthenticationIntegrationTest {
     })
     void invalidAuthentication(String authorizationHeader, String refreshTokenHeader) throws Exception {
         // given
-        Date now = getDate(2025, 5, 17, 0, 0, 0);
+        Date now = createDate(2025, 5, 17, 0, 0, 0);
         HttpHeaders headers = getHttpHeaders(authorizationHeader, refreshTokenHeader);
         when(jwtProvider.parseClaims(anyString()))
                 .thenAnswer(invocation -> {
@@ -243,7 +243,7 @@ public class AuthenticationIntegrationTest {
                 .andExpect(jsonPath("message").value(errorCode.getMessage()));
     }
 
-    private static Date getDate(int year, int month, int dayOfMonth, int hour, int minute, int second) {
+    private static Date createDate(int year, int month, int dayOfMonth, int hour, int minute, int second) {
         return Date.from(
                 LocalDateTime.of(year, month, dayOfMonth, hour, minute, second)
                         .atZone(ZoneId.of("Asia/Seoul"))
