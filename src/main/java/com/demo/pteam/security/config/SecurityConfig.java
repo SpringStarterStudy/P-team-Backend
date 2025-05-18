@@ -58,6 +58,7 @@ public class SecurityConfig {
                         .failureHandler(new JwtAuthenticationFailureHandler())
                 )
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/").permitAll()
                         .requestMatchers("/api/auths/login").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception

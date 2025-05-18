@@ -69,7 +69,7 @@ public class LoginIntegrationTest {
                 .filter(filter -> filter instanceof ApiLoginFilter)
                 .findFirst()
                 .ifPresent(filter -> {
-                        spyApiLoginFilter = (ApiLoginFilter) spy(filter);
+                        spyApiLoginFilter = spy((ApiLoginFilter) filter);
                         mockMvc = MockMvcBuilders.webAppContextSetup(context)
                                 .addFilter(spyApiLoginFilter)
                                 .build();

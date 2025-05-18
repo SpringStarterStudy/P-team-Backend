@@ -49,6 +49,8 @@ class JwtAuthenticationFilterTest {
     private static final String EXPIRED_AUTHORIZATION_HEADER = PREFIX + EXPIRED_ACCESS_TOKEN;
     private static final String EXPIRED_REFRESH_TOKEN_HEADER = PREFIX + EXPIRED_REFRESH_TOKEN;
 
+    private static final String REQUEST_PATH = "/api/members";  // 사용자 인증이 필요한 경로
+
     @InjectMocks
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -74,7 +76,7 @@ class JwtAuthenticationFilterTest {
     private static MockHttpServletRequest getMockHttpServletRequest(JwtToken token) {
         MockHttpServletRequest mockRequest = new MockHttpServletRequest();
         mockRequest.setMethod(HttpMethod.GET.name());
-        mockRequest.setRequestURI("/api/members");  // 사용자 인증이 필요한 경로
+        mockRequest.setRequestURI(REQUEST_PATH);
         mockRequest.addHeader("Authorization", token.getAuthHeader());
         mockRequest.addHeader("Refresh-Token", token.getRefreshHeader());
         mockRequest.setContentType(MediaType.APPLICATION_JSON_VALUE);
