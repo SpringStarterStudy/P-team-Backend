@@ -1,10 +1,13 @@
 package com.demo.pteam.global.exception;
 
 import com.demo.pteam.global.response.ApiResponse;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import java.util.Arrays;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -44,8 +47,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(
             ConstraintViolationException ex) {
         String errorMessage = ex.getConstraintViolations().stream()
-                .map(this::formatViolationMessage)
-                .collect(Collectors.joining(", "));
+            .map(this::formatViolationMessage)
+            .collect(Collectors.joining(", "));
         log.error("Validation 예외 발생: {}", errorMessage);
         return ResponseEntity.badRequest().body(
                 ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION, errorMessage));
@@ -59,10 +62,34 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION));
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<String>> handleJsonParseException(HttpMessageNotReadableException ex) {
+        log.error("요청 파싱 예외 발생: {}", ex.getMessage());
+
+        Throwable cause = ex.getCause();
+        if (cause instanceof InvalidFormatException invalidFormatEx &&
+            invalidFormatEx.getTargetType().isEnum()) {
+
+            Object[] enumConstants = invalidFormatEx.getTargetType().getEnumConstants();
+            String allowedValues = Arrays.stream(enumConstants)
+                .map(Object::toString)
+                .collect(Collectors.joining(", "));
+
+            // enum 변환 실패
+            String message = String.format(GlobalErrorCode.VALIDATION_EXCEPTION.getMessage(), allowedValues);
+
+            return ResponseEntity
+                .status(GlobalErrorCode.VALIDATION_EXCEPTION.getStatus())
+                .body(ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION, message));
+        }
+        return ResponseEntity
+            .status(GlobalErrorCode.VALIDATION_EXCEPTION.getStatus())
+            .body(ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION));
+    }
+
     private String formatViolationMessage(ConstraintViolation<?> violation) {
         String fullPath = violation.getPropertyPath().toString();
         String field = fullPath.substring(fullPath.lastIndexOf(".") + 1); // 필드명만 추출
         return field + ": " + violation.getMessage();
     }
 }
-

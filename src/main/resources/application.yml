@@ -23,6 +23,16 @@ spring:
     out-of-order: true
     locations: classpath:db/migration, classpath:db/data
 
+kakao:
+  api:
+    api-key: ${KAKAO_REST_API_KEY}
+    base-url: https://dapi.kakao.com
+
 logging:
   level:
     org.springframework: info
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: 3600000    # 1시간(60 * 60 * 1000)
+  refresh-token-expiration: 604800000   # 7일(7 * 24 * 60 * 60 * 1000)
