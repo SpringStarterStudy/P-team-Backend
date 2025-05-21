@@ -12,9 +12,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.stream.Collectors;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
@@ -45,27 +45,26 @@ public class GlobalExceptionHandler {
     // ValidationException 처리
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ApiResponse<String>> handleConstraintViolationException(
-        ConstraintViolationException ex) {
+            ConstraintViolationException ex) {
         String errorMessage = ex.getConstraintViolations().stream()
             .map(this::formatViolationMessage)
             .collect(Collectors.joining(", "));
         log.error("Validation 예외 발생: {}", errorMessage);
         return ResponseEntity.badRequest().body(
-            ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION, errorMessage));
+                ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION, errorMessage));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiResponse<String>> handleTypeMismatchException(
-        MethodArgumentTypeMismatchException ex) {
+            MethodArgumentTypeMismatchException ex) {
         log.error("입력 형식 예외 : {}", ex.getMessage());
         return ResponseEntity.status(GlobalErrorCode.VALIDATION_EXCEPTION.getStatus())
-            .body(ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION));
+                .body(ApiResponse.error(GlobalErrorCode.VALIDATION_EXCEPTION));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<String>> handleJsonParseException(HttpMessageNotReadableException ex) {
         log.error("요청 파싱 예외 발생: {}", ex.getMessage());
-
 
         Throwable cause = ex.getCause();
         if (cause instanceof InvalidFormatException invalidFormatEx &&
