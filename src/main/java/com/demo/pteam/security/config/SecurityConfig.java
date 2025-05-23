@@ -32,7 +32,6 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
     private final AccountService accountService;
-    private final JwtProvider jwtProvider;
     private final ObjectMapper objectMapper;
     private final JwtService jwtService;
 
@@ -49,7 +48,7 @@ public class SecurityConfig {
                 .with(new ApiLoginConfigurer(objectMapper), config -> config
                         .authenticationManager(authenticationManager)
                         .loginProcessingUrl("/api/auths/login")
-                        .successHandler(new LoginAuthenticationSuccessHandler(jwtProvider))
+                        .successHandler(new LoginAuthenticationSuccessHandler(jwtService))
                         .failureHandler(new LoginAuthenticationFailureHandler())
                 )
                 .with(new JwtAuthenticationConfigurer(objectMapper), config -> config

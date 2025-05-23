@@ -8,6 +8,7 @@ import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Map;
 
 @Component
@@ -17,25 +18,25 @@ public class JwtProvider {
     @Value("${jwt.secret}")
     private String secretKey;
 
-    @Value("${jwt.access-token-expiration}")
-    private long accessTokenExpiration;
+    @Value("${jwt.access-token-ttl}")
+    private long accessTokenTTL;
 
-    @Value("${jwt.refresh-token-expiration}")
-    private long refreshTokenExpiration;
+    @Value("${jwt.refresh-token-ttl}")
+    private long refreshTokenTTL;
 
     public JwtProvider(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
-    public String generateAccessToken(UserPrincipal principal) {
+    public String generateAccessToken(UserPrincipal principal, Date now) {
         String sub = String.valueOf(principal.id());
         Map<String, Object> claims = objectMapper.convertValue(principal, new TypeReference<>() {});
-        return JwtUtils.encode(sub, claims, secretKey, accessTokenExpiration);
+        return JwtUtils.encode(sub, claims, secretKey, accessTokenTTL, now);
     }
 
-    public String generateRefreshToken(UserPrincipal principal) {
+    public String generateRefreshToken(UserPrincipal principal, Date now) {
         String sub = String.valueOf(principal.id());
-        return JwtUtils.encode(sub, secretKey, refreshTokenExpiration);
+        return JwtUtils.encode(sub, secretKey, refreshTokenTTL, now);
     }
 
     public Claims parseClaims(String token) throws JwtException {
