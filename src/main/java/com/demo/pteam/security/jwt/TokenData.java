@@ -4,11 +4,11 @@ public record TokenData(
         String token,
         long expirationMillis
 ) {
-    boolean isSameToken(String token) {
+    public boolean isSameToken(String token) {
         return this.token.equals(token);
     }
 
-    boolean isExpired() {
+    public boolean isExpired() {
         return System.currentTimeMillis() > expirationMillis;
     }
 }
