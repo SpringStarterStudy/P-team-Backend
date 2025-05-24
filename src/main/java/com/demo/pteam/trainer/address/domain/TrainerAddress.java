@@ -1,7 +1,5 @@
 package com.demo.pteam.trainer.address.domain;
 
-import com.demo.pteam.global.exception.ApiException;
-import com.demo.pteam.trainer.address.exception.TrainerAddressErrorCode;
 import lombok.Getter;
 
 @Getter
