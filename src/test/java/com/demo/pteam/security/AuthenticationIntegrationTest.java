@@ -1,8 +1,12 @@
 package com.demo.pteam.security;
 
 import com.demo.pteam.global.exception.ErrorCode;
+import com.demo.pteam.security.authentication.JwtService;
+import com.demo.pteam.security.authentication.dto.JwtToken;
 import com.demo.pteam.security.exception.AuthenticationErrorCode;
 import com.demo.pteam.security.jwt.JwtProvider;
+import com.demo.pteam.security.jwt.TokenData;
+import com.demo.pteam.security.jwt.TokenStore;
 import com.demo.pteam.security.principal.UserPrincipal;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,12 +18,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -66,14 +73,16 @@ public class AuthenticationIntegrationTest {
 
     private static final Date NOW = createDate(2025, 5, 14, 16, 28, 20);
 
+    private static final long REFRESH_TOKEN_EXPIRATION = 1747812500L;
+
     @Value("${jwt.secret}")
     public String jwtSecretKey;
 
-    @Value("${jwt.access-token-expiration}")
-    private long accessTokenExpiration;
+    @Value("${jwt.access-token-ttl}")
+    private long accessTokenTTL;
 
-    @Value("${jwt.refresh-token-expiration}")
-    private long refreshTokenExpiration;
+    @Value("${jwt.refresh-token-ttl}")
+    private long refreshTokenTTL;
 
     @Autowired
     private FilterChainProxy filterChainProxy;
@@ -85,14 +94,29 @@ public class AuthenticationIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @MockitoSpyBean
+    private JwtService jwtService;
+
     @MockitoBean
     private JwtProvider jwtProvider;
+
+    @MockitoSpyBean
+    private TokenStore tokenStore;
+
+    private TokenData spyTokenData;
 
     @BeforeEach
     public void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context)
                 .addFilters(filterChainProxy)
                 .build();
+
+        TokenData tokenData = new TokenData(REFRESH_TOKEN, REFRESH_TOKEN_EXPIRATION);
+        spyTokenData = spy(tokenData);
+        Map<Long, TokenData> store = (Map<Long, TokenData>) ReflectionTestUtils.getField(tokenStore, "store");
+        store.put(1L, spyTokenData);
+
+        doAnswer(invocation -> (NOW.getTime() / 1000) > REFRESH_TOKEN_EXPIRATION).when(spyTokenData).isExpired();
     }
 
     @DisplayName("인증")
@@ -152,20 +176,35 @@ public class AuthenticationIntegrationTest {
         // given
         Date now = createDate(2025, 5, 17, 0, 0, 0);
         HttpHeaders headers = getHttpHeaders(AUTHORIZATION_HEADER, REFRESH_TOKEN_HEADER);
+
+        doAnswer(invocation ->  (now.getTime() / 1000) > REFRESH_TOKEN_EXPIRATION).when(spyTokenData).isExpired();
+
+        doAnswer(invocation -> {
+            UserPrincipal principal = invocation.getArgument(0);
+            String accessToken = jwtProvider.generateAccessToken(principal, now);
+            String refreshToken = jwtProvider.generateRefreshToken(principal, now);
+            tokenStore.save(principal.id(), refreshToken, now.getTime() + refreshTokenTTL);
+            return JwtToken.ofRaw(accessToken, refreshToken);
+        }).when(jwtService).createJwtToken(any(UserPrincipal.class));
+
         when(jwtProvider.parseClaims(anyString()))
                 .thenAnswer(invocation -> {
                     String token = invocation.getArgument(0);
                     return parseClaims(token, now);
                 });
-        when(jwtProvider.generateAccessToken(any(UserPrincipal.class)))
+
+        when(jwtProvider.generateAccessToken(any(UserPrincipal.class), any(Date.class)))
                 .thenAnswer(invocation -> {
                     UserPrincipal principal = invocation.getArgument(0);
-                    return generateAccessToken(principal, now);
+                    Date date = invocation.getArgument(1);
+                    return generateAccessToken(principal, date);
                 });
-        when(jwtProvider.generateRefreshToken(any(UserPrincipal.class)))
+
+        when(jwtProvider.generateRefreshToken(any(UserPrincipal.class), any(Date.class)))
                 .thenAnswer(invocation -> {
                     UserPrincipal principal = invocation.getArgument(0);
-                    return generateRefreshToken(principal, now);
+                    Date date = invocation.getArgument(1);
+                    return generateRefreshToken(principal, date);
                 });
 
         // when
@@ -261,12 +300,12 @@ public class AuthenticationIntegrationTest {
     public String generateAccessToken(UserPrincipal principal, Date now) {
         String sub = String.valueOf(principal.id());
         Map<String, Object> claims = objectMapper.convertValue(principal, new TypeReference<>() {});
-        return TestJwtUtils.encode(sub, claims, jwtSecretKey, accessTokenExpiration, now);
+        return TestJwtUtils.encode(sub, claims, jwtSecretKey, accessTokenTTL, now);
     }
 
     public String generateRefreshToken(UserPrincipal principal, Date now) {
         String sub = String.valueOf(principal.id());
-        return TestJwtUtils.encode(sub, jwtSecretKey, refreshTokenExpiration, now);
+        return TestJwtUtils.encode(sub, jwtSecretKey, refreshTokenTTL, now);
     }
 
     public Claims parseClaims(String token, Date now) throws JwtException {

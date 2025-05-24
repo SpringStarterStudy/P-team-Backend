@@ -20,10 +20,12 @@ import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -38,14 +40,19 @@ class JwtProviderTest {
     private Claims claims;
 
     private static final String TEST_SECRET_KEY = "CQakf5359nUg2eTfl8lF4ceO7l+g8usgLW10BfVBFHw=";
-    private static final long TEST_ACCESS_TOKEN_EXPIRATION = 3600000L;
-    private static final long TEST_REFRESH_TOKEN_EXPIRATION = 604800000L;
+    private static final long TEST_ACCESS_TOKEN_TTL = 3600000L;
+    private static final long TEST_REFRESH_TOKEN_TTL = 604800000L;
+    private static final Date NOW = Date.from(
+            LocalDateTime.of(2025, 4, 17, 21, 22, 58)
+                    .atZone(ZoneId.of("Asia/Seoul"))
+                    .toInstant()
+    );
 
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(jwtProvider, "secretKey", TEST_SECRET_KEY);
-        ReflectionTestUtils.setField(jwtProvider, "accessTokenExpiration", TEST_ACCESS_TOKEN_EXPIRATION);
-        ReflectionTestUtils.setField(jwtProvider, "refreshTokenExpiration", TEST_REFRESH_TOKEN_EXPIRATION);
+        ReflectionTestUtils.setField(jwtProvider, "accessTokenTTL", TEST_ACCESS_TOKEN_TTL);
+        ReflectionTestUtils.setField(jwtProvider, "refreshTokenTTL", TEST_REFRESH_TOKEN_TTL);
     }
 
     @DisplayName("accessToken 생성")
@@ -56,11 +63,11 @@ class JwtProviderTest {
             UserPrincipal testPrincipal = new UserPrincipal(1L, Role.ROLE_USER, true);
             Map<String, Object> claims = objectMapper.convertValue(testPrincipal, new TypeReference<>() {});
             String expectedAccessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDQ4OTI1NzgsImV4cCI6MTc0NDg5NjE3OH0.vcl4raUrANBRCgJ1rciXit8KIhvrt5STIpvX-4HLZCU";
-            utilities.when(() -> JwtUtils.encode("1", claims, TEST_SECRET_KEY, TEST_ACCESS_TOKEN_EXPIRATION))
+            utilities.when(() -> JwtUtils.encode("1", claims, TEST_SECRET_KEY, TEST_ACCESS_TOKEN_TTL, NOW))
                     .thenReturn(expectedAccessToken);
 
             // when
-            String accessToken = jwtProvider.generateAccessToken(testPrincipal);
+            String accessToken = jwtProvider.generateAccessToken(testPrincipal, NOW);
 
             // then
             assertThat(accessToken).isEqualTo(expectedAccessToken);
@@ -74,11 +81,11 @@ class JwtProviderTest {
             // given
             UserPrincipal testPrincipal = new UserPrincipal(1L, Role.ROLE_USER, true);
             String expectedRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ0ODkyNTc4LCJleHAiOjE3NDQ4OTYxNzh9.3oA6KqZkPHeLXMpT5nOfXun4E5UAI5FgSCvKtTyoOjA";
-            utilities.when(() -> JwtUtils.encode("1", TEST_SECRET_KEY, TEST_REFRESH_TOKEN_EXPIRATION))
+            utilities.when(() -> JwtUtils.encode("1", TEST_SECRET_KEY, TEST_REFRESH_TOKEN_TTL, NOW))
                     .thenReturn(expectedRefreshToken);
 
             // when
-            String accessToken = jwtProvider.generateRefreshToken(testPrincipal);
+            String accessToken = jwtProvider.generateRefreshToken(testPrincipal, NOW);
 
             // then
             assertThat(accessToken).isEqualTo(expectedRefreshToken);

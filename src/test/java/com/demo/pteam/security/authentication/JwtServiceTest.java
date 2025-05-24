@@ -3,8 +3,10 @@ package com.demo.pteam.security.authentication;
 import com.demo.pteam.authentication.domain.AccountStatus;
 import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.security.authentication.dto.JwtReissueResult;
+import com.demo.pteam.security.authentication.dto.JwtToken;
 import com.demo.pteam.security.dto.JwtAccountInfo;
 import com.demo.pteam.security.jwt.JwtProvider;
+import com.demo.pteam.security.jwt.TokenStore;
 import com.demo.pteam.security.principal.PrincipalFactory;
 import com.demo.pteam.security.principal.UserPrincipal;
 import io.jsonwebtoken.Claims;
@@ -43,6 +45,9 @@ class JwtServiceTest {
 
     @Mock
     private JwtUserDetailsService jwtUserDetailsService;
+
+    @Mock
+    private TokenStore tokenStore;
 
     @Mock
     private Claims claims;
@@ -195,11 +200,11 @@ class JwtServiceTest {
 
             String testAccessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDU4NTMwMjEsImV4cCI6MTc0NjQ1NzgyMX0.6mOSoVzZ63-SZjrl_gp9yh_dmoDNIvXDsN9X0M54wA8";
             String testRefreshToken = REFRESH_TOKEN;
-            when(jwtProvider.generateAccessToken(expectedPrincipal)).thenReturn(testAccessToken);
-            when(jwtProvider.generateRefreshToken(expectedPrincipal)).thenReturn(testRefreshToken);
+            JwtService spyJwtService = spy(new JwtService(jwtProvider, jwtUserDetailsService, tokenStore));
+            when(spyJwtService.createJwtToken(expectedPrincipal)).thenReturn(JwtToken.ofRaw(testAccessToken, testRefreshToken));
 
             // when
-            JwtReissueResult reissue = jwtService.reissue(testUserDetails);
+            JwtReissueResult reissue = spyJwtService.reissue(testUserDetails);
 
             // then
             assertThat(reissue).isNotNull();
