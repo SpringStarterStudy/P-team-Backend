@@ -2,6 +2,7 @@ package com.demo.pteam.review.controller;
 
 import com.demo.pteam.global.response.ApiResponse;
 import com.demo.pteam.review.controller.dto.ReviewCreateRequestDto;
+import com.demo.pteam.review.controller.dto.ReviewImageUploadResponseDto;
 import com.demo.pteam.review.controller.dto.ReviewResponseDto;
 import com.demo.pteam.review.controller.dto.ReviewUpdateRequestDto;
 import com.demo.pteam.review.service.ReviewService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -87,5 +89,21 @@ public class ReviewController {
 
         ApiResponse<Void> apiResponse = ApiResponse.success("리뷰가 성공적으로 삭제되었습니다.", null);
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping("/images")
+    public ResponseEntity<ApiResponse<ReviewImageUploadResponseDto>> uploadReviewImage(
+            @RequestParam("file") MultipartFile file,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        // TODO
+        // 현재 인증된 사용자 ID 가져오기
+        // Long userId = ((CustomUserDetails) userDetails).getId();
+        Long userId = null;
+
+        ReviewImageUploadResponseDto responseDto = reviewService.uploadReviewImage(file, userId);
+
+        ApiResponse<ReviewImageUploadResponseDto> apiResponse = ApiResponse.success("이미지가 성공적으로 업로드되었습니다.", responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
 }
