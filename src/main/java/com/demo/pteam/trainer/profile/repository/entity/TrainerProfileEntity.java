@@ -22,7 +22,7 @@ public class TrainerProfileEntity extends SoftDeletableEntity {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private AccountEntity trainer;
 
     @OneToOne(fetch = FetchType.LAZY)
