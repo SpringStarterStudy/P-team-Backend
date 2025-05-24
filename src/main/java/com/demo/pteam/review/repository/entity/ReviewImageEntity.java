@@ -23,6 +23,9 @@ public class ReviewImageEntity extends BaseEntity {
     @JoinColumn(name = "review_id", nullable = false)
     private ReviewEntity review;
 
+    @Column(name = "user_id")
+    private Long userId;
+
     @Column(name = "image_url", nullable = false, length = 255)
     private String imageUrl;
 
@@ -44,5 +47,9 @@ public class ReviewImageEntity extends BaseEntity {
     public ReviewImageEntity updateReview(ReviewEntity review) {
         this.review = review;
         return this;
+    }
+
+    public void updateDisplayOrder(Byte displayOrder) {
+        this.displayOrder = displayOrder;
     }
 }
