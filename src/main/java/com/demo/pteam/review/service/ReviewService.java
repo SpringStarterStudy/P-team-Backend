@@ -3,6 +3,7 @@ package com.demo.pteam.review.service;
 import com.demo.pteam.authentication.repository.entity.AccountEntity;
 import com.demo.pteam.global.exception.ApiException;
 import com.demo.pteam.review.controller.dto.ReviewCreateRequestDto;
+import com.demo.pteam.review.controller.dto.ReviewImageUploadResponseDto;
 import com.demo.pteam.review.controller.dto.ReviewResponseDto;
 import com.demo.pteam.review.controller.dto.ReviewUpdateRequestDto;
 import com.demo.pteam.review.domain.ReviewDomain;
@@ -18,9 +19,12 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,6 +39,7 @@ public class ReviewService {
 //    private final AccountRepository accountRepository;
     private final ScheduleRepository scheduleRepository;
     private final ReviewMapper reviewMapper;
+    private final FileStorageService fileStorageService;
 
     /**
      * 리뷰 생성
@@ -173,8 +178,67 @@ public class ReviewService {
     }
 
 
+    /**
+     * 리뷰 이미지 업로드
+     * @param multipartFile 업로드할 이미지 파일
+     * @param userId 현재 인증된 사용자 ID
+     * @return 업로드된 이미지 정보
+     */
+    public ReviewImageUploadResponseDto uploadReviewImage(MultipartFile multipartFile, Long userId) {
+        // 파일 유효성 검사
+        if (multipartFile == null || multipartFile.isEmpty()) {
+            throw new ApiException(ReviewErrorCode.IMAGE_REQUIRED);
+        }
+
+        // 파일 확장자 검사
+        String originalFilename = multipartFile.getOriginalFilename();
+        String extension = getExtension(originalFilename);
+        if (!isValidImageExtension(extension)) {
+            throw new ApiException(ReviewErrorCode.INVALID_IMAGE_FORMAT);
+        }
+
+        // 파일 크기 검사 (5MB 제한)
+        if (multipartFile.getSize() > 5 * 1024 * 1024) {
+            throw new ApiException(ReviewErrorCode.IMAGE_TOO_LARGE);
+        }
+
+        try {
+            String imageUrl = fileStorageService.storeFile(multipartFile);
+
+            ReviewImageEntity imageEntity = ReviewImageEntity.builder()
+                    .userId(userId)
+                    .imageUrl(imageUrl)
+                    .fileName(originalFilename)
+                    .fileType(multipartFile.getContentType())
+                    .fileSize((int) multipartFile.getSize())
+                    .isActive(true)
+                    // review는 null (나중에 리뷰 생성 시 연결)
+                    // displayOrder는 null (리뷰 연결 시 설정)
+                    .build();
+            ReviewImageEntity savedImage = reviewImageRepository.save(imageEntity);
+
+            return ReviewImageUploadResponseDto.from(savedImage);
+        } catch (IOException e) {
+            throw new ApiException(ReviewErrorCode.IMAGE_UPLOAD_FAIL);
+        }
+    }
+
+
 
     // 메서드
+
+    // 파일 확장자 추출
+    private String getExtension(String filename) {
+        if (filename == null) return "";
+        int lastDotIndex = filename.lastIndexOf(".");
+        if (lastDotIndex == -1) return "";
+        return filename.substring(lastDotIndex + 1).toLowerCase();
+    }
+
+    // 이미지 확장자 검증
+    private boolean isValidImageExtension(String extension) {
+        return Arrays.asList("jpg", "jpeg", "png", "gif").contains(extension);
+    }
 
     // 이미지 연결
     private List<ReviewImageEntity> connectImagesToReview(List<Long> imageIds, ReviewEntity review) {
@@ -193,6 +257,10 @@ public class ReviewService {
                     }
 
                     image.updateReview(review);
+
+                    // displayOrder 설정 (순서대로 1, 2, 3...)
+                    int orderIndex = imageIds.indexOf(imageId) + 1;
+                    image.updateDisplayOrder((byte) orderIndex);
 
                     return reviewImageRepository.save(image);
                 })
