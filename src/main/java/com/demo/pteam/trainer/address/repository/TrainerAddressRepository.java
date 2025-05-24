@@ -5,4 +5,5 @@ import java.util.Optional;
 
 public interface TrainerAddressRepository {
     TrainerAddress save(TrainerAddress address);
+    Optional<TrainerAddress> findById(Long addressId);
 }
