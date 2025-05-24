@@ -28,4 +28,9 @@ public class TrainerProfileRepositoryImpl implements TrainerProfileRepository {
     trainerProfileJPARepository.save(entity);
   }
 
+  @Override
+  public Optional<TrainerProfileEntity> findEntityByUserId(Long userId) {
+    return trainerProfileJPARepository.findDetailedProfileEntityByUserId(userId);
+  }
+
 }

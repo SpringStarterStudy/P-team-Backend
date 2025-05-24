@@ -6,6 +6,8 @@ import com.demo.pteam.trainer.address.repository.entity.TrainerAddressEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @RequiredArgsConstructor
 public class TrainerAddressRepositoryImpl implements TrainerAddressRepository {
@@ -38,6 +40,19 @@ public class TrainerAddressRepositoryImpl implements TrainerAddressRepository {
             saved.getPostalCode(),
             coordinates
     );
+  }
+
+  @Override
+  public Optional<TrainerAddress> findById(Long addressId) {
+    return jpaRepository.findById(addressId)
+            .map(entity -> new TrainerAddress(
+                    entity.getId(),
+                    entity.getNumberAddress(),
+                    entity.getRoadAddress(),
+                    entity.getDetailAddress(),
+                    entity.getPostalCode(),
+                    new Coordinates(entity.getLatitude(), entity.getLongitude())
+            ));
   }
 
 }
