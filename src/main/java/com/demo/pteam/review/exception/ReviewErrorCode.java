@@ -19,7 +19,12 @@ public enum ReviewErrorCode implements ErrorCode {
     NOT_REVIEW_OWNER(HttpStatus.FORBIDDEN,"R_010", "리뷰 작성자만 수정/삭제할 수 있습니다."),
     INVALID_CONTENT(HttpStatus.BAD_REQUEST, "R_011", "리뷰 내용이 유효하지 않습니다."),
     INVALID_RATING(HttpStatus.BAD_REQUEST, "R_012", "별점은 0.0-5.0 사이의 값이어야 합니다."),
-    REVIEW_EDIT_TIME_EXPIRED(HttpStatus.FORBIDDEN, "R_013", "리뷰 수정은 작성 후 48시간 이내에만 가능합니다.");
+    REVIEW_EDIT_TIME_EXPIRED(HttpStatus.FORBIDDEN, "R_013", "리뷰 수정은 작성 후 48시간 이내에만 가능합니다."),
+    IMAGE_REQUIRED(HttpStatus.BAD_REQUEST, "R_020", "이미지 파일이 필요합니다."),
+    INVALID_IMAGE_FORMAT(HttpStatus.BAD_REQUEST, "R_021", "지원하지 않는 이미지 형식입니다."),
+    IMAGE_TOO_LARGE(HttpStatus.BAD_REQUEST, "R_022", "이미지 크기가 너무 큽니다."),
+    IMAGE_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "R_023", "이미지 업로드에 실패했습니다."),
+    NOT_IMAGE_OWNER(HttpStatus.FORBIDDEN, "R_024", "이미지 소유자만 삭제할 수 있습니다.");
 
     private final HttpStatus status;
     private final String code;
