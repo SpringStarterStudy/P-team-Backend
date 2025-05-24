@@ -83,6 +83,21 @@ public class ReviewService {
     }
 
 
+    /**
+     * 리뷰 ID로 조회하는 메서드
+     * @param reviewId 조회할 리뷰 ID
+     * @return 조회된 리뷰의 응답 DTO
+     */
+    public ReviewResponseDto findById(Long reviewId) {
+        ReviewEntity reviewEntity = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new ApiException(ReviewErrorCode.REVIEW_NOT_FOUND));
+
+        List<ReviewImageEntity> reviewImages = reviewImageRepository.findByReviewId(reviewId);
+
+        return new ReviewResponseDto(reviewEntity, reviewImages);
+    }
+
+
     // 메서드
 
     // 이미지 연결
