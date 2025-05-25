@@ -1,5 +1,6 @@
 package com.demo.pteam.trainer.profile.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -15,10 +16,18 @@ public class TrainerProfileResponse {
   private String displayName;
   private String intro;
   private Integer credit;
+
+  @JsonFormat(pattern = "HH:mm")
   private LocalTime contactStartTime;
+
+  @JsonFormat(pattern = "HH:mm")
   private LocalTime contactEndTime;
   private String profileImg;
+
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime createdAt;
+
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime updatedAt;
 
   private Address address;
