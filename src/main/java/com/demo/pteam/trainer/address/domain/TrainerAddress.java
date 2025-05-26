@@ -22,10 +22,6 @@ public class TrainerAddress {
     this.coordinates = coordinates;
   }
 
-  public static TrainerAddress from(String roadAddress, String detailAddress, Coordinates coordinates) {
-    return new TrainerAddress(null, null, roadAddress, detailAddress, null, coordinates);
-  }
-
   public void completeAddress(String numberAddress, String postalCode) {
     this.numberAddress = numberAddress;
     this.postalCode = postalCode;

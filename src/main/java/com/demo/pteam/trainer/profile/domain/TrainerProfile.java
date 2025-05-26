@@ -34,13 +34,6 @@ public class TrainerProfile {
     this.isNamePublic = isNamePublic;
   }
 
-  public static TrainerProfile of(Long userId, String name, String nickname, Long addressId, String profileImg,
-                                  String intro, Integer credit,
-                                  LocalTime contactStartTime, LocalTime contactEndTime, Boolean isNamePublic) {
-    return new TrainerProfile(null, userId, name, nickname, addressId, profileImg, intro, credit,
-            contactStartTime, contactEndTime, isNamePublic);
-  }
-
   public String getDisplayName() {
     return isNamePublic ? name : nickname;
   }

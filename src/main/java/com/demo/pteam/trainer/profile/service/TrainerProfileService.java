@@ -62,18 +62,7 @@ public class TrainerProfileService {
     TrainerAddress savedAddress = trainerAddressRepository.save(newAddress);
 
     // name, nickname 임시
-    TrainerProfile profile = TrainerProfile.of(
-            userId,
-            null,
-            null,
-            savedAddress.getId(),
-            request.getProfileImg(),
-            request.getIntro(),
-            request.getCredit(),
-            request.getContactStartTime(),
-            request.getContactEndTime(),
-            request.getIsNamePublic()
-    );
+    TrainerProfile profile = TrainerProfileMapper.toDomain(request, userId, savedAddress.getId());
 
     if (!profile.isProfileComplete()) {
       throw new ApiException(TrainerProfileErrorCode.PROFILE_INCOMPLETE);

@@ -4,6 +4,7 @@ package com.demo.pteam.trainer.profile.mapper;
 import com.demo.pteam.authentication.repository.entity.AccountEntity;
 import com.demo.pteam.trainer.address.domain.TrainerAddress;
 import com.demo.pteam.trainer.address.repository.entity.TrainerAddressEntity;
+import com.demo.pteam.trainer.profile.controller.dto.TrainerProfileRequest;
 import com.demo.pteam.trainer.profile.controller.dto.TrainerProfileResponse;
 import com.demo.pteam.trainer.profile.domain.TrainerProfile;
 import com.demo.pteam.trainer.profile.repository.entity.TrainerProfileEntity;
@@ -67,5 +68,22 @@ public class TrainerProfileMapper {
                     .longitude(address.getCoordinates().getLongitude())
                     .build())
             .build();
+  }
+
+  // 요청 DTO -> 도메인
+  public static TrainerProfile toDomain(TrainerProfileRequest dto, Long userId, Long addressId) {
+    return new TrainerProfile(
+            null,
+            userId,
+            null,
+            null,
+            addressId,
+            dto.getProfileImg(),
+            dto.getIntro(),
+            dto.getCredit(),
+            dto.getContactStartTime(),
+            dto.getContactEndTime(),
+            dto.getIsNamePublic()
+    );
   }
 }
