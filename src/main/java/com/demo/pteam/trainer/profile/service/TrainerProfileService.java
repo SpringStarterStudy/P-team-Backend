@@ -3,6 +3,7 @@ package com.demo.pteam.trainer.profile.service;
 import com.demo.pteam.external.kakao.dto.KakaoGeoResponse;
 import com.demo.pteam.external.kakao.service.KakaoMapService;
 import com.demo.pteam.global.exception.ApiException;
+import com.demo.pteam.trainer.address.domain.Coordinates;
 import com.demo.pteam.trainer.address.domain.TrainerAddress;
 import com.demo.pteam.trainer.address.exception.TrainerAddressErrorCode;
 import com.demo.pteam.trainer.address.mapper.TrainerAddressMapper;
@@ -15,14 +16,14 @@ import com.demo.pteam.trainer.profile.mapper.TrainerProfileMapper;
 import com.demo.pteam.trainer.profile.repository.TrainerProfileRepository;
 import com.demo.pteam.trainer.profile.repository.entity.TrainerProfileEntity;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class TrainerProfileService {
 
   private final TrainerProfileRepository trainerProfileRepository;
@@ -36,8 +37,32 @@ public class TrainerProfileService {
    */
   public void createProfile(TrainerProfileRequest request, Long userId) {
     // TODO: '회원'이 아닌 '트레이너' 확인 여부
+    log.info("📌 profileImg = {}", request.getProfileImg());
+    log.info("📌 intro = {}", request.getIntro());
+    log.info("📌 credit = {}", request.getCredit());
+    log.info("📌 contactStartTime = {}", request.getContactStartTime());
+    log.info("📌 contactEndTime = {}", request.getContactEndTime());
+    log.info("📌 isNamePublic = {}", request.getIsNamePublic());
+
+    TrainerProfileRequest.Address addr = request.getAddress();
+    log.info("📍 address.roadAddress = {}", addr.getRoadAddress());
+    log.info("📍 address.detailAddress = {}", addr.getDetailAddress());
+    log.info("📍 address.latitude = {}", addr.getLatitude());
+    log.info("📍 address.longitude = {}", addr.getLongitude());
 
     TrainerAddress newAddress = TrainerAddressMapper.toDomain(request.getAddress());
+
+    Coordinates coordinates = newAddress.getCoordinates();
+
+    if (coordinates.isNull()) {
+      throw new ApiException(TrainerAddressErrorCode.COORDINATES_NULL);
+    }
+    if (coordinates.isInvalidLatitude()) {
+      throw new ApiException(TrainerAddressErrorCode.INVALID_LATITUDE);
+    }
+    if (coordinates.isInvalidLongitude()) {
+      throw new ApiException(TrainerAddressErrorCode.INVALID_LONGITUDE);
+    }
 
     KakaoGeoResponse response = kakaoMapService.requestCoordToAddress(
             newAddress.getCoordinates().getLatitude(),
@@ -54,25 +79,20 @@ public class TrainerProfileService {
       throw new ApiException(TrainerAddressErrorCode.ADDRESS_COORDINATE_MISMATCH);
     }
 
-    newAddress.completeAddress(
+    TrainerAddress completedAddress = newAddress.withCompletedAddress(
             document.getAddress().getAddressName(),
             document.getRoadAddress().getZoneNo()
     );
 
-    TrainerAddress savedAddress = trainerAddressRepository.save(newAddress);
+    TrainerAddress savedAddress = trainerAddressRepository.save(completedAddress);
 
-    // name, nickname 임시
+    // name, nickname 임시 null
     TrainerProfile profile = TrainerProfileMapper.toDomain(request, userId, savedAddress.getId());
 
-    if (!profile.isProfileComplete()) {
-      throw new ApiException(TrainerProfileErrorCode.PROFILE_INCOMPLETE);
-    }
-
-    if (!profile.isContactTimePairValid()) {
+    if (profile.isInvalidContactTimePair()) {
       throw new ApiException(TrainerProfileErrorCode.INVALID_CONTACT_TIME_PAIR);
     }
-
-    if (!profile.isValidContatTimeRange()) {
+    if (profile.isInvalidContactTimeRange()) {
       throw new ApiException(TrainerProfileErrorCode.INVALID_CONTACT_TIME_RANGE);
     }
 

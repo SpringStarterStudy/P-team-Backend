@@ -4,13 +4,12 @@ import lombok.Getter;
 
 @Getter
 public class TrainerAddress {
-
   private final Long id;
-  private String numberAddress;
+  private final String numberAddress;
   private final String roadAddress;
   private final String detailAddress;
-  private String postalCode;
-  private Coordinates coordinates;
+  private final String postalCode;
+  private final Coordinates coordinates;
 
   public TrainerAddress(Long id, String numberAddress, String roadAddress, String detailAddress,
                         String postalCode, Coordinates coordinates) {
@@ -22,9 +21,15 @@ public class TrainerAddress {
     this.coordinates = coordinates;
   }
 
-  public void completeAddress(String numberAddress, String postalCode) {
-    this.numberAddress = numberAddress;
-    this.postalCode = postalCode;
+  public TrainerAddress withCompletedAddress(String numberAddress, String postalCode) {
+    return new TrainerAddress(
+            this.id,
+            numberAddress,
+            this.roadAddress,
+            this.detailAddress,
+            postalCode,
+            this.coordinates
+    );
   }
 
   public boolean matchesRoadAddress(String kakaoRoadAddress) {

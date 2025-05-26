@@ -38,21 +38,13 @@ public class TrainerProfile {
     return isNamePublic ? name : nickname;
   }
 
-  public boolean isContactTimePairValid() {
-    return (contactStartTime == null && contactEndTime == null) ||
-            (contactStartTime != null && contactEndTime != null);
+  public boolean isInvalidContactTimePair() {
+    return !(contactStartTime == null && contactEndTime == null) &&
+            !(contactStartTime != null && contactEndTime != null);
   }
 
-  public boolean hasContactTime() {
-    return contactStartTime != null && contactEndTime != null;
-  }
-
-  public boolean isValidContatTimeRange() {
-    return hasContactTime() && !contactStartTime.isAfter(contactEndTime);
-  }
-
-  public boolean isProfileComplete() {
-    return userId != null && isNamePublic != null;
+  public boolean isInvalidContactTimeRange() {
+    return contactStartTime != null && contactEndTime != null && contactStartTime.isAfter(contactEndTime);
   }
 
 }

@@ -70,7 +70,7 @@ public class TrainerProfileMapper {
             .build();
   }
 
-  // 요청 DTO -> 도메인
+  // 프로필 요청 DTO -> 프로필 도메인
   public static TrainerProfile toDomain(TrainerProfileRequest dto, Long userId, Long addressId) {
     return new TrainerProfile(
             null,
