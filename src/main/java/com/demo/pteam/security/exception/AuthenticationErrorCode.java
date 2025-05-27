@@ -10,7 +10,7 @@ public enum AuthenticationErrorCode implements ErrorCode {
     ACCOUNT_SUSPENDED(HttpStatus.FORBIDDEN, "A_006", "계정이 정지된 상태입니다."),
     NOT_AUTHENTICATED(HttpStatus.UNAUTHORIZED, "A_008", "로그인이 필요합니다."),
     INVALID_ACCESS(HttpStatus.FORBIDDEN, "A_009", "접근 권한이 없습니다."),
-    INVALID_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "A_011", "인증 정보가 유효하지 않습니다. 다시 로그인해 주세요."),
+    INVALID_AUTHENTICATION(HttpStatus.UNAUTHORIZED, "A_011", "인증 정보가 유효하지 않습니다."),
     AUTHENTICATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "A_012", "사용자 인증에 실패했습니다."),
     AUTHORIZATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "A_014", "접근 권한 확인에 실패했습니다."),
     LOGIN_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "A_017", "로그인에 실패했습니다."),
