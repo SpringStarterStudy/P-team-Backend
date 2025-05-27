@@ -1,0 +1,1 @@
+ALTER TABLE trainer_profile ADD CONSTRAINT uq_trainer_user UNIQUE (user_id);

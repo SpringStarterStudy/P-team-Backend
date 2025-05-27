@@ -2,9 +2,12 @@ package com.demo.pteam.trainer.address.repository;
 
 import com.demo.pteam.trainer.address.domain.Coordinates;
 import com.demo.pteam.trainer.address.domain.TrainerAddress;
+import com.demo.pteam.trainer.address.mapper.TrainerAddressMapper;
 import com.demo.pteam.trainer.address.repository.entity.TrainerAddressEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -14,15 +17,7 @@ public class TrainerAddressRepositoryImpl implements TrainerAddressRepository {
 
   @Override
   public TrainerAddress save(TrainerAddress address) {
-    TrainerAddressEntity entity = TrainerAddressEntity.builder()
-            .numberAddress(address.getNumberAddress())
-            .roadAddress(address.getRoadAddress())
-            .detailAddress(address.getDetailAddress())
-            .postalCode(address.getPostalCode())
-            .latitude(address.getCoordinates().getLatitude())
-            .longitude(address.getCoordinates().getLongitude())
-            .build();
-
+    TrainerAddressEntity entity = TrainerAddressMapper.toEntity(address);
     TrainerAddressEntity saved = jpaRepository.save(entity);
 
     Coordinates coordinates = new Coordinates(
@@ -38,6 +33,19 @@ public class TrainerAddressRepositoryImpl implements TrainerAddressRepository {
             saved.getPostalCode(),
             coordinates
     );
+  }
+
+  @Override
+  public Optional<TrainerAddress> findById(Long addressId) {
+    return jpaRepository.findById(addressId)
+            .map(entity -> new TrainerAddress(
+                    entity.getId(),
+                    entity.getNumberAddress(),
+                    entity.getRoadAddress(),
+                    entity.getDetailAddress(),
+                    entity.getPostalCode(),
+                    new Coordinates(entity.getLatitude(), entity.getLongitude())
+            ));
   }
 
 }
