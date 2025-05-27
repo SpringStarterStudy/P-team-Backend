@@ -1,18 +1,18 @@
 package com.demo.pteam.trainer.address.domain;
 
-import com.demo.pteam.global.exception.ApiException;
-import com.demo.pteam.trainer.address.exception.TrainerAddressErrorCode;
 import lombok.Getter;
+
+import java.util.Objects;
 
 @Getter
 public class TrainerAddress {
 
   private final Long id;
-  private String numberAddress;
+  private final String numberAddress;
   private final String roadAddress;
   private final String detailAddress;
-  private String postalCode;
-  private Coordinates coordinates;
+  private final String postalCode;
+  private final Coordinates coordinates;
 
   public TrainerAddress(Long id, String numberAddress, String roadAddress, String detailAddress,
                         String postalCode, Coordinates coordinates) {
@@ -24,17 +24,34 @@ public class TrainerAddress {
     this.coordinates = coordinates;
   }
 
-  public static TrainerAddress from(String roadAddress, String detailAddress, Coordinates coordinates) {
-    return new TrainerAddress(null, null, roadAddress, detailAddress, null, coordinates);
-  }
-
-  public void completeAddress(String numberAddress, String postalCode) {
-    this.numberAddress = numberAddress;
-    this.postalCode = postalCode;
+  public TrainerAddress withCompletedAddress(String numberAddress, String postalCode) {
+    return new TrainerAddress(
+            this.id,
+            numberAddress,
+            this.roadAddress,
+            this.detailAddress,
+            postalCode,
+            this.coordinates
+    );
   }
 
   public boolean matchesRoadAddress(String kakaoRoadAddress) {
     return this.roadAddress.equals(kakaoRoadAddress);
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    TrainerAddress that = (TrainerAddress) o;
+
+    return Objects.equals(this.roadAddress, that.roadAddress) &&
+            Objects.equals(this.detailAddress, that.detailAddress) &&
+            this.coordinates.equals(that.coordinates);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(roadAddress, detailAddress, coordinates);
+  }
 }
