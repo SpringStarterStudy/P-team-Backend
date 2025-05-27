@@ -16,14 +16,12 @@ import com.demo.pteam.trainer.profile.mapper.TrainerProfileMapper;
 import com.demo.pteam.trainer.profile.repository.TrainerProfileRepository;
 import com.demo.pteam.trainer.profile.repository.entity.TrainerProfileEntity;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
-@Slf4j
 public class TrainerProfileService {
 
   private final TrainerProfileRepository trainerProfileRepository;
@@ -37,18 +35,6 @@ public class TrainerProfileService {
    */
   public void createProfile(TrainerProfileRequest request, Long userId) {
     // TODO: '회원'이 아닌 '트레이너' 확인 여부
-    log.info("📌 profileImg = {}", request.getProfileImg());
-    log.info("📌 intro = {}", request.getIntro());
-    log.info("📌 credit = {}", request.getCredit());
-    log.info("📌 contactStartTime = {}", request.getContactStartTime());
-    log.info("📌 contactEndTime = {}", request.getContactEndTime());
-    log.info("📌 isNamePublic = {}", request.getIsNamePublic());
-
-    TrainerProfileRequest.Address addr = request.getAddress();
-    log.info("📍 address.roadAddress = {}", addr.getRoadAddress());
-    log.info("📍 address.detailAddress = {}", addr.getDetailAddress());
-    log.info("📍 address.latitude = {}", addr.getLatitude());
-    log.info("📍 address.longitude = {}", addr.getLongitude());
 
     TrainerAddress newAddress = TrainerAddressMapper.toDomain(request.getAddress());
 
@@ -92,6 +78,7 @@ public class TrainerProfileService {
     if (profile.isInvalidContactTimePair()) {
       throw new ApiException(TrainerProfileErrorCode.INVALID_CONTACT_TIME_PAIR);
     }
+
     if (profile.isInvalidContactTimeRange()) {
       throw new ApiException(TrainerProfileErrorCode.INVALID_CONTACT_TIME_RANGE);
     }
