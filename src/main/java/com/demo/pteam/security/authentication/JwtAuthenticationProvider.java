@@ -53,7 +53,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             if (userDetails.isSuspended()) {
                 throw new DisabledException("Disabled");
             }
-            return jwtService.reissue(userDetails);
+            return jwtService.reissue(userDetails, refreshToken);
         } catch (ExpiredJwtException e) {     // refreshToken 만료
             throw new ExpiredTokenException("Expired JWT token");
         } catch (UsernameNotFoundException e) {

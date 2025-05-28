@@ -4,6 +4,8 @@ import com.demo.pteam.security.authentication.dto.JwtReissueResult;
 import com.demo.pteam.security.authentication.dto.JwtToken;
 import com.demo.pteam.security.dto.JwtAccountInfo;
 import com.demo.pteam.security.jwt.JwtProvider;
+import com.demo.pteam.security.jwt.TokenBlackList;
+import com.demo.pteam.security.jwt.TokenData;
 import com.demo.pteam.security.jwt.TokenStore;
 import com.demo.pteam.security.principal.PrincipalFactory;
 import com.demo.pteam.security.principal.UserPrincipal;
@@ -20,33 +22,64 @@ public class JwtService {
     private final JwtProvider jwtProvider;
     private final JwtUserDetailsService jwtUserDetailsService;
     private final TokenStore tokenStore;
+    private final TokenBlackList tokenBlackList;
 
     @Value("${jwt.refresh-token-ttl}")
     private long refreshTokenTTL;
 
-    public JwtService(JwtProvider jwtProvider, JwtUserDetailsService jwtUserDetailsService, TokenStore tokenStore) {
+    public JwtService(JwtProvider jwtProvider, JwtUserDetailsService jwtUserDetailsService, TokenStore tokenStore, TokenBlackList tokenBlackList) {
         this.jwtProvider = jwtProvider;
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.tokenStore = tokenStore;
+        this.tokenBlackList = tokenBlackList;
     }
 
     public JwtUserDetails<JwtAccountInfo> loadUser(String refreshToken) throws IllegalArgumentException, JwtException, UsernameNotFoundException {
-        Claims claims = parseClaims(refreshToken);
-        Long id = Long.valueOf(claims.getSubject());
-        if (tokenStore.isInvalid(id, refreshToken)) {
+        Long id = extractSubject(refreshToken);
+        validateToken(refreshToken, id);
+        return jwtUserDetailsService.loadUserById(id);
+    }
+
+    public void invalidateRefreshToken(String refreshToken, String reason) throws IllegalArgumentException, JwtException {
+        String rawRefreshToken = removeBearerPrefix(refreshToken);
+        Long id = extractSubject(rawRefreshToken);
+        validateToken(rawRefreshToken, id);
+        saveBlackList(id, rawRefreshToken, reason);
+    }
+
+    private String removeBearerPrefix(String token) {
+        String prefix = "Bearer ";
+        return token.startsWith(prefix)
+                ? token.substring(prefix.length())
+                : token;
+    }
+
+    private Long extractSubject(String token) throws IllegalArgumentException, JwtException {
+        Claims claims = parseClaims(token);
+        return Long.valueOf(claims.getSubject());
+    }
+
+    private void validateToken(String refreshToken, Long id) throws JwtException {
+        if (tokenStore.isInvalid(id, refreshToken) || tokenBlackList.isBlackListed(refreshToken)) {
             throw new JwtException("Invalid JWT");
         }
-        return jwtUserDetailsService.loadUserById(id);
     }
 
     public Claims parseClaims(String token) throws IllegalArgumentException, JwtException {
         return jwtProvider.parseClaims(token);
     }
 
-    public JwtReissueResult reissue(JwtUserDetails<JwtAccountInfo> userDetails) {
+    public JwtReissueResult reissue(JwtUserDetails<JwtAccountInfo> userDetails, String refreshToken) {
         UserPrincipal principal = PrincipalFactory.fromUser(userDetails);
+        saveBlackList(principal.id(), refreshToken, "reissue");
         JwtToken jwtToken = createJwtToken(principal);
         return new JwtReissueResult(principal, jwtToken);
+    }
+
+    private void saveBlackList(Long id, String refreshToken, String reason) throws JwtException {
+        TokenData tokenData = tokenStore.findByAccountId(id).orElseThrow(() -> new JwtException("Invalid JWT"));
+        tokenStore.delete(id);
+        tokenBlackList.save(refreshToken, reason, tokenData.expirationMillis());
     }
 
     public JwtToken createJwtToken(UserPrincipal principal) {

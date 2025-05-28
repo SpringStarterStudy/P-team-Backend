@@ -9,7 +9,6 @@ import com.demo.pteam.security.authentication.handler.JwtAuthenticationFailureHa
 import com.demo.pteam.security.authentication.handler.JwtAuthenticationSuccessHandler;
 import com.demo.pteam.security.configurer.ApiLoginConfigurer;
 import com.demo.pteam.security.configurer.JwtAuthenticationConfigurer;
-import com.demo.pteam.security.jwt.JwtProvider;
 import com.demo.pteam.security.login.handler.LoginAuthenticationFailureHandler;
 import com.demo.pteam.security.login.handler.LoginAuthenticationSuccessHandler;
 import com.demo.pteam.security.login.LoginAuthenticationProvider;
@@ -53,12 +52,14 @@ public class SecurityConfig {
                 )
                 .with(new JwtAuthenticationConfigurer(objectMapper), config -> config
                         .authenticationManager(authenticationManager)
+                        .logoutPath("/api/auths/logout")
                         .successHandler(new JwtAuthenticationSuccessHandler())
                         .failureHandler(new JwtAuthenticationFailureHandler())
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/auths/login").permitAll()
+                        .requestMatchers("/api/auths/logout").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new ApiAuthenticationEntryPoint(objectMapper))

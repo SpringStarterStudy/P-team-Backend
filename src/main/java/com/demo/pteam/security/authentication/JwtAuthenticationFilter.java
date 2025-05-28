@@ -13,6 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolderStrategy;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -22,6 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private AuthenticationManager authenticationManager;
     private AuthenticationSuccessHandler successHandler;
     private AuthenticationFailureHandler failureHandler;
+    private RequestMatcher logoutPathRequestMatcher = new AntPathRequestMatcher("/api/auths/logout");
 
     public void setAuthenticationManager(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;
@@ -35,12 +38,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.failureHandler = failureHandler;
     }
 
+    public void setLogoutPathRequestMatcher(RequestMatcher logoutPathRequestMatcher) {
+        this.logoutPathRequestMatcher = logoutPathRequestMatcher;
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException, AuthenticationException {
         try {
-            Authentication authResult = this.attemptAuthentication(request);
-            if (authResult != null) {
-                this.successfulAuthentication(request, response, authResult);
+            if (!this.logoutPathRequestMatcher.matches(request)) {   // 로그아웃 경로일 경우 accessToken 인증 무시
+                Authentication authResult = this.attemptAuthentication(request);
+                if (authResult != null) {
+                    this.successfulAuthentication(request, response, authResult);
+                }
             }
             chain.doFilter(request, response);
         } catch (AuthenticationException e) {
