@@ -9,9 +9,13 @@ public class TrainerAddressMapper {
   // 요청 DTO -> 도메인 변환
   public static TrainerAddress toDomain(TrainerProfileRequest.Address dto) {
     Coordinates coordinates = new Coordinates(dto.getLatitude(), dto.getLongitude());
-    return TrainerAddress.from(
+
+    return new TrainerAddress(
+            null,
+            null,
             dto.getRoadAddress(),
             dto.getDetailAddress(),
+            null,
             coordinates
     );
   }

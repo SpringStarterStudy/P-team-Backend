@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalTime;
 
@@ -15,6 +17,8 @@ import java.time.LocalTime;
 @Table(name = "trainer_profile")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE trainer_profile SET deleted_at = NOW() WHERE id = ?")
+@Where(clause = "deleted_at IS NULL")
 public class TrainerProfileEntity extends SoftDeletableEntity {
 
     @Id
@@ -22,7 +26,7 @@ public class TrainerProfileEntity extends SoftDeletableEntity {
     private Long id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private AccountEntity trainer;
 
     @OneToOne(fetch = FetchType.LAZY)
