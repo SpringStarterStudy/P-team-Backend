@@ -46,6 +46,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auths/login").permitAll()
+                        .requestMatchers("/api/trainers/**").permitAll() // 임시
                         .anyRequest().authenticated());
 
         return http.build();
