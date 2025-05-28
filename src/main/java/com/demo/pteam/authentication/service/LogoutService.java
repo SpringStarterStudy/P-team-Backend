@@ -1,7 +1,7 @@
 package com.demo.pteam.authentication.service;
 
 import com.demo.pteam.global.exception.ApiException;
-import com.demo.pteam.security.authentication.JwtService;
+import com.demo.pteam.security.jwt.JwtService;
 import com.demo.pteam.security.exception.AuthenticationErrorCode;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;

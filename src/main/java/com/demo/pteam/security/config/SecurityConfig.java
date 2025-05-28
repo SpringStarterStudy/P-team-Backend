@@ -3,7 +3,7 @@ package com.demo.pteam.security.config;
 import com.demo.pteam.authentication.service.AccountService;
 import com.demo.pteam.security.authentication.ApiAccessDeniedHandler;
 import com.demo.pteam.security.authentication.ApiAuthenticationEntryPoint;
-import com.demo.pteam.security.authentication.JwtService;
+import com.demo.pteam.security.jwt.JwtService;
 import com.demo.pteam.security.authentication.JwtAuthenticationProvider;
 import com.demo.pteam.security.authentication.handler.JwtAuthenticationFailureHandler;
 import com.demo.pteam.security.authentication.handler.JwtAuthenticationSuccessHandler;

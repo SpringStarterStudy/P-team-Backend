@@ -3,9 +3,10 @@ package com.demo.pteam.security.authentication;
 import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.security.authentication.dto.JwtReissueResult;
 import com.demo.pteam.security.authentication.dto.JwtToken;
-import com.demo.pteam.security.dto.JwtAccountInfo;
 import com.demo.pteam.security.exception.ExpiredTokenException;
 import com.demo.pteam.security.exception.InvalidJwtException;
+import com.demo.pteam.security.jwt.JwtService;
+import com.demo.pteam.security.jwt.exception.DisabledAccountException;
 import com.demo.pteam.security.principal.PrincipalFactory;
 import com.demo.pteam.security.principal.UserPrincipal;
 import io.jsonwebtoken.Claims;
@@ -49,11 +50,9 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private JwtReissueResult reissueToken(String refreshToken) {
         try {
-            JwtUserDetails<JwtAccountInfo> userDetails = jwtService.loadUser(refreshToken);
-            if (userDetails.isSuspended()) {
-                throw new DisabledException("Disabled");
-            }
-            return jwtService.reissue(userDetails, refreshToken);
+            return jwtService.reissue(refreshToken);
+        } catch (DisabledAccountException e) {  // 계정 정지
+            throw new DisabledException("Disabled");
         } catch (ExpiredJwtException e) {     // refreshToken 만료
             throw new ExpiredTokenException("Expired JWT token");
         } catch (UsernameNotFoundException e) {

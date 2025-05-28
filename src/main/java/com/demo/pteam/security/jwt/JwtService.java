@@ -1,12 +1,11 @@
-package com.demo.pteam.security.authentication;
+package com.demo.pteam.security.jwt;
 
+import com.demo.pteam.security.authentication.JwtUserDetails;
+import com.demo.pteam.security.authentication.JwtUserDetailsService;
 import com.demo.pteam.security.authentication.dto.JwtReissueResult;
 import com.demo.pteam.security.authentication.dto.JwtToken;
 import com.demo.pteam.security.dto.JwtAccountInfo;
-import com.demo.pteam.security.jwt.JwtProvider;
-import com.demo.pteam.security.jwt.TokenBlackList;
-import com.demo.pteam.security.jwt.TokenData;
-import com.demo.pteam.security.jwt.TokenStore;
+import com.demo.pteam.security.jwt.exception.DisabledAccountException;
 import com.demo.pteam.security.principal.PrincipalFactory;
 import com.demo.pteam.security.principal.UserPrincipal;
 import io.jsonwebtoken.Claims;
@@ -34,7 +33,7 @@ public class JwtService {
         this.tokenBlackList = tokenBlackList;
     }
 
-    public JwtUserDetails<JwtAccountInfo> loadUser(String refreshToken) throws IllegalArgumentException, JwtException, UsernameNotFoundException {
+    private JwtUserDetails<JwtAccountInfo> loadUser(String refreshToken) throws IllegalArgumentException, JwtException, UsernameNotFoundException {
         Long id = extractSubject(refreshToken);
         validateToken(refreshToken, id);
         return jwtUserDetailsService.loadUserById(id);
@@ -69,7 +68,11 @@ public class JwtService {
         return jwtProvider.parseClaims(token);
     }
 
-    public JwtReissueResult reissue(JwtUserDetails<JwtAccountInfo> userDetails, String refreshToken) {
+    public JwtReissueResult reissue(String refreshToken) throws DisabledAccountException, IllegalArgumentException, JwtException, UsernameNotFoundException {
+        JwtUserDetails<JwtAccountInfo> userDetails = loadUser(refreshToken);
+        if (userDetails.isSuspended()) {
+            throw new DisabledAccountException("Disabled");
+        }
         UserPrincipal principal = PrincipalFactory.fromUser(userDetails);
         saveBlackList(principal.id(), refreshToken, "reissue");
         JwtToken jwtToken = createJwtToken(principal);
