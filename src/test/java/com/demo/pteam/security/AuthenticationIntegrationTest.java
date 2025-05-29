@@ -8,8 +8,6 @@ import com.demo.pteam.security.jwt.JwtProvider;
 import com.demo.pteam.security.jwt.TokenData;
 import com.demo.pteam.security.jwt.TokenStore;
 import com.demo.pteam.security.principal.UserPrincipal;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -23,7 +21,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
@@ -72,13 +69,10 @@ public class AuthenticationIntegrationTest {
 
     private static final Date NOW = createDate(2025, 5, 14, 16, 28, 20);
 
-    private static final long REFRESH_TOKEN_EXPIRATION = 1747812500L;
+    private static final long REFRESH_TOKEN_EXPIRATION = 1747812500000L;
 
     @Value("${jwt.secret}")
     public String jwtSecretKey;
-
-    @Value("${jwt.access-token-ttl}")
-    private long accessTokenTTL;
 
     @Value("${jwt.refresh-token-ttl}")
     private long refreshTokenTTL;
@@ -90,13 +84,10 @@ public class AuthenticationIntegrationTest {
     private WebApplicationContext context;
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockitoSpyBean
     private JwtService jwtService;
 
-    @MockitoBean
+    @MockitoSpyBean
     private JwtProvider jwtProvider;
 
     @MockitoSpyBean
@@ -115,7 +106,20 @@ public class AuthenticationIntegrationTest {
         Map<Long, TokenData> store = (Map<Long, TokenData>) ReflectionTestUtils.getField(tokenStore, "store");
         store.put(1L, spyTokenData);
 
-        doAnswer(invocation -> NOW.getTime() > REFRESH_TOKEN_EXPIRATION * 1000).when(spyTokenData).isExpired();
+        doReturn(NOW.getTime() > REFRESH_TOKEN_EXPIRATION).when(spyTokenData).isExpired();
+
+        doAnswer(invocation -> {
+            String token = invocation.getArgument(0);
+            return jwtDecode(token, jwtSecretKey, NOW);
+        }).when(jwtProvider).parseClaims(anyString());
+
+        doAnswer(invocation -> {
+            UserPrincipal principal = invocation.getArgument(0);
+            String accessToken = jwtProvider.generateAccessToken(principal, NOW);
+            String refreshToken = jwtProvider.generateRefreshToken(principal, NOW);
+            tokenStore.save(principal.id(), refreshToken, NOW.getTime() + refreshTokenTTL);
+            return JwtToken.ofRaw(accessToken, refreshToken);
+        }).when(jwtService).createJwtToken(any(UserPrincipal.class));
     }
 
     @DisplayName("인증")
@@ -123,11 +127,6 @@ public class AuthenticationIntegrationTest {
     void authentication() throws Exception {
         // given
         HttpHeaders headers = getHttpHeaders(AUTHORIZATION_HEADER, REFRESH_TOKEN_HEADER);
-        when(jwtProvider.parseClaims(anyString()))
-                .thenAnswer(invocation -> {
-                    String token = invocation.getArgument(0);
-                    return parseClaims(token, NOW);
-                });
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -173,38 +172,9 @@ public class AuthenticationIntegrationTest {
     @Test
     void reissueToken_whenExpiredAccessToken() throws Exception {
         // given
-        Date now = createDate(2025, 5, 17, 0, 0, 0);
-        HttpHeaders headers = getHttpHeaders(AUTHORIZATION_HEADER, REFRESH_TOKEN_HEADER);
-
-        doAnswer(invocation ->  now.getTime() > REFRESH_TOKEN_EXPIRATION * 1000).when(spyTokenData).isExpired();
-
-        doAnswer(invocation -> {
-            UserPrincipal principal = invocation.getArgument(0);
-            String accessToken = jwtProvider.generateAccessToken(principal, now);
-            String refreshToken = jwtProvider.generateRefreshToken(principal, now);
-            tokenStore.save(principal.id(), refreshToken, now.getTime() + refreshTokenTTL);
-            return JwtToken.ofRaw(accessToken, refreshToken);
-        }).when(jwtService).createJwtToken(any(UserPrincipal.class));
-
-        when(jwtProvider.parseClaims(anyString()))
-                .thenAnswer(invocation -> {
-                    String token = invocation.getArgument(0);
-                    return parseClaims(token, now);
-                });
-
-        when(jwtProvider.generateAccessToken(any(UserPrincipal.class), any(Date.class)))
-                .thenAnswer(invocation -> {
-                    UserPrincipal principal = invocation.getArgument(0);
-                    Date date = invocation.getArgument(1);
-                    return generateAccessToken(principal, date);
-                });
-
-        when(jwtProvider.generateRefreshToken(any(UserPrincipal.class), any(Date.class)))
-                .thenAnswer(invocation -> {
-                    UserPrincipal principal = invocation.getArgument(0);
-                    Date date = invocation.getArgument(1);
-                    return generateRefreshToken(principal, date);
-                });
+        String expiredAccessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDcxOTc2OTksImV4cCI6MTc0NzIwMTI5OX0.N_rIOLOXpRwJePbV2rXXldzZCZpVTPodV1HtAg1pTo4";
+        String authorizationHeader = PREFIX + expiredAccessToken;
+        HttpHeaders headers = getHttpHeaders(authorizationHeader, REFRESH_TOKEN_HEADER);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -212,8 +182,8 @@ public class AuthenticationIntegrationTest {
         );
 
         // then
-        String expectedAuthorizationHeader = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDc0MDc2MDAsImV4cCI6MTc0NzQxMTIwMH0.njsPH05b9znVXRA1bIVR1yMDW5W4Uc5veEbYJoBJO6g";
-        String expectedRefreshTokenHeader = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ3NDA3NjAwLCJleHAiOjE3NDgwMTI0MDB9.JzK0M_e6ESbM4--nRcg8Z92kR7SvML9oPBCrAq_3eMs";
+        String expectedAuthorizationHeader = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDcyMDc3MDAsImV4cCI6MTc0NzIxMTMwMH0.rDK2OWyTgu5XWEfqz5NOszPmxSOGinhMfaonuWbbZz4";
+        String expectedRefreshTokenHeader = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ3MjA3NzAwLCJleHAiOjE3NDc4MTI1MDB9.NXnMg9s2NpZFIgf6EmRdGpC9qyXDOWGbRklF39vOLBg";
         resultActions.andExpect(status().isOk())
                 .andExpect(header().string("Authorization", expectedAuthorizationHeader))
                 .andExpect(header().string("Refresh-Token", expectedRefreshTokenHeader));
@@ -223,13 +193,12 @@ public class AuthenticationIntegrationTest {
     @Test
     void expiredAllToken() throws Exception {
         // given
-        Date now = createDate(2025, 5, 31, 0, 0, 0);
-        HttpHeaders headers = getHttpHeaders(AUTHORIZATION_HEADER, REFRESH_TOKEN_HEADER);
-        when(jwtProvider.parseClaims(anyString()))
-                .thenAnswer(invocation -> {
-                    String token = invocation.getArgument(0);
-                    return parseClaims(token, now);
-                });
+        String expiredAccessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDYyMDc2OTksImV4cCI6MTc0NjIxMTI5OX0.hKvQt7OnZm9PrKwChdLoV2AOu8dl986KkadBGWl1Rwk";
+        String expiredRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ2MjA3NzAwLCJleHAiOjE3NDY4MTI1MDB9.RM0vvy-wmC4h85xCPMIdp4XZ6KJxghK7qs0-oZwsaLA";
+        String authorizationHeader = PREFIX + expiredAccessToken;
+        String refreshTokenHeader = PREFIX + expiredRefreshToken;
+
+        HttpHeaders headers = getHttpHeaders(authorizationHeader, refreshTokenHeader);
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -248,10 +217,10 @@ public class AuthenticationIntegrationTest {
     @ParameterizedTest
     @CsvSource({
             // 정지된 계정
-            PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDcyMDc2OTksImV4cCI6MTc0NzIxMTI5OX0.ECLFpWPv4zCMK23ePHIDGRcM90Xbo96_rylhh_85R4M," +
+            PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDcxOTc2OTksImV4cCI6MTc0NzIwMTI5OX0.6zGtTw13sWHLQS2RDTdjFFpn2YIcU269Vvas6kKT52g," +
                     PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzQ3MjA3NzAwLCJleHAiOjE3NDc4MTI1MDB9.t_haw0rj8zjwocm2SwOd9JV6Lo8FDOMCYZh-ULoISPw",
             // 사용자 정보 x
-            PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDAiLCJyb2xlIjoiUk9MRV9VU0VSIiwidmVyaWZpZWQiOnRydWUsImlhdCI6MTc0NzIwNzY5OSwiZXhwIjoxNzQ3MjExMjk5fQ.SSgiqa6srmV0LqqmvB5h80Y3MkI7dEQTkQrW1pRfFuY," +
+            PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDAiLCJyb2xlIjoiUk9MRV9VU0VSIiwidmVyaWZpZWQiOnRydWUsImlhdCI6MTc0NzE5NzY5OSwiZXhwIjoxNzQ3MjAxMjk5fQ.D_4lca0W-wCr-jRP-BgRTV8mOq2gLzKyLLMz5yU_bx4," +
                     PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDAiLCJpYXQiOjE3NDcyMDc3MDAsImV4cCI6MTc0NzgxMjUwMH0.rKQUzJKm6H1syrdFQEQ1WPvHHCSeWIhEXYHNhfiypsw",
             // 유효하지 않은 형식의 header
             ACCESS_TOKEN + "," + REFRESH_TOKEN,
@@ -260,13 +229,7 @@ public class AuthenticationIntegrationTest {
     })
     void invalidAuthentication(String authorizationHeader, String refreshTokenHeader) throws Exception {
         // given
-        Date now = createDate(2025, 5, 17, 0, 0, 0);
         HttpHeaders headers = getHttpHeaders(authorizationHeader, refreshTokenHeader);
-        when(jwtProvider.parseClaims(anyString()))
-                .thenAnswer(invocation -> {
-                    String token = invocation.getArgument(0);
-                    return parseClaims(token, now);
-                });
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -296,57 +259,17 @@ public class AuthenticationIntegrationTest {
         return headers;
     }
 
-    public String generateAccessToken(UserPrincipal principal, Date now) {
-        String sub = String.valueOf(principal.id());
-        Map<String, Object> claims = objectMapper.convertValue(principal, new TypeReference<>() {});
-        return TestJwtUtils.encode(sub, claims, jwtSecretKey, accessTokenTTL, now);
+    public static Claims jwtDecode(String token, String secretKey, Date now) throws JwtException {
+        return Jwts.parser()
+                .clock(() -> now)
+                .verifyWith(createSigningKey(secretKey))
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 
-    public String generateRefreshToken(UserPrincipal principal, Date now) {
-        String sub = String.valueOf(principal.id());
-        return TestJwtUtils.encode(sub, jwtSecretKey, refreshTokenTTL, now);
-    }
-
-    public Claims parseClaims(String token, Date now) throws JwtException {
-        return TestJwtUtils.decode(token, jwtSecretKey, now);
-    }
-
-    static class TestJwtUtils {
-        public static String encode(String subject, Map<String, Object> claims, String secretKey, Long expirationMillis, Date now) {
-            Date expiration = new Date(now.getTime() + expirationMillis);
-
-            return Jwts.builder()
-                    .subject(subject)
-                    .claims(claims)
-                    .issuedAt(now)
-                    .expiration(expiration)
-                    .signWith(createSigningKey(secretKey))
-                    .compact();
-        }
-
-        public static String encode(String subject, String secretKey, Long expirationMillis, Date now) {
-            Date expiration = new Date(now.getTime() + expirationMillis);
-
-            return Jwts.builder()
-                    .subject(subject)
-                    .issuedAt(now)
-                    .expiration(expiration)
-                    .signWith(createSigningKey(secretKey))
-                    .compact();
-        }
-
-        public static Claims decode(String token, String secretKey, Date now) throws JwtException {
-            return Jwts.parser()
-                    .clock(() -> now)
-                    .verifyWith(createSigningKey(secretKey))
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-        }
-
-        private static SecretKey createSigningKey(String secretKey) {
-            byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-            return Keys.hmacShaKeyFor(keyBytes);
-        }
+    private static SecretKey createSigningKey(String secretKey) {
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }
