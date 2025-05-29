@@ -1,7 +1,7 @@
 package com.demo.pteam.security;
 
 import com.demo.pteam.global.exception.ErrorCode;
-import com.demo.pteam.security.authentication.JwtService;
+import com.demo.pteam.security.jwt.JwtService;
 import com.demo.pteam.security.authentication.dto.JwtToken;
 import com.demo.pteam.security.exception.AuthenticationErrorCode;
 import com.demo.pteam.security.jwt.JwtProvider;
@@ -18,7 +18,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -116,7 +115,7 @@ public class AuthenticationIntegrationTest {
         Map<Long, TokenData> store = (Map<Long, TokenData>) ReflectionTestUtils.getField(tokenStore, "store");
         store.put(1L, spyTokenData);
 
-        doAnswer(invocation -> (NOW.getTime() / 1000) > REFRESH_TOKEN_EXPIRATION).when(spyTokenData).isExpired();
+        doAnswer(invocation -> NOW.getTime() > REFRESH_TOKEN_EXPIRATION * 1000).when(spyTokenData).isExpired();
     }
 
     @DisplayName("인증")
@@ -177,7 +176,7 @@ public class AuthenticationIntegrationTest {
         Date now = createDate(2025, 5, 17, 0, 0, 0);
         HttpHeaders headers = getHttpHeaders(AUTHORIZATION_HEADER, REFRESH_TOKEN_HEADER);
 
-        doAnswer(invocation ->  (now.getTime() / 1000) > REFRESH_TOKEN_EXPIRATION).when(spyTokenData).isExpired();
+        doAnswer(invocation ->  now.getTime() > REFRESH_TOKEN_EXPIRATION * 1000).when(spyTokenData).isExpired();
 
         doAnswer(invocation -> {
             UserPrincipal principal = invocation.getArgument(0);

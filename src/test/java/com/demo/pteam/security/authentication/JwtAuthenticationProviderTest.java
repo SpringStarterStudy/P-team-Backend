@@ -7,6 +7,8 @@ import com.demo.pteam.security.authentication.dto.JwtToken;
 import com.demo.pteam.security.dto.JwtAccountInfo;
 import com.demo.pteam.security.exception.ExpiredTokenException;
 import com.demo.pteam.security.exception.InvalidJwtException;
+import com.demo.pteam.security.jwt.JwtService;
+import com.demo.pteam.security.jwt.exception.DisabledAccountException;
 import com.demo.pteam.security.principal.PrincipalFactory;
 import com.demo.pteam.security.principal.UserPrincipal;
 import io.jsonwebtoken.Claims;
@@ -169,11 +171,11 @@ class JwtAuthenticationProviderTest {
                 .thenThrow(new ExpiredJwtException(mock(Header.class), claims, "JWT expired"));
         JwtAccountInfo testAccountInfo = getTestAccountInfo();
         JwtUserDetailsImpl testUserDetails = getTestUserDetails(testAccountInfo);
-        when(jwtService.loadUser(REFRESH_TOKEN)).thenReturn(testUserDetails);
+//        when(jwtService.loadUser(REFRESH_TOKEN)).thenReturn(testUserDetails);
         UserPrincipal testPrincipal = getTestPrincipal(testUserDetails);
         JwtToken reissueToken = mock(JwtToken.class);
         JwtReissueResult jwtReissueResult = new JwtReissueResult(testPrincipal, reissueToken);
-        when(jwtService.reissue(testUserDetails)).thenReturn(jwtReissueResult);
+        when(jwtService.reissue(REFRESH_TOKEN)).thenReturn(jwtReissueResult);
 
         // when
         Authentication authenticate = jwtAuthenticationProvider.authenticate(authentication);
@@ -194,13 +196,7 @@ class JwtAuthenticationProviderTest {
         when(authentication.getCredentials()).thenReturn(expiredToken);
         when(jwtService.parseClaims(EXPIRED_ACCESS_TOKEN))
                 .thenThrow(new ExpiredJwtException(mock(Header.class), claims, "JWT expired"));
-        JwtAccountInfo suspendedAccount = new JwtAccountInfo(
-                1L,
-                Role.ROLE_USER,
-                AccountStatus.SUSPENDED
-        );
-        JwtUserDetailsImpl testUserDetails = getTestUserDetails(suspendedAccount);
-        when(jwtService.loadUser(REFRESH_TOKEN)).thenReturn(testUserDetails);
+        when(jwtService.reissue(REFRESH_TOKEN)).thenThrow(new DisabledAccountException("Disabled"));
 
         // when
         ThrowingCallable action = () -> jwtAuthenticationProvider.authenticate(authentication);
@@ -219,7 +215,7 @@ class JwtAuthenticationProviderTest {
         when(authentication.getCredentials()).thenReturn(expiredToken);
         when(jwtService.parseClaims(EXPIRED_ACCESS_TOKEN))
                 .thenThrow(new ExpiredJwtException(mock(Header.class), claims, "JWT expired"));
-        when(jwtService.loadUser(EXPIRED_REFRESH_TOKEN))
+        when(jwtService.reissue(EXPIRED_REFRESH_TOKEN))
                 .thenThrow(new ExpiredJwtException(mock(Header.class), claims, "JWT expired"));
 
         // when
@@ -239,7 +235,7 @@ class JwtAuthenticationProviderTest {
         when(authentication.getCredentials()).thenReturn(expiredToken);
         when(jwtService.parseClaims(EXPIRED_ACCESS_TOKEN))
                 .thenThrow(new ExpiredJwtException(mock(Header.class), claims, "JWT expired"));
-        when(jwtService.loadUser(REFRESH_TOKEN)).thenThrow(new UsernameNotFoundException("AccountId not found: " + 1L));
+        when(jwtService.reissue(REFRESH_TOKEN)).thenThrow(new UsernameNotFoundException("AccountId not found: " + 1L));
 
         // when
         ThrowingCallable action = () -> jwtAuthenticationProvider.authenticate(authentication);
@@ -263,7 +259,7 @@ class JwtAuthenticationProviderTest {
         when(authentication.getCredentials()).thenReturn(expiredToken);
         when(jwtService.parseClaims(EXPIRED_ACCESS_TOKEN))
                 .thenThrow(new ExpiredJwtException(mock(Header.class), claims, "JWT expired"));
-        when(jwtService.loadUser(invalidRefreshToken)).thenThrow(new JwtException("Invalid JWT"));
+        when(jwtService.reissue(invalidRefreshToken)).thenThrow(new JwtException("Invalid JWT"));
 
         // when
         ThrowingCallable action = () -> jwtAuthenticationProvider.authenticate(authentication);
