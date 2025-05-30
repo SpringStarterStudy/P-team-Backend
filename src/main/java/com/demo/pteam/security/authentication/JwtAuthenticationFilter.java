@@ -1,6 +1,7 @@
 package com.demo.pteam.security.authentication;
 
 import com.demo.pteam.security.authentication.dto.JwtToken;
+import com.demo.pteam.security.exception.MethodNotAllowedException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,7 +46,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException, AuthenticationException {
         try {
-            if (!this.logoutPathRequestMatcher.matches(request)) {   // 로그아웃 경로일 경우 accessToken 인증 무시
+            if (this.logoutPathRequestMatcher.matches(request)) {   // 로그아웃 경로일 경우 accessToken 인증 무시
+                if (!request.getMethod().equals("POST")) {
+                    throw new MethodNotAllowedException("Authentication method not supported: " + request.getMethod());
+                }
+            } else {
                 Authentication authResult = this.attemptAuthentication(request);
                 if (authResult != null) {
                     this.successfulAuthentication(request, response, authResult);

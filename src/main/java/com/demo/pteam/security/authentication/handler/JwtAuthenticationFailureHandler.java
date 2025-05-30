@@ -5,9 +5,11 @@ import com.demo.pteam.global.response.ApiResponse;
 import com.demo.pteam.security.exception.ExpiredTokenException;
 import com.demo.pteam.security.exception.InvalidJwtException;
 import com.demo.pteam.security.exception.AuthenticationErrorCode;
+import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -31,6 +33,9 @@ public class JwtAuthenticationFailureHandler implements AuthenticationFailureHan
                 exception instanceof BadCredentialsException ||     // 사용자 정보 x
                 exception instanceof InvalidJwtException) {         // 유효하지 않은 토큰
             writeAuthenticationFailureResponse(response, AuthenticationErrorCode.INVALID_AUTHENTICATION);
+        } else if (exception instanceof MethodNotAllowedException) {   // post 요청 x
+            response.setHeader("Allow", HttpMethod.POST.name());
+            writeAuthenticationFailureResponse(response, AuthenticationErrorCode.METHOD_NOT_ALLOWED);
         } else {    // 서버 에러
             writeAuthenticationFailureResponse(response, AuthenticationErrorCode.AUTHENTICATION_FAILED);
         }

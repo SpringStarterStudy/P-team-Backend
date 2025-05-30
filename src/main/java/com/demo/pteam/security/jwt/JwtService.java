@@ -46,11 +46,13 @@ public class JwtService {
         saveBlackList(id, rawRefreshToken, reason);
     }
 
-    private String removeBearerPrefix(String token) {
+    private String removeBearerPrefix(String token) throws IllegalArgumentException {
         String prefix = "Bearer ";
-        return token.startsWith(prefix)
-                ? token.substring(prefix.length())
-                : token;
+        if (token.startsWith(prefix)) {
+            return token.substring(prefix.length());
+        } else {
+            throw new IllegalArgumentException("Invalid header");
+        }
     }
 
     private Long extractSubject(String token) throws IllegalArgumentException, JwtException {
