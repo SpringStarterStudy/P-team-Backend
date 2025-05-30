@@ -2,6 +2,7 @@ package com.demo.pteam.security;
 
 import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.security.exception.AuthenticationErrorCode;
+import com.demo.pteam.security.jwt.InMemoryTokenStore;
 import com.demo.pteam.security.login.ApiLoginFilter;
 import com.demo.pteam.security.dto.LoginRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,7 +15,6 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,6 +28,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
@@ -38,6 +39,7 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -61,6 +63,9 @@ public class LoginIntegrationTest {
     @Autowired
     private FilterChainProxy filterChainProxy;
     private ApiLoginFilter spyApiLoginFilter;
+
+    @MockitoSpyBean
+    private InMemoryTokenStore spyTokenStore;
 
     @BeforeEach
     public void setUp() {
@@ -104,16 +109,21 @@ public class LoginIntegrationTest {
         String accessToken = response.getHeader("Authorization").replace("Bearer ", "");
         String refreshToken = response.getHeader("Refresh-Token").replace("Bearer ", "");
 
+        long expectedAccountId = 1L;
         // accessToken 검증
         Claims accessTokenClaims = jwtDecode(accessToken, jwtSecretKey);
-        Assertions.assertThat(Long.valueOf(accessTokenClaims.getSubject())).isEqualTo(1L);
+        assertThat(Long.valueOf(accessTokenClaims.getSubject())).isEqualTo(expectedAccountId);
         String roleString = accessTokenClaims.get("role", String.class);
-        Assertions.assertThat(Role.valueOf(roleString)).isEqualTo(Role.ROLE_USER);
-        Assertions.assertThat(accessTokenClaims.get("verified", Boolean.class)).isEqualTo(true);
+        assertThat(Role.valueOf(roleString)).isEqualTo(Role.ROLE_USER);
+        assertThat(accessTokenClaims.get("verified", Boolean.class)).isEqualTo(true);
 
         // refreshToken 검증
         Claims refreshTokenClaims = jwtDecode(refreshToken, jwtSecretKey);
-        Assertions.assertThat(Long.valueOf(refreshTokenClaims.getSubject())).isEqualTo(1L);
+        assertThat(Long.valueOf(refreshTokenClaims.getSubject())).isEqualTo(expectedAccountId);
+
+        // refreshToken 저장 여부 검증
+        assertThat(spyTokenStore.findByAccountId(expectedAccountId)).isNotEmpty();
+        assertThat(spyTokenStore.findByAccountId(expectedAccountId).get().token()).isEqualTo(refreshToken);
     }
 
     @DisplayName("로그인 정보 불일치")
