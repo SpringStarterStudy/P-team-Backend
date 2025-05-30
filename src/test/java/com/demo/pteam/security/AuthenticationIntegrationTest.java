@@ -1,12 +1,9 @@
 package com.demo.pteam.security;
 
 import com.demo.pteam.global.exception.ErrorCode;
-import com.demo.pteam.security.jwt.JwtService;
+import com.demo.pteam.security.jwt.*;
 import com.demo.pteam.security.authentication.dto.JwtToken;
 import com.demo.pteam.security.exception.AuthenticationErrorCode;
-import com.demo.pteam.security.jwt.JwtProvider;
-import com.demo.pteam.security.jwt.TokenData;
-import com.demo.pteam.security.jwt.TokenStore;
 import com.demo.pteam.security.principal.UserPrincipal;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -34,6 +31,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -59,11 +57,15 @@ public class AuthenticationIntegrationTest {
         "exp": 1747812500
     }
     */
+    private static final long TEST_ACCOUNT_ID = 1L;
     private static final String PREFIX = "Bearer ";
     private static final String ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDcyMDc2OTksImV4cCI6MTc0NzIxMTI5OX0.M2IjaJJCfnV7Eheijp72nKtVlL1pgkghNr-Zc1i6Oks";
     private static final String REFRESH_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ3MjA3NzAwLCJleHAiOjE3NDc4MTI1MDB9.NXnMg9s2NpZFIgf6EmRdGpC9qyXDOWGbRklF39vOLBg";
     private static final String AUTHORIZATION_HEADER = PREFIX + ACCESS_TOKEN;
     private static final String REFRESH_TOKEN_HEADER = PREFIX + REFRESH_TOKEN;
+
+    private static final String EXPIRED_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDYyMDc2OTksImV4cCI6MTc0NjIxMTI5OX0.hKvQt7OnZm9PrKwChdLoV2AOu8dl986KkadBGWl1Rwk";
+    private static final String BLACK_LISTED_REFRESH_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ3MjA3NjAwLCJleHAiOjE3NDc4MTI1MDB9.hV1YYOo0nHGBrBixLRxiupfeeLtMJyaXyNUTWctCQcQ";
 
     private static final String REQUEST_PATH = "/api/members";  // 사용자 인증이 필요한 경로
 
@@ -91,9 +93,10 @@ public class AuthenticationIntegrationTest {
     private JwtProvider jwtProvider;
 
     @MockitoSpyBean
-    private TokenStore tokenStore;
+    private InMemoryTokenStore spyTokenStore;
 
-    private TokenData spyTokenData;
+    @MockitoSpyBean
+    private InMemoryTokenBlackList spyTokenBlackList;
 
     @BeforeEach
     public void setUp() {
@@ -101,11 +104,20 @@ public class AuthenticationIntegrationTest {
                 .addFilters(filterChainProxy)
                 .build();
 
-        TokenData tokenData = new TokenData(REFRESH_TOKEN, REFRESH_TOKEN_EXPIRATION);
-        spyTokenData = spy(tokenData);
-        Map<Long, TokenData> store = (Map<Long, TokenData>) ReflectionTestUtils.getField(tokenStore, "store");
-        store.put(1L, spyTokenData);
+        // 블랙리스트 등록
+        BlackListedToken blackListedToken = new BlackListedToken("reissue", REFRESH_TOKEN_EXPIRATION);
+        BlackListedToken spyBlackListedToken = spy(blackListedToken);
+        Map<String, BlackListedToken> blackList = (Map<String, BlackListedToken>) ReflectionTestUtils.getField(spyTokenBlackList, "blackList");
+        blackList.clear();
+        blackList.put(BLACK_LISTED_REFRESH_TOKEN, blackListedToken);
+        doReturn(NOW.getTime() > REFRESH_TOKEN_EXPIRATION).when(spyBlackListedToken).isExpired();
 
+        // refreshToken 저장
+        TokenData tokenData = new TokenData(REFRESH_TOKEN, REFRESH_TOKEN_EXPIRATION);
+        TokenData spyTokenData = spy(tokenData);
+        Map<Long, TokenData> store = (Map<Long, TokenData>) ReflectionTestUtils.getField(spyTokenStore, "store");
+        store.clear();
+        store.put(1L, spyTokenData);
         doReturn(NOW.getTime() > REFRESH_TOKEN_EXPIRATION).when(spyTokenData).isExpired();
 
         doAnswer(invocation -> {
@@ -117,7 +129,7 @@ public class AuthenticationIntegrationTest {
             UserPrincipal principal = invocation.getArgument(0);
             String accessToken = jwtProvider.generateAccessToken(principal, NOW);
             String refreshToken = jwtProvider.generateRefreshToken(principal, NOW);
-            tokenStore.save(principal.id(), refreshToken, NOW.getTime() + refreshTokenTTL);
+            spyTokenStore.save(principal.id(), refreshToken, NOW.getTime() + refreshTokenTTL);
             return JwtToken.ofRaw(accessToken, refreshToken);
         }).when(jwtService).createJwtToken(any(UserPrincipal.class));
     }
@@ -137,6 +149,13 @@ public class AuthenticationIntegrationTest {
         resultActions.andExpect(status().isOk())
                 .andExpect(header().string("Authorization", AUTHORIZATION_HEADER))
                 .andExpect(header().string("Refresh-Token", REFRESH_TOKEN_HEADER));
+
+        // refreshToken 저장 여부 검증
+        assertThat(spyTokenStore.findByAccountId(TEST_ACCOUNT_ID)).isNotEmpty();
+        assertThat(spyTokenStore.findByAccountId(TEST_ACCOUNT_ID).get().token()).isEqualTo(REFRESH_TOKEN);
+
+        // blackList 저장 여부 검증
+        assertThat(spyTokenBlackList.isBlackListed(REFRESH_TOKEN)).isFalse();
     }
 
     @DisplayName("인증 필수 - 토큰 x")
@@ -183,45 +202,38 @@ public class AuthenticationIntegrationTest {
 
         // then
         String expectedAuthorizationHeader = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDcyMDc3MDAsImV4cCI6MTc0NzIxMTMwMH0.rDK2OWyTgu5XWEfqz5NOszPmxSOGinhMfaonuWbbZz4";
-        String expectedRefreshTokenHeader = "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ3MjA3NzAwLCJleHAiOjE3NDc4MTI1MDB9.NXnMg9s2NpZFIgf6EmRdGpC9qyXDOWGbRklF39vOLBg";
+        String expectedRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ3MjA3NzAwLCJleHAiOjE3NDc4MTI1MDB9.NXnMg9s2NpZFIgf6EmRdGpC9qyXDOWGbRklF39vOLBg";
+        String expectedRefreshTokenHeader = "Bearer " + expectedRefreshToken;
         resultActions.andExpect(status().isOk())
                 .andExpect(header().string("Authorization", expectedAuthorizationHeader))
                 .andExpect(header().string("Refresh-Token", expectedRefreshTokenHeader));
-    }
 
-    @DisplayName("token 만료")
-    @Test
-    void expiredAllToken() throws Exception {
-        // given
-        String expiredAccessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDYyMDc2OTksImV4cCI6MTc0NjIxMTI5OX0.hKvQt7OnZm9PrKwChdLoV2AOu8dl986KkadBGWl1Rwk";
-        String expiredRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ2MjA3NzAwLCJleHAiOjE3NDY4MTI1MDB9.RM0vvy-wmC4h85xCPMIdp4XZ6KJxghK7qs0-oZwsaLA";
-        String authorizationHeader = PREFIX + expiredAccessToken;
-        String refreshTokenHeader = PREFIX + expiredRefreshToken;
+        // refreshToken 저장 여부 검증
+        assertThat(spyTokenStore.findByAccountId(TEST_ACCOUNT_ID)).isNotEmpty();
+        assertThat(spyTokenStore.findByAccountId(TEST_ACCOUNT_ID).get().token()).isEqualTo(expectedRefreshToken);
 
-        HttpHeaders headers = getHttpHeaders(authorizationHeader, refreshTokenHeader);
-
-        // when
-        ResultActions resultActions = mockMvc.perform(
-                get(REQUEST_PATH).headers(headers)
-        );
-
-        // then
-        ErrorCode errorCode = AuthenticationErrorCode.INVALID_AUTHENTICATION;
-        resultActions.andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("status").value(errorCode.getStatus().value()))
-                .andExpect(jsonPath("code").value(errorCode.getCode()))
-                .andExpect(jsonPath("message").value(errorCode.getMessage()));
+        // blackList 저장 여부 검증
+        assertThat(spyTokenBlackList.isBlackListed(REFRESH_TOKEN)).isTrue();
     }
 
     @DisplayName("인증 정보가 유효하지 않은 경우")
     @ParameterizedTest
     @CsvSource({
+            // token 만료
+            PREFIX + EXPIRED_ACCESS_TOKEN + "," +
+                    PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ2MjA3NzAwLCJleHAiOjE3NDY4MTI1MDB9.RM0vvy-wmC4h85xCPMIdp4XZ6KJxghK7qs0-oZwsaLA",
             // 정지된 계정
             PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDcxOTc2OTksImV4cCI6MTc0NzIwMTI5OX0.6zGtTw13sWHLQS2RDTdjFFpn2YIcU269Vvas6kKT52g," +
                     PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyIiwiaWF0IjoxNzQ3MjA3NzAwLCJleHAiOjE3NDc4MTI1MDB9.t_haw0rj8zjwocm2SwOd9JV6Lo8FDOMCYZh-ULoISPw",
             // 사용자 정보 x
             PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDAiLCJyb2xlIjoiUk9MRV9VU0VSIiwidmVyaWZpZWQiOnRydWUsImlhdCI6MTc0NzE5NzY5OSwiZXhwIjoxNzQ3MjAxMjk5fQ.D_4lca0W-wCr-jRP-BgRTV8mOq2gLzKyLLMz5yU_bx4," +
                     PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMDAiLCJpYXQiOjE3NDcyMDc3MDAsImV4cCI6MTc0NzgxMjUwMH0.rKQUzJKm6H1syrdFQEQ1WPvHHCSeWIhEXYHNhfiypsw",
+            // 저장되지 않은 refreshToken
+            PREFIX + EXPIRED_ACCESS_TOKEN + "," +
+                    PREFIX + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ3MjA3NzAwLCJleHAiOjE3NDc4MTI2MDB9.NUGUY8psTrIpnafnZV0qzrBqbQqJAotZCdsZEQAn3Xw",
+            // 블랙리스트에 등록된 refreshToken
+            PREFIX + EXPIRED_ACCESS_TOKEN + "," +
+                    PREFIX + BLACK_LISTED_REFRESH_TOKEN,
             // 유효하지 않은 형식의 header
             ACCESS_TOKEN + "," + REFRESH_TOKEN,
             // 유효하지 않은 토큰
