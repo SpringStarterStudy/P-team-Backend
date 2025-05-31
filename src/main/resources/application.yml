@@ -23,6 +23,15 @@ spring:
     out-of-order: true
     locations: classpath:db/migration, classpath:db/data
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+
 logging:
   level:
     org.springframework: info
+    org.springframework.web.multipart: DEBUG
+
+file:
+  upload-dir: uploads
