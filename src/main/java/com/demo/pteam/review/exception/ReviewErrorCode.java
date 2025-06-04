@@ -15,7 +15,11 @@ public enum ReviewErrorCode implements ErrorCode {
     PT_NOT_COMPLETED(HttpStatus.BAD_REQUEST, "R_006", "완료되지 않은 PT에 대해 리뷰를 작성할 수 없습니다."),
     IMAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "R_007", "이미지를 찾을 수 없습니다."),
     IMAGE_ALREADY_LINKED(HttpStatus.CONFLICT, "R_008", "이미지가 이미 다른 리뷰에 연결되어 있습니다."),
-    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "R_009", "리뷰를 찾을 수 없습니다.");
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "R_009", "리뷰를 찾을 수 없습니다."),
+    NOT_REVIEW_OWNER(HttpStatus.FORBIDDEN,"R_010", "리뷰 작성자만 수정/삭제할 수 있습니다."),
+    INVALID_CONTENT(HttpStatus.BAD_REQUEST, "R_011", "리뷰 내용이 유효하지 않습니다."),
+    INVALID_RATING(HttpStatus.BAD_REQUEST, "R_012", "별점은 0.0-5.0 사이의 값이어야 합니다."),
+    REVIEW_EDIT_TIME_EXPIRED(HttpStatus.FORBIDDEN, "R_013", "리뷰 수정은 작성 후 48시간 이내에만 가능합니다.");
 
     private final HttpStatus status;
     private final String code;
