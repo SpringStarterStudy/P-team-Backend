@@ -10,10 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -45,5 +42,13 @@ public class ReviewController {
         ApiResponse<ReviewResponseDto> apiResponse = ApiResponse.success("리뷰가 성공적으로 생성되었습니다.", responseDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
 
+    }
+
+    @GetMapping("/{reviewId}")
+    public ResponseEntity<ApiResponse<ReviewResponseDto>> getReview(@PathVariable Long reviewId) {
+        ReviewResponseDto responseDto = reviewService.findById(reviewId);
+
+        ApiResponse<ReviewResponseDto> apiResponse = ApiResponse.success("리뷰가 성공적으로 조회되었습니다.", responseDto);
+        return ResponseEntity.ok(apiResponse);
     }
 }

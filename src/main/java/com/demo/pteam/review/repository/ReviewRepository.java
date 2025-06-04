@@ -6,6 +6,8 @@ import com.demo.pteam.schedule.repository.entity.ScheduleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface ReviewRepository {
 
@@ -18,7 +20,8 @@ public interface ReviewRepository {
     // 사용자가 작성한 리뷰 수를 반환
     long countByUserId(Long userId);
 
-    // 리뷰 조회
+    // 리뷰 단일 조회
+    Optional<ReviewEntity> findById(Long reviewId);
 
     // 리뷰 수정
 
