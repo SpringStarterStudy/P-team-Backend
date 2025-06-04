@@ -48,15 +48,21 @@ public class ReviewEntity extends BaseEntity {
 
 
     public void updateContent(String content) {
-        this.content = content;
+        if (content != null) {
+            this.content = content;
+        }
     }
 
     public void updateRating(BigDecimal rating) {
-        this.rating = rating;
+        if (rating != null) {
+            this.rating = rating;
+        }
     }
 
     public void updatePtPurpose(PtPurpose ptPurpose) {
-        this.ptPurpose = ptPurpose;
+        if (ptPurpose != null) {
+            this.ptPurpose = ptPurpose;
+        }
     }
 
     public static ReviewEntity createReview(AccountEntity trainer, AccountEntity user,

@@ -123,17 +123,10 @@ public class ReviewService {
             throw new ApiException(ReviewErrorCode.REVIEW_EDIT_TIME_EXPIRED);
         }
 
-        if (requestDto.getContent() != null) {
-            reviewEntity.updateContent(requestDto.getContent());
-        }
-
-        if (requestDto.getRating() != null) {
-            reviewEntity.updateRating(requestDto.getRating());
-        }
-
-        if (requestDto.getPtPurpose() != null) {
-            reviewEntity.updatePtPurpose(requestDto.getPtPurpose());
-        }
+        // null 체크
+        reviewEntity.updateContent(requestDto.getContent());
+        reviewEntity.updateRating(requestDto.getRating());
+        reviewEntity.updatePtPurpose(requestDto.getPtPurpose());
 
         if (requestDto.getImageIds() != null) {
             // 기존 이미지 연결 해제
