@@ -1,5 +1,6 @@
 package com.demo.pteam.trainer.profile.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,7 +24,10 @@ public class TrainerProfileRequest {
     @PositiveOrZero(message = "크레딧은 0 이상이어야 합니다.")
     private Integer credit;
 
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime contactStartTime;
+
+    @JsonFormat(pattern = "HH:mm")
     private LocalTime contactEndTime;
 
     @NotNull(message = "이름 공개 선택 여부는 필수입니다.")
