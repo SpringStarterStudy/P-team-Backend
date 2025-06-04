@@ -63,6 +63,9 @@ dependencies {
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
+	// 날짜/시간 타입(JSON 직렬화 지원)
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
 	// Test
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
