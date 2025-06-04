@@ -17,6 +17,7 @@ import com.demo.pteam.schedule.repository.ScheduleRepository;
 import com.demo.pteam.schedule.repository.entity.ScheduleEntity;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,7 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -221,6 +222,35 @@ public class ReviewService {
         } catch (IOException e) {
             throw new ApiException(ReviewErrorCode.IMAGE_UPLOAD_FAIL);
         }
+    }
+
+    /**
+     * 리뷰 임시 이미지 삭제
+     * @param imageId 삭제할 이미지 ID
+     * @param userId 현재 인증된 사용자 ID
+     */
+    @Transactional
+    public void deleteReviewImage(Long imageId, Long userId) {
+        ReviewImageEntity imageEntity = reviewImageRepository.findById(imageId)
+                .orElseThrow(() -> new ApiException(ReviewErrorCode.IMAGE_NOT_FOUND));
+
+        if (!imageEntity.getUserId().equals(userId)) {
+            throw new ApiException(ReviewErrorCode.NOT_IMAGE_OWNER);
+        }
+
+        if (imageEntity.getReview() != null) {
+            throw new ApiException(ReviewErrorCode.IMAGE_ALREADY_LINKED);
+        }
+
+        // 파일 스토리지에서 삭제
+        try {
+            fileStorageService.deleteFile(imageEntity.getImageUrl());
+        } catch (IOException e) {
+            log.error("Failed to delete image file: {}", e.getMessage());
+        }
+
+        // DB에서 삭제
+        reviewImageRepository.delete(imageEntity);
     }
 
 
