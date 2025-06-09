@@ -8,4 +8,7 @@ import java.util.Optional;
 public interface LocalAccountRepository {
     Optional<LocalAccountDto> findByUsername(String username);
     LocalAccountEntity save(LocalAccountEntity localAccountEntity);
+    boolean existsByUsername(String username);
+    boolean existsByEmail(String email);
+    boolean existsByNickname(String nickname);
 }

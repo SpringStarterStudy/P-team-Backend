@@ -44,4 +44,31 @@ public class LocalAccountJPARepositoryCustomImpl implements LocalAccountJPARepos
                         .build()
         );
     }
+
+    @Override
+    public boolean existsByActiveUsername(String username) {
+        return queryFactory
+                .selectOne()
+                .from(localAccountEntity)
+                .where(localAccountEntity.activeUsername.eq(username))
+                .fetchOne() != null;
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return queryFactory
+                .selectOne()
+                .from(localAccountEntity)
+                .where(localAccountEntity.email.eq(email))
+                .fetchOne() != null;
+    }
+
+    @Override
+    public boolean existsByNickname(String nickname) {
+        return queryFactory
+                .selectOne()
+                .from(localAccountEntity)
+                .where(localAccountEntity.nickname.eq(nickname))
+                .fetchOne() != null;
+    }
 }

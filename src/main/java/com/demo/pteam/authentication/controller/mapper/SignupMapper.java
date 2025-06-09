@@ -19,7 +19,7 @@ public interface SignupMapper {
     @Mapping(source = "entity.password", target = "encodedPassword")
     Signup toDomain(LocalAccountEntity entity);
 
-    @Mapping(target = "status", expression = "java(AccountStatus.ACTIVE)")
+    @Mapping(target = "status", expression = "java(AccountStatus.UNVERIFIED)")
     @Mapping(source = "domain.role", target = "role", qualifiedByName = "roleToEnum")
     @Mapping(source = "domain.encodedPassword", target = "password")
     LocalAccountEntity toEntity(Signup domain);

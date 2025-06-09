@@ -21,4 +21,19 @@ public class LocalAccountRepositoryImpl implements LocalAccountRepository {
     public LocalAccountEntity save(LocalAccountEntity localAccountEntity) {
         return localAccountJPARepository.save(localAccountEntity);
     }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return localAccountJPARepository.existsByActiveUsername(username);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return localAccountJPARepository.existsByEmail(email);
+    }
+
+    @Override
+    public boolean existsByNickname(String nickname) {
+        return localAccountJPARepository.existsByNickname(nickname);
+    }
 }

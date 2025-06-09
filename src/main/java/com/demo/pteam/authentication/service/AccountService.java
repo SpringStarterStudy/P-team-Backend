@@ -7,9 +7,11 @@ import com.demo.pteam.security.login.dto.LoginAccountInfo;
 import com.demo.pteam.security.login.mapper.LocalAccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class AccountService {
     private final LocalAccountRepository localAccountRepository;
     private final LocalAccountMapper localAccountMapper;
@@ -18,5 +20,17 @@ public class AccountService {
         LocalAccountDto localAccount = localAccountRepository.findByUsername(username)
                 .orElseThrow(() -> new UserNotFoundException("User not found: " + username));
         return localAccountMapper.toLoginAccountInfo(localAccount);
+    }
+
+    public boolean isUniqueByUsername(String username) {
+        return !localAccountRepository.existsByUsername(username);
+    }
+
+    public boolean isUniqueByEmail(String email) {
+        return !localAccountRepository.existsByEmail(email);
+    }
+
+    public boolean isUniqueNickname(String nickname) {
+        return !localAccountRepository.existsByNickname(nickname);
     }
 }

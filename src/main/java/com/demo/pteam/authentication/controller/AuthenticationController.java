@@ -4,6 +4,7 @@ import com.demo.pteam.authentication.controller.dto.SignupRequest;
 import com.demo.pteam.authentication.controller.dto.SignupResponse;
 import com.demo.pteam.authentication.service.SignupService;
 import com.demo.pteam.global.response.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,8 +19,7 @@ public class AuthenticationController {
     private final SignupService signupService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<SignupResponse>> signup(@RequestBody SignupRequest signupRequest) {
-        // TODO: 파라미터 검증 추가
+    public ResponseEntity<ApiResponse<SignupResponse>> signup(@RequestBody @Valid SignupRequest signupRequest) {
         SignupResponse response = signupService.signup(signupRequest);
         return ResponseEntity.created(URI.create("/api/members/" + response.id()))
                 .body(ApiResponse.success(HttpStatus.CREATED, "회원가입 성공", response));

@@ -9,6 +9,7 @@ import com.demo.pteam.authentication.repository.entity.LocalAccountEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class SignupService {
     private final SignupMapper signupMapper;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public SignupResponse signup(SignupRequest signupRequest) {
         Signup signup = signupMapper.toDomain(signupRequest, encodePassword(signupRequest.password()));
         LocalAccountEntity savedEntity = localAccountRepository.save(signupMapper.toEntity(signup));
