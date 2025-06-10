@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "local_accounts")
 @DiscriminatorValue(value = "1")
@@ -28,8 +30,9 @@ public class LocalAccountEntity extends AccountEntity {
     private String activeUsername;
 
     @Builder
-    public LocalAccountEntity(String name, String nickname, Role role, String username, String password, String email, AccountStatus status) {
-        super(name, nickname, role);
+    public LocalAccountEntity(LocalDateTime createdAt, String name, String nickname, Role role, String username,
+                              String password, String email, AccountStatus status) {
+        super(createdAt, name, nickname, role);
         this.username = username;
         this.password = password;
         this.email = email;

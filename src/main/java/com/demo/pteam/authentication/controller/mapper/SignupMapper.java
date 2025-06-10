@@ -9,7 +9,9 @@ import com.demo.pteam.authentication.repository.entity.LocalAccountEntity;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "spring", imports = AccountStatus.class)
+import java.time.LocalDateTime;
+
+@Mapper(componentModel = "spring", imports = {AccountStatus.class, LocalDateTime.class})
 public interface SignupMapper {
     SignupMapper INSTANCE = Mappers.getMapper(SignupMapper.class);
 
@@ -22,6 +24,7 @@ public interface SignupMapper {
     @Mapping(target = "status", expression = "java(AccountStatus.UNVERIFIED)")
     @Mapping(source = "domain.role", target = "role", qualifiedByName = "roleToEnum")
     @Mapping(source = "domain.encodedPassword", target = "password")
+    @Mapping(target = "createdAt", expression = "java(LocalDateTime.now())")
     LocalAccountEntity toEntity(Signup domain);
     SignupResponse toResponse(Signup domain);
 
