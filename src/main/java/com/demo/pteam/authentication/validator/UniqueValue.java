@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 해당 값이 유일(Unique)한 값인지 검증하는 어노테이션
+ * 해당 문자열이 유일(Unique)한지 검증하는 어노테이션
  * <p> 이 어노테이션은 필드와 파라미터 레벨에 적용되며, 유니크 제약조건을 만족하는지 여부를 검증합니다.
  * 검증할 대상을 {@code target}에 지정합니다.
  * <p> 검증 로직은 getter 메서드를 통해 동작하므로, 비교할 필드에 대한 <b>getter 메서드가 반드시 선언</b>되어 있어야 합니다.
