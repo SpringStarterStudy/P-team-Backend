@@ -50,7 +50,7 @@ public class UniqueValueValidator implements ConstraintValidator<UniqueValue, St
             throw new IllegalArgumentException("Unsupported target: " + target);
         }
         if (!strategy.isValidFormat(value)) {
-            return true;
+            return true;    // @Pattern에서 처리
         }
         return strategy.isUnique(value);
     }

@@ -19,6 +19,6 @@ public class EmailUniqueCheck implements UniqueCheckStrategy{
 
     @Override
     public boolean isValidFormat(String value) {
-        return value.matches(PATTERN);
+        return value.matches(PATTERN) && value.length() >= 8 && value.length() < 255;
     }
 }
