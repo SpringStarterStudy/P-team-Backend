@@ -12,7 +12,6 @@ import java.util.Map;
 public class UniqueValueValidator implements ConstraintValidator<UniqueValue, String> {
     private final Map<String, UniqueCheckStrategy> strategyMap;
     private String target;
-    private boolean allowBlank;
 
     public UniqueValueValidator(Map<String, UniqueCheckStrategy> strategyMap) {
         this.strategyMap = strategyMap;
@@ -21,35 +20,37 @@ public class UniqueValueValidator implements ConstraintValidator<UniqueValue, St
     /**
      * 검증에 사용할 필드 초기화
      * <p> {@link UniqueValue} 어노테이션에 정의된 설정값을 기반으로 검증에 사용할 필드를 초기화합니다.
-     * <p>구체적으로는 어노테이션에 명시된 {@code target}과 {@code allowBlank} 옵션을 설정합니다.
+     * <p>구체적으로는 어노테이션에 명시된 {@code target} 옵션을 설정합니다.
      *
-     * @param constraintAnnotation {@link UniqueValue} 어노테이션 인스턴스로, 검증 대상과 blank 허용 여부를 포함합니다.
+     * @param constraintAnnotation {@link UniqueValue} 어노테이션 인스턴스로, 검증 대상을 포함합니다.
      */
     @Override
     public void initialize(UniqueValue constraintAnnotation) {
         this.target = constraintAnnotation.target();
-        this.allowBlank = constraintAnnotation.allowBlank();
     }
 
     /**
      * 유일(Unique)한 값인지 검증
-     * <p> {@code allowBlank}가 true일 경우 빈 값을 허용(true 반환)하고, false일 경우 빈 값을 허용하지 않습니다(false 반환).
-     * <p> {@code value}가 유일한 값인 경우 true를 반환하고, 그렇지 않을 경우 false를 반환합니다.
+     * <p> {@code value}가 유일한 값인 경우 {@code true}를 반환하고, 그렇지 않을 경우 {@code false}를 반환합니다.
+     * <p> {@code value}의 형식이 유효하지 않은 경우, 검증을 건너뛰고 {@code true}를 반환합니다.
      * <p> 유효하지 않은 {@code target}일 경우 {@link IllegalArgumentException}를 throw 합니다.
      *
      * @param value 검증할 객체
      * @param constraintValidatorContext 검증 작업에 필요한 컨텍스트 정보가 포함된 객체
-     * @return 유일한 값인 경우 true, 그렇지 않을 경우 false
+     * @return 유일한 값인 경우 {@code true}, 그렇지 않을 경우 {@code false}
      */
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
         if (value == null || value.isBlank()) {
-            return allowBlank;
+            return true;    // @NotBlank에서 처리
         }
 
         UniqueCheckStrategy strategy = strategyMap.get(target);
         if (strategy == null) {
             throw new IllegalArgumentException("Unsupported target: " + target);
+        }
+        if (!strategy.isValidFormat(value)) {
+            return true;
         }
         return strategy.isUnique(value);
     }

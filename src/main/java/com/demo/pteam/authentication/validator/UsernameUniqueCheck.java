@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component("username")
 public class UsernameUniqueCheck implements UniqueCheckStrategy {
+    private static final String PATTERN = "^[a-zA-Z0-9]{4,12}$";
     private final AccountService accountService;
 
     public UsernameUniqueCheck(AccountService accountService) {
@@ -14,5 +15,10 @@ public class UsernameUniqueCheck implements UniqueCheckStrategy {
     @Override
     public boolean isUnique(String username) {
         return accountService.isUniqueByUsername(username);
+    }
+
+    @Override
+    public boolean isValidFormat(String value) {
+        return value.matches(PATTERN);
     }
 }
