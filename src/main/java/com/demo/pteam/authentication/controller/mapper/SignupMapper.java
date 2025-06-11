@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public interface SignupMapper {
     SignupMapper INSTANCE = Mappers.getMapper(SignupMapper.class);
 
+    @Mapping(target = "id", ignore = true)
     Signup toDomain(SignupRequest request, String encodedPassword);
 
     @Mapping(source = "entity.role", target = "role", qualifiedByName = "roleToString")
