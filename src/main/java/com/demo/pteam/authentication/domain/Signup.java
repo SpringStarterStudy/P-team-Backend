@@ -15,5 +15,5 @@ public class Signup {
     private final String email;
     private final String name;
     private final String nickname;
-    private final LocalDateTime createdAt = LocalDateTime.now();
+    private final LocalDateTime createdAt;
 }
