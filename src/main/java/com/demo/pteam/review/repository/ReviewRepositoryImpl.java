@@ -33,4 +33,9 @@ public class ReviewRepositoryImpl implements ReviewRepository {
     public Optional<ReviewEntity> findById(Long reviewId) {
         return reviewJpaRepository.findById(reviewId);
     }
+
+    @Override
+    public void delete(ReviewEntity review) {
+        reviewJpaRepository.delete(review);
+    }
 }
