@@ -21,7 +21,8 @@ public class ReviewRepositoryImpl implements ReviewRepository {
 
     @Override
     public boolean existsByUserAndSchedule(Long userId, Long scheduleId) {
-        return reviewJpaRepository.existsByUserAndSchedule(userId, scheduleId);
+//        return reviewJpaRepository.existsByUserAndSchedule(userId, scheduleId);
+        return true;
     }
 
     @Override

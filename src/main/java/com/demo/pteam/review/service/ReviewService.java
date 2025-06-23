@@ -33,7 +33,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewImageRepository reviewImageRepository;
 //    private final AccountRepository accountRepository;
-    private final ScheduleRepository scheduleRepository;
+//    private final ScheduleRepository scheduleRepository;
     private final ReviewMapper reviewMapper;
 
     /**
