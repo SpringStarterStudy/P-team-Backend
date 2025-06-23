@@ -26,5 +26,5 @@ logging:
 
 jwt:
   secret: CQakf5359nUg2eTfl8lF4ceO7l+g8usgLW10BfVBFHw=
-  access-token-expiration: 3600000    # 1시간(60 * 60 * 1000)
-  refresh-token-expiration: 604800000   # 7일(7 * 24 * 60 * 60 * 1000)
+  access-token-ttl: 3600000    # 1시간(60 * 60 * 1000)
+  refresh-token-ttl: 604800000   # 7일(7 * 24 * 60 * 60 * 1000)

@@ -3,7 +3,8 @@ package com.demo.pteam.security.login.handler;
 import com.demo.pteam.authentication.domain.AccountStatus;
 import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.global.response.ApiResponse;
-import com.demo.pteam.security.jwt.JwtProvider;
+import com.demo.pteam.security.authentication.JwtService;
+import com.demo.pteam.security.authentication.dto.JwtToken;
 import com.demo.pteam.security.principal.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
@@ -38,7 +39,7 @@ class LoginAuthenticationSuccessHandlerTest {
     LoginAuthenticationSuccessHandler loginAuthenticationSuccessHandler;
 
     @Mock
-    JwtProvider jwtProvider;
+    JwtService jwtService;
 
     @BeforeEach
     public void setUp() {
@@ -55,8 +56,7 @@ class LoginAuthenticationSuccessHandlerTest {
         Authentication testAuthentication = getTestAuthentication(testPrincipal);
         String testAccessToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IlJPTEVfVVNFUiIsInZlcmlmaWVkIjp0cnVlLCJpYXQiOjE3NDQ4OTI1NzgsImV4cCI6MTc0NDg5NjE3OH0.j5z_RoIBqYKCXiOlelrLtAk--4RUHy_qaVe1yzQxztQ";
         String testRefreshToken = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzQ0ODkyNTc4LCJleHAiOjE3NDU0OTczNzh9.ZZ-AB4LA5xwOvToTGaMSDMzMIWpPgDTKP0HjfDNMlPE";
-        when(jwtProvider.generateAccessToken(testPrincipal)).thenReturn(testAccessToken);
-        when(jwtProvider.generateRefreshToken(testPrincipal)).thenReturn(testRefreshToken);
+        when(jwtService.createJwtToken(testPrincipal)).thenReturn(JwtToken.ofRaw(testAccessToken, testRefreshToken));
 
         // when
         loginAuthenticationSuccessHandler.onAuthenticationSuccess(mockRequest, mockResponse, testAuthentication);

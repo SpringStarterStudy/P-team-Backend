@@ -1,7 +1,8 @@
 package com.demo.pteam.security.login.handler;
 
 import com.demo.pteam.global.response.ApiResponse;
-import com.demo.pteam.security.jwt.JwtProvider;
+import com.demo.pteam.security.authentication.JwtService;
+import com.demo.pteam.security.authentication.dto.JwtToken;
 import com.demo.pteam.security.principal.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,11 +16,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-    private final JwtProvider jwtProvider;
+    private final JwtService jwtService;
     private ObjectMapper objectMapper;
 
-    public LoginAuthenticationSuccessHandler(JwtProvider jwtProvider) {
-        this.jwtProvider = jwtProvider;
+    public LoginAuthenticationSuccessHandler(JwtService jwtService) {
+        this.jwtService = jwtService;
     }
 
     public void setObjectMapper(ObjectMapper objectMapper) {
@@ -30,18 +31,17 @@ public class LoginAuthenticationSuccessHandler implements AuthenticationSuccessH
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         Object principal = authentication.getPrincipal();
         if (principal instanceof UserPrincipal userPrincipal) {
-            String accessToken = jwtProvider.generateAccessToken(userPrincipal);
-            String refreshToken = jwtProvider.generateRefreshToken(userPrincipal);
-            writeLoginSuccessResponse(response, accessToken, refreshToken);
+            JwtToken jwtToken = jwtService.createJwtToken(userPrincipal);
+            writeLoginSuccessResponse(response, jwtToken);
         } else {
             throw new InternalAuthenticationServiceException("Unexpected principal type");
         }
     }
 
-    private void writeLoginSuccessResponse(HttpServletResponse response, String accessToken, String refreshToken) throws IOException {
+    private void writeLoginSuccessResponse(HttpServletResponse response, JwtToken jwtToken) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
-        response.setHeader("Authorization", "Bearer " + accessToken);
-        response.setHeader("Refresh-Token", "Bearer " + refreshToken);
+        response.setHeader("Authorization", jwtToken.getAuthHeader());
+        response.setHeader("Refresh-Token", jwtToken.getRefreshHeader());
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 

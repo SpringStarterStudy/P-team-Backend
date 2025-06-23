@@ -1,9 +1,9 @@
 package com.demo.pteam.security.login;
 
+import com.demo.pteam.authentication.domain.Role;
 import com.demo.pteam.authentication.exception.UserNotFoundException;
 import com.demo.pteam.authentication.service.AccountService;
-import com.demo.pteam.security.login.dto.LoginAccountInfo;
-import com.demo.pteam.security.principal.CustomUserDetails;
+import com.demo.pteam.security.dto.LoginAccountInfo;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,10 +12,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.List;
 
-public class CustomUserDetailsService implements UserDetailsService {
+public class LoginUserDetailsService implements UserDetailsService {
     private final AccountService accountService;
 
-    public CustomUserDetailsService(AccountService accountService) {
+    public LoginUserDetailsService(AccountService accountService) {
         this.accountService = accountService;
     }
 
@@ -23,13 +23,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
             LoginAccountInfo accountInfo = accountService.getLoginAccount(username);
-            return new CustomUserDetails(accountInfo, List.of(createGrantedAuthority(accountInfo)));
+            return new LoginUserDetails(accountInfo, List.of(createGrantedAuthority(accountInfo.role())));
         } catch (UserNotFoundException e) {
             throw new UsernameNotFoundException(e.getMessage(), e);
         }
     }
 
-    private GrantedAuthority createGrantedAuthority(LoginAccountInfo accountInfo) {
-        return new SimpleGrantedAuthority(accountInfo.role().name());
+    private GrantedAuthority createGrantedAuthority(Role role) {
+        return new SimpleGrantedAuthority(role.name());
     }
 }

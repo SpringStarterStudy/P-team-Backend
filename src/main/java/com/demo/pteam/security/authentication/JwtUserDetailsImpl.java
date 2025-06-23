@@ -1,17 +1,16 @@
-package com.demo.pteam.security.principal;
+package com.demo.pteam.security.authentication;
 
-import com.demo.pteam.security.login.dto.LoginAccountInfo;
+import com.demo.pteam.security.dto.JwtAccountInfo;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 
-public class CustomUserDetails implements UserDetails {
-    private final LoginAccountInfo account;
+public class JwtUserDetailsImpl implements JwtUserDetails<JwtAccountInfo> {
+    private final JwtAccountInfo account;
     private final List<GrantedAuthority> authorities;
 
-    public CustomUserDetails(LoginAccountInfo account, List<GrantedAuthority> authorities) {
+    public JwtUserDetailsImpl(JwtAccountInfo account, List<GrantedAuthority> authorities) {
         this.account = account;
         this.authorities = authorities;
     }
@@ -21,18 +20,9 @@ public class CustomUserDetails implements UserDetails {
         return authorities;
     }
 
-    public LoginAccountInfo getAccount() {
+    @Override
+    public JwtAccountInfo getAccount() {
         return account;
-    }
-
-    @Override
-    public String getPassword() {
-        return account.password();
-    }
-
-    @Override
-    public String getUsername() {
-        return account.username();
     }
 
     @Override
@@ -40,14 +30,17 @@ public class CustomUserDetails implements UserDetails {
         return !isSuspended();
     }
 
+    @Override
     public boolean isDeleted() {
         return account.status().isDeleted();
     }
 
+    @Override
     public boolean isUnverified() {
         return account.status().isUnverified();
     }
 
+    @Override
     public boolean isSuspended() {
         return account.status().isSuspended();
     }

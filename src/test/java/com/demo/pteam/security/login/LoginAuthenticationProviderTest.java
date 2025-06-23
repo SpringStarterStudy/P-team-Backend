@@ -2,8 +2,7 @@ package com.demo.pteam.security.login;
 
 import com.demo.pteam.authentication.domain.AccountStatus;
 import com.demo.pteam.authentication.domain.Role;
-import com.demo.pteam.security.login.dto.LoginAccountInfo;
-import com.demo.pteam.security.principal.CustomUserDetails;
+import com.demo.pteam.security.dto.LoginAccountInfo;
 import com.demo.pteam.security.principal.PrincipalFactory;
 import com.demo.pteam.security.principal.UserPrincipal;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -25,8 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,11 +54,11 @@ class LoginAuthenticationProviderTest {
         );
     }
 
-    private CustomUserDetails getTestUserDetails(LoginAccountInfo accountInfo) {
-        return new CustomUserDetails(accountInfo, List.of(new SimpleGrantedAuthority(accountInfo.role().name())));
+    private LoginUserDetails getTestUserDetails(LoginAccountInfo accountInfo) {
+        return new LoginUserDetails(accountInfo, List.of(new SimpleGrantedAuthority(accountInfo.role().name())));
     }
 
-    private UserPrincipal getTestPrincipal(CustomUserDetails userDetails) {
+    private UserPrincipal getTestPrincipal(LoginUserDetails userDetails) {
         return PrincipalFactory.fromUser(userDetails);
     }
 
@@ -69,7 +67,7 @@ class LoginAuthenticationProviderTest {
     void authenticate_success() {
         // given
         LoginAccountInfo testAccountInfo = getTestLoginAccountInfo();
-        CustomUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
+        LoginUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
         UserPrincipal testPrincipal = getTestPrincipal(testUserDetails);
         String requestUsername = "username";
         String requestPassword = "1234567aA!";
@@ -91,7 +89,7 @@ class LoginAuthenticationProviderTest {
     void authenticate_passwordMismatch() {
         // given
         LoginAccountInfo testAccountInfo = getTestLoginAccountInfo();
-        CustomUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
+        LoginUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
         String requestUsername = "username";
         String requestPassword = "12345aA!";
         when(userDetailsService.loadUserByUsername(requestUsername)).thenReturn(testUserDetails);
@@ -101,7 +99,7 @@ class LoginAuthenticationProviderTest {
         ThrowingCallable action = () -> loginAuthenticationProvider.authenticate(testAuthentication);
 
         // then
-        assertThatThrownBy(action).isInstanceOf(BadCredentialsException.class);
+        assertThatExceptionOfType(BadCredentialsException.class).isThrownBy(action);
     }
 
     @DisplayName("로그인 인증 - 존재하지 않는 계정")
@@ -118,7 +116,7 @@ class LoginAuthenticationProviderTest {
         ThrowingCallable action = () -> loginAuthenticationProvider.authenticate(testAuthentication);
 
         // then
-        assertThatThrownBy(action).isInstanceOf(BadCredentialsException.class);
+        assertThatExceptionOfType(BadCredentialsException.class).isThrownBy(action);
     }
 
     @DisplayName("로그인 인증 - 정지된 계정")
@@ -126,7 +124,7 @@ class LoginAuthenticationProviderTest {
     void authenticate_suspended() {
         // given
         LoginAccountInfo testAccountInfo = getTestLoginAccountInfo(AccountStatus.SUSPENDED);
-        CustomUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
+        LoginUserDetails testUserDetails = getTestUserDetails(testAccountInfo);
         String requestUsername = "username";
         String requestPassword = "1234567aA!";
         when(userDetailsService.loadUserByUsername(requestUsername)).thenReturn(testUserDetails);
@@ -136,6 +134,6 @@ class LoginAuthenticationProviderTest {
         ThrowingCallable action = () -> loginAuthenticationProvider.authenticate(testAuthentication);
 
         // then
-        assertThatThrownBy(action).isInstanceOf(DisabledException.class);
+        assertThatExceptionOfType(DisabledException.class).isThrownBy(action);
     }
 }

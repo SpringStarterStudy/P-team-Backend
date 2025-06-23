@@ -4,7 +4,7 @@ import com.demo.pteam.global.exception.ErrorCode;
 import com.demo.pteam.global.response.ApiResponse;
 import com.demo.pteam.security.exception.InvalidJsonFormatException;
 import com.demo.pteam.security.exception.InvalidJsonPropertyException;
-import com.demo.pteam.security.exception.LoginErrorCode;
+import com.demo.pteam.security.exception.AuthenticationErrorCode;
 import com.demo.pteam.security.exception.MethodNotAllowedException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,24 +29,24 @@ public class LoginAuthenticationFailureHandler implements AuthenticationFailureH
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
         if (exception instanceof BadCredentialsException) {   // 로그인 정보 불일치
-            ErrorCode errorCode = LoginErrorCode.INVALID_CREDENTIALS;
+            ErrorCode errorCode = AuthenticationErrorCode.INVALID_CREDENTIALS;
             writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
         } else if (exception instanceof DisabledException) {    // 계정 정지
-            ErrorCode errorCode = LoginErrorCode.ACCOUNT_SUSPENDED;
+            ErrorCode errorCode = AuthenticationErrorCode.ACCOUNT_SUSPENDED;
             writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
         } else if (exception instanceof MethodNotAllowedException) {   // post 요청 x
-            ErrorCode errorCode = LoginErrorCode.METHOD_NOT_ALLOWED;
+            ErrorCode errorCode = AuthenticationErrorCode.METHOD_NOT_ALLOWED;
             response.setHeader("Allow", HttpMethod.POST.name());
             writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
         } else if (exception instanceof InvalidJsonPropertyException e) {    // 잘못된 json property
-            ErrorCode errorCode = LoginErrorCode.INVALID_JSON_PROPERTY;
+            ErrorCode errorCode = AuthenticationErrorCode.INVALID_JSON_PROPERTY;
             String message = String.format(errorCode.getMessage(), e.getPropertyName());
             writeLoginFailureResponse(response, errorCode, message);
         } else if (exception instanceof InvalidJsonFormatException) {   // 잘못된 요청 형식(json parsing 실패)
-            ErrorCode errorCode = LoginErrorCode.INVALID_JSON_FORMAT;
+            ErrorCode errorCode = AuthenticationErrorCode.INVALID_JSON_FORMAT;
             writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
         } else {
-            ErrorCode errorCode = LoginErrorCode.LOGIN_FAILED;
+            ErrorCode errorCode = AuthenticationErrorCode.LOGIN_FAILED;
             writeLoginFailureResponse(response, errorCode, errorCode.getMessage());
         }
     }

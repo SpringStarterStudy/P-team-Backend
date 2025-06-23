@@ -11,8 +11,7 @@ import java.util.Date;
 import java.util.Map;
 
 public class JwtUtils {
-    public static String encode(String subject, Map<String, Object> claims, String secretKey, Long expirationMillis) {
-        Date now = new Date();
+    public static String encode(String subject, Map<String, Object> claims, String secretKey, Long expirationMillis, Date now) {
         Date expiration = new Date(now.getTime() + expirationMillis);
 
         return Jwts.builder()
@@ -24,8 +23,7 @@ public class JwtUtils {
                 .compact();
     }
 
-    public static String encode(String subject, String secretKey, Long expirationMillis) {
-        Date now = new Date();
+    public static String encode(String subject, String secretKey, Long expirationMillis, Date now) {
         Date expiration = new Date(now.getTime() + expirationMillis);
 
         return Jwts.builder()
@@ -47,13 +45,5 @@ public class JwtUtils {
     private static SecretKey createSigningKey(String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-    public static boolean isExpired(Claims claims) {
-        try {
-            return claims.getExpiration().before(new Date());
-        } catch (JwtException e) {
-            return true;
-        }
     }
 }

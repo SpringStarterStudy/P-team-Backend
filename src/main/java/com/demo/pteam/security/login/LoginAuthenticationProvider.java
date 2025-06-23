@@ -1,6 +1,5 @@
 package com.demo.pteam.security.login;
 
-import com.demo.pteam.security.principal.CustomUserDetails;
 import com.demo.pteam.security.principal.UserPrincipal;
 import com.demo.pteam.security.principal.PrincipalFactory;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,7 +34,7 @@ public class LoginAuthenticationProvider extends DaoAuthenticationProvider {
 
     @Override
     protected Authentication createSuccessAuthentication(Object principal, Authentication authentication, UserDetails user) {
-        if (principal instanceof CustomUserDetails userDetails) {
+        if (principal instanceof LoginUserDetails userDetails) {
             UserPrincipal userPrincipal = PrincipalFactory.fromUser(userDetails);
             return super.createSuccessAuthentication(userPrincipal, authentication, user);
         } else {
