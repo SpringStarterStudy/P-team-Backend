@@ -9,7 +9,6 @@ import com.demo.pteam.security.authentication.handler.JwtAuthenticationFailureHa
 import com.demo.pteam.security.authentication.handler.JwtAuthenticationSuccessHandler;
 import com.demo.pteam.security.configurer.ApiLoginConfigurer;
 import com.demo.pteam.security.configurer.JwtAuthenticationConfigurer;
-import com.demo.pteam.security.jwt.JwtProvider;
 import com.demo.pteam.security.login.handler.LoginAuthenticationFailureHandler;
 import com.demo.pteam.security.login.handler.LoginAuthenticationSuccessHandler;
 import com.demo.pteam.security.login.LoginAuthenticationProvider;
