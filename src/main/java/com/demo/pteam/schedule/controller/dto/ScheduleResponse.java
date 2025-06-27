@@ -9,24 +9,21 @@ import java.time.LocalDateTime;
 
 @Builder
 public record ScheduleResponse(
-        Long scheduleId,
+        Long id,
         Long userId,
         Long trainerId,
         String nickname,
-        @JsonFormat(pattern = "yyyy-MM-dd")
-        LocalDate date,
-        @JsonFormat(pattern = "HH:mm")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         LocalDateTime startTime,
-        @JsonFormat(pattern = "HH:mm")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         LocalDateTime endTime
 ) {
     public static ScheduleResponse from(Schedule schedule) {
         return ScheduleResponse.builder()
-                .scheduleId(schedule.getId())
+                .id(schedule.getId())
                 .userId(schedule.getUserId())
                 .trainerId(schedule.getTrainerId())
                 .nickname(schedule.getNickname())
-                .date(schedule.getDate())
                 .startTime(schedule.getStartTime())
                 .endTime(schedule.getEndTime())
                 .build();

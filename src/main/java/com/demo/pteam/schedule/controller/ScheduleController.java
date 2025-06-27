@@ -21,6 +21,7 @@ public class ScheduleController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<ScheduleResponse>>> readSchedules(@AuthenticationPrincipal UserPrincipal principal,
                                                            @ModelAttribute ReadScheduleRequest requestParams) {
+        // TODO: 파라미터 검증 추가
         List<ScheduleResponse> schedules = scheduleService.findAllSchedules(principal.id(), requestParams);
         return ResponseEntity.ok(ApiResponse.success("회원정보 조회 성공", schedules));
     }
