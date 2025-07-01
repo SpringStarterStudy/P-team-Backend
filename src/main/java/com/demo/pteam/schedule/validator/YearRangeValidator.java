@@ -3,12 +3,12 @@ package com.demo.pteam.schedule.validator;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class YearRangeValidator implements ConstraintValidator<YearRange, Integer> {
     private static final int MIN_YEAR = 1900;
-    private static final int MAX_YEAR = LocalDateTime.now().getYear() + 10;
+    private static final int MAX_YEAR = LocalDate.now().getYear() + 10;
 
     @Override
     public boolean isValid(Integer year, ConstraintValidatorContext context) {
