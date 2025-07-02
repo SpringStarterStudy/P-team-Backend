@@ -1,7 +1,7 @@
 package com.demo.pteam.security.login.handler;
 
 import com.demo.pteam.global.response.ApiResponse;
-import com.demo.pteam.security.authentication.JwtService;
+import com.demo.pteam.security.jwt.JwtService;
 import com.demo.pteam.security.authentication.dto.JwtToken;
 import com.demo.pteam.security.principal.UserPrincipal;
 import com.fasterxml.jackson.databind.ObjectMapper;

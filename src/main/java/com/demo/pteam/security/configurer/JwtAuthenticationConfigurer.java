@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 public class JwtAuthenticationConfigurer extends AbstractHttpConfigurer<JwtAuthenticationConfigurer, HttpSecurity> {
     private final ObjectMapper objectMapper;
@@ -16,6 +18,7 @@ public class JwtAuthenticationConfigurer extends AbstractHttpConfigurer<JwtAuthe
     private AuthenticationManager authenticationManager;
     private AuthenticationSuccessHandler successHandler;
     private AuthenticationFailureHandler failureHandler;
+    private RequestMatcher LogoutPathMatcher;
 
     public JwtAuthenticationConfigurer(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -26,6 +29,7 @@ public class JwtAuthenticationConfigurer extends AbstractHttpConfigurer<JwtAuthe
         authenticationFilter.setAuthenticationManager(authenticationManager);
         authenticationFilter.setAuthenticationSuccessHandler(successHandler);
         authenticationFilter.setAuthenticationFailureHandler(failureHandler);
+        authenticationFilter.setLogoutPathRequestMatcher(LogoutPathMatcher);
         http.setSharedObject(JwtAuthenticationFilter.class, authenticationFilter);
         http.addFilterBefore(authenticationFilter, ApiLoginFilter.class);
 
@@ -47,5 +51,14 @@ public class JwtAuthenticationConfigurer extends AbstractHttpConfigurer<JwtAuthe
     public JwtAuthenticationConfigurer failureHandler(AuthenticationFailureHandler failureHandler) {
         this.failureHandler = failureHandler;
         return this;
+    }
+
+    public JwtAuthenticationConfigurer logoutPath(String logoutPath) {
+        this.LogoutPathMatcher = createLogoutPathMatcher(logoutPath);
+        return this;
+    }
+
+    private RequestMatcher createLogoutPathMatcher(String logoutPath) {
+        return new AntPathRequestMatcher(logoutPath);
     }
 }

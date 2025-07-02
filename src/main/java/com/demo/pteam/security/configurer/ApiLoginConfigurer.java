@@ -19,6 +19,7 @@ public class ApiLoginConfigurer extends AbstractHttpConfigurer<ApiLoginConfigure
     private AuthenticationManager authenticationManager;
     private AuthenticationSuccessHandler successHandler;
     private AuthenticationFailureHandler failureHandler;
+    private RequestMatcher loginProcessingUrlMatcher;
 
     public ApiLoginConfigurer(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -30,6 +31,7 @@ public class ApiLoginConfigurer extends AbstractHttpConfigurer<ApiLoginConfigure
         authenticationFilter.setAuthenticationManager(authenticationManager);
         authenticationFilter.setAuthenticationSuccessHandler(successHandler);
         authenticationFilter.setAuthenticationFailureHandler(failureHandler);
+        authenticationFilter.setRequiresAuthenticationRequestMatcher(loginProcessingUrlMatcher);
         http.setSharedObject(ApiLoginFilter.class, authenticationFilter);
         http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -57,7 +59,7 @@ public class ApiLoginConfigurer extends AbstractHttpConfigurer<ApiLoginConfigure
     }
 
     public ApiLoginConfigurer loginProcessingUrl(String loginProcessingUrl) {
-        this.authenticationFilter.setRequiresAuthenticationRequestMatcher(this.createLoginProcessingUrlMatcher(loginProcessingUrl));
+        this.loginProcessingUrlMatcher = this.createLoginProcessingUrlMatcher(loginProcessingUrl);
         return this;
     }
 

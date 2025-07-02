@@ -3,6 +3,7 @@ package com.demo.pteam.security.jwt;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -25,6 +26,11 @@ public class InMemoryTokenStore implements TokenStore {
         return data == null ||
                 !data.isSameToken(refreshToken) ||
                 data.isExpired();
+    }
+
+    @Override
+    public Optional<TokenData> findByAccountId(Long accountId) {
+        return Optional.ofNullable(store.get(accountId));
     }
 
     @Scheduled(fixedRate = 3600000)     // 1시간 간격
