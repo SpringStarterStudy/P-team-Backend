@@ -33,4 +33,16 @@ public class AccountService {
                 .orElseThrow(() -> new UserNotFoundException("AccountId not found: " + accountId));
         return accountMapper.toJwtAccountInfo(account);
     }
+
+    public boolean isUniqueByUsername(String username) {
+        return !localAccountRepository.existsByUsername(username);
+    }
+
+    public boolean isUniqueByEmail(String email) {
+        return !localAccountRepository.existsByEmail(email);
+    }
+
+    public boolean isUniqueNickname(String nickname) {
+        return !localAccountRepository.existsByNickname(nickname);
+    }
 }

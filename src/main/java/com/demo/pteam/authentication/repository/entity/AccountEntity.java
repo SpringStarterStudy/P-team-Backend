@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "accounts")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -25,7 +27,8 @@ public abstract class AccountEntity extends SoftDeletableEntity {
     @Column(updatable = false)
     private Role role;
 
-    protected AccountEntity(String name, String nickname, Role role) {
+    protected AccountEntity(LocalDateTime createdAt, String name, String nickname, Role role) {
+        super(createdAt);
         this.name = name;
         this.nickname = nickname;
         this.role = role;

@@ -61,6 +61,7 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/api/auths/login").permitAll()
                         .requestMatchers("/api/auths/logout").permitAll()
+                        .requestMatchers("/api/auths/signup").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(new ApiAuthenticationEntryPoint(objectMapper))

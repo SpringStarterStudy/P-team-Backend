@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "social_accounts")
 @DiscriminatorValue(value = "2")
@@ -30,8 +32,9 @@ public class SocialAccountEntity extends AccountEntity {
     private String activeUsernameCode;
 
     @Builder
-    public SocialAccountEntity(String name, String nickname, Role role, String usernameCode, SocialType type, AccountStatus status) {
-        super(name, nickname, role);
+    public SocialAccountEntity(LocalDateTime createdAt, String name, String nickname,
+                               Role role, String usernameCode, SocialType type, AccountStatus status) {
+        super(createdAt, name, nickname, role);
         this.usernameCode = usernameCode;
         this.type = type;
         this.status = status;
