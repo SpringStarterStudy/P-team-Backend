@@ -1,6 +1,7 @@
 package com.demo.pteam.schedule.repository.entity;
 
 import com.demo.pteam.authentication.repository.entity.AccountEntity;
+import com.demo.pteam.global.entity.SoftDeletableEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "schedule")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ScheduleEntity {
+public class ScheduleEntity extends SoftDeletableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -29,16 +30,10 @@ public class ScheduleEntity {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
-    // TODO: 임시 구현
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
-    @Column(insertable = false)
-    private LocalDateTime deletedAt;
-
     @Builder
-    public ScheduleEntity(AccountEntity userAccountEntity, AccountEntity trainerAccountEntity, LocalDateTime startTime, LocalDateTime endTime) {
+    public ScheduleEntity(LocalDateTime createdAt, AccountEntity userAccountEntity, AccountEntity trainerAccountEntity,
+                          LocalDateTime startTime, LocalDateTime endTime) {
+        super(createdAt);
         this.userAccountEntity = userAccountEntity;
         this.trainerAccountEntity = trainerAccountEntity;
         this.startTime = startTime;

@@ -1,5 +1,6 @@
 package com.demo.pteam.global.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
@@ -14,5 +15,6 @@ public abstract class SoftDeletableEntity extends BaseEntity {
         super(createdAt);
     }
 
-    protected LocalDateTime deletedAt;
+    @Column(insertable = false)
+    private LocalDateTime deletedAt;
 }
