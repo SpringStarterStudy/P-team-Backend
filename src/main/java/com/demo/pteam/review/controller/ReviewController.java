@@ -106,4 +106,20 @@ public class ReviewController {
         ApiResponse<ReviewImageUploadResponseDto> apiResponse = ApiResponse.success("이미지가 성공적으로 업로드되었습니다.", responseDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
     }
+
+    @DeleteMapping("/images/{imageId}")
+    public ResponseEntity<ApiResponse<Void>> deleteReviewImage(
+            @PathVariable Long imageId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        // TODO
+        // 현재 인증된 사용자 ID 가져오기
+        // Long userId = ((CustomUserDetails) userDetails).getId();
+        Long userId = null;
+
+        reviewService.deleteReviewImage(imageId, userId);
+
+        ApiResponse<Void> apiResponse = ApiResponse.success("이미지가 성공적으로 삭제되었습니다.", null);
+        return ResponseEntity.ok(apiResponse);
+    }
 }
