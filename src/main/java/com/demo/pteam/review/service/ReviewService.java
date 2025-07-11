@@ -171,10 +171,16 @@ public class ReviewService {
             throw new ApiException(ReviewErrorCode.NOT_REVIEW_OWNER);
         }
 
-        // 리뷰 이미지 연결 해제
         List<ReviewImageEntity> images = reviewImageRepository.findByReviewId(reviewId);
-        images.forEach(image -> image.updateReview(null));
 
+        images.forEach(image -> {
+            try {
+                fileStorageService.deleteFile(image.getImageUrl());
+            } catch (IOException e) {
+                log.error("Failed to delete image file: {}", e.getMessage());
+            }
+        });
+        reviewImageRepository.deleteAll(images);
         reviewRepository.delete(reviewEntity);
     }
 
