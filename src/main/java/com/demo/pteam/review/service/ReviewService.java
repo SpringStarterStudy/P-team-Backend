@@ -197,6 +197,11 @@ public class ReviewService {
             throw new ApiException(ReviewErrorCode.INVALID_IMAGE_FORMAT);
         }
 
+        // 파일 타입 검증
+        if (!isValidImageType(multipartFile.getContentType())) {
+            throw new ApiException(ReviewErrorCode.INVALID_IMAGE_FORMAT);
+        }
+
         // 파일 크기 검사 (5MB 제한)
         if (multipartFile.getSize() > 5 * 1024 * 1024) {
             throw new ApiException(ReviewErrorCode.IMAGE_TOO_LARGE);
@@ -226,6 +231,10 @@ public class ReviewService {
 
 
     // 메서드
+    // 파일 타입 검증
+    private boolean isValidImageType(String contentType) {
+        return contentType != null && contentType.startsWith("image/");
+    }
 
     // 파일 확장자 추출
     private String getExtension(String filename) {
@@ -237,7 +246,8 @@ public class ReviewService {
 
     // 이미지 확장자 검증
     private boolean isValidImageExtension(String extension) {
-        return Arrays.asList("jpg", "jpeg", "png", "gif").contains(extension);
+        List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png", "gif");
+        return allowedExtensions.contains(extension.toLowerCase());
     }
 
     // 이미지 연결
@@ -250,6 +260,12 @@ public class ReviewService {
                 .map(imageId -> {
                     ReviewImageEntity image = reviewImageRepository.findById(imageId)
                             .orElseThrow(() -> new ApiException(ReviewErrorCode.IMAGE_NOT_FOUND));
+
+
+                    // 권한 체크
+                    if (!image.getUserId().equals(review.getUser().getId())) {
+                        throw new ApiException(ReviewErrorCode.IMAGE_ACCESS_DENIED);
+                    }
 
                     // 이미지가 이미 리뷰와 연결되어 있는지 확인
                     if (image.getReview() != null && !image.getReview().equals(review)) {

@@ -24,7 +24,8 @@ public enum ReviewErrorCode implements ErrorCode {
     INVALID_IMAGE_FORMAT(HttpStatus.BAD_REQUEST, "R_021", "지원하지 않는 이미지 형식입니다."),
     IMAGE_TOO_LARGE(HttpStatus.BAD_REQUEST, "R_022", "이미지 크기가 너무 큽니다."),
     IMAGE_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "R_023", "이미지 업로드에 실패했습니다."),
-    NOT_IMAGE_OWNER(HttpStatus.FORBIDDEN, "R_024", "이미지 소유자만 삭제할 수 있습니다.");
+    NOT_IMAGE_OWNER(HttpStatus.FORBIDDEN, "R_024", "이미지 소유자만 삭제할 수 있습니다."),
+    IMAGE_ACCESS_DENIED(HttpStatus.FORBIDDEN, "R_025", "다른 사용자의 이미지를 사용할 수 없습니다.");
 
     private final HttpStatus status;
     private final String code;
